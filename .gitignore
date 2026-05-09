@@ -1,0 +1,7 @@
+# Subprojects — each has its own git repo
+00-Threejs/
+assets/
+threejs-modules/
+
+# Personal Claude Code settings (machine-specific paths and permissions)
+.claude/settings.local.json
