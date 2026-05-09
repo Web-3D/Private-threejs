@@ -5,3 +5,6 @@ threejs-modules/
 
 # Personal Claude Code settings (machine-specific paths and permissions)
 .claude/settings.local.json
+
+# validate.js cache — local only, không share
+.validate-cache.json
