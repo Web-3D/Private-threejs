@@ -83,7 +83,7 @@ Khi user chỉnh tay hoặc Gemini copy file → **phải chạy thủ công**.
 | File | Mục đích |
 |------|---------|
 | `SYNC.md` | Log quyết định + trạng thái workspace — **đọc đầu session**, ghi sau thay đổi lớn |
-| `DEFERRED.md` | Tính năng đã nghiên cứu nhưng hoãn — đừng implement trừ khi đạt ngưỡng ghi trong file |
+| `deferred/` | Tính năng đã nghiên cứu nhưng hoãn — mỗi file 1 tính năng, đọc trước khi đề xuất implement |
 | `assets/REGISTRY.json` | Index tổng hợp tất cả assets đã validate — auto-generated, không sửa tay |
 
 ---

@@ -75,4 +75,4 @@ assets/ — chưa có asset nào
 | Thêm/track asset | `.gemini/skills/asset-pipeline/SKILL.md` |
 | Bộ luật asset | `assets/README.md` → catalog + rules |
 | Xem tất cả assets đã validate | `assets/REGISTRY.json` — auto-generated, đừng sửa tay |
-| Tính năng nên làm sau | `DEFERRED.md` — đọc trước khi đề xuất CI/CD hoặc versioning |
+| Tính năng nên làm sau | `deferred/README.md` — index 4 tính năng hoãn, mỗi cái có file riêng |
