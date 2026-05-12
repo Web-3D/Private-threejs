@@ -1,0 +1,11 @@
+{
+  "name": "util-name",
+  "category": "util",
+  "version": "1.0.0",
+  "description": "Mô tả utility làm gì",
+  "tags": ["tag1", "tag2"],
+  "complexity": "low",
+  "status": "draft",
+  "dependencies": [],
+  "exports": ["functionName"]
+}

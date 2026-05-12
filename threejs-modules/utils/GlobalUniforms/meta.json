@@ -1,0 +1,12 @@
+{
+  "name": "GlobalUniforms",
+  "category": "utils",
+  "version": "1.0.0",
+  "description": "Singleton cung cấp uTime/uWeather/uDamage đồng bộ cho mọi shader trong scene",
+  "status": "unit-pass",
+  "dependencies": ["three"],
+  "tags": ["uniform", "singleton", "animation", "time", "weather", "damage", "shader-sync"],
+  "complexity": "low",
+  "three-version": ">=0.174",
+  "exports": ["GlobalUniforms"]
+}

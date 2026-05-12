@@ -1,7 +1,7 @@
-# Subprojects — each has its own git repo
+# 00-Threejs — has its own git repo (Threejs-template), cloned standalone for new projects
 00-Threejs/
-assets/
-threejs-modules/
+
+# threejs-modules/ — tracked directly by Private-threejs (no separate repo)
 
 # Ecosystem-level — managed by Web-3D root repo (Web-3D-Ecosystem)
 .claude/

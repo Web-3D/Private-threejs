@@ -1,0 +1,18 @@
+{
+  "name": "shader-name",
+  "category": "shader",
+  "version": "1.0.0",
+  "description": "Mô tả ngắn gọn shader làm gì",
+  "tags": ["tag1", "tag2"],
+  "complexity": "low",
+  "performance-cost": "low",
+  "performance": "60fps với geometry < 100k tris",
+  "three-version-compatible": "^0.174.0",
+  "status": "draft",
+  "dependencies": [],
+  "props": [
+    { "name": "color", "type": "THREE.Color", "default": "0xffffff", "description": "màu chính" },
+    { "name": "speed", "type": "number", "default": "1.0", "description": "tốc độ animation" }
+  ],
+  "usage": "const mat = new ShaderName({ color: 0xff0000 })"
+}

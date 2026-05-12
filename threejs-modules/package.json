@@ -1,0 +1,42 @@
+{
+  "name": "threejs-modules",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Reusable Three.js / WebGPU module library — source-only, not compiled",
+  "author": "NgQuan",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,json,md}\"",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@types/three": "^0.174.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-simple-import-sort": "^13.0.0",
+    "globals": "^15.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.0.0",
+    "three": "^0.174.0",
+    "typescript": "^5.0.0"
+  },
+  "lint-staged": {
+    "**/*.ts": [
+      "eslint --fix",
+      "prettier --write",
+      "bash -c 'tsc --noEmit'"
+    ],
+    "**/*.{json,md}": [
+      "prettier --write"
+    ]
+  }
+}

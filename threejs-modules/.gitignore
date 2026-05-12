@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+.env
+
+# Agent handoff files — tạm thời, không commit
+MAINTENANCE.md

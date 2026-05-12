@@ -1,0 +1,12 @@
+{
+  "name": "RuntimeGuard",
+  "category": "util",
+  "version": "1.0.0",
+  "description": "Kiểm tra draw calls, triangle count, geometry leak mỗi frame",
+  "tags": ["performance", "monitoring", "debug", "budget", "dispose"],
+  "complexity": "low",
+  "status": "unit-pass",
+  "dependencies": [],
+  "exports": ["RuntimeGuard"],
+  "usage": "guard.check() // gọi cuối mỗi frame trong animation loop, sau renderer.render()"
+}

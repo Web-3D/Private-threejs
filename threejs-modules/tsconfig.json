@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    // ─── Target & Module ─────────────────────────────────────────────────
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler", // Tương thích Three.js ESM imports
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+
+    // ─── Strict mode — bắt buộc, cùng chuẩn với project ─────────────────
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    // ─── Source-only — không sinh file output ────────────────────────────
+    // Library này không được compile — chỉ dùng tsc để check type
+    "noEmit": true,
+
+    // ─── Tương thích ─────────────────────────────────────────────────────
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "useDefineForClassFields": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
+}

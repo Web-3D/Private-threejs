@@ -12,12 +12,12 @@ THREEJS/                         ← Engine workspace (git: Private-threejs)
 ├── update-index.js              ← cập nhật Living Index tự động
 ├── deferred/                    ← tính năng đã nghiên cứu, chưa build
 │
-├── 00-Threejs/                  ← [repo: Threejs-template] KHUÔN MẪU dự án
+├── 00-Threejs/                  ← [repo: Threejs-template] KHUÔN MẪU dự án — clone riêng khi tạo project mới
 │   ├── src/                     ← source code (world/, shaders/, utils/, templates/)
 │   ├── vite.config.js           ← build config
 │   └── CLAUDE.md                ← project-level coding rules
 │
-└── threejs-modules/             ← [repo: threejs-modules] KHO VẬT LIỆU
+└── threejs-modules/             ← [Private-threejs] KHO VẬT LIỆU — tracked cùng engine repo
     ├── shaders/                 ← shader modules (TSL/GLSL)
     ├── utils/                   ← utility classes
     ├── components/              ← Three.js components

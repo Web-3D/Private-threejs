@@ -1,0 +1,12 @@
+{
+  "name": "useHookName",
+  "category": "hook",
+  "version": "1.0.0",
+  "description": "Mô tả hook làm gì, return gì",
+  "tags": ["tag1", "tag2"],
+  "complexity": "low",
+  "status": "draft",
+  "dependencies": [],
+  "returns": "ReturnType",
+  "usage": "const value = useHookName(params)"
+}

@@ -1,0 +1,21 @@
+{
+  "name": "ComponentName",
+  "category": "component",
+  "version": "1.0.0",
+  "description": "Mô tả component làm gì trong scene",
+  "tags": ["tag1", "tag2"],
+  "complexity": "medium",
+  "performance-cost": "medium",
+  "performance": "60fps, draw calls: +N",
+  "three-version-compatible": "^0.174.0",
+  "deps": [],
+  "props": [
+    {
+      "name": "position",
+      "type": "THREE.Vector3",
+      "default": "new THREE.Vector3()",
+      "description": "vị trí trong scene"
+    }
+  ],
+  "usage": "const obj = new ComponentName(); scene.add(obj.mesh)"
+}
