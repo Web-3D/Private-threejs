@@ -3,8 +3,11 @@
 assets/
 threejs-modules/
 
-# Personal Claude Code settings (machine-specific paths and permissions)
-.claude/settings.local.json
+# Ecosystem-level — managed by Web-3D root repo (Web-3D-Ecosystem)
+.claude/
+.gemini/
+SYNC.md
+GEMINI.md
 
 # validate.js cache — local only, không share
 .validate-cache.json

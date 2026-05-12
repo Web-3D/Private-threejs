@@ -14,12 +14,22 @@ const crypto = require('crypto')
 const fs = require('fs')
 const path = require('path')
 
-// ─── Budget table (từ ARCHITECTURE.md) ───────────────────────────────────────
+// ─── Budget table (từ assets/ROADMAP.md) ─────────────────────────────────────
+// Tier đọc từ meta.json field "tier". Default: standard / npc.
 
 const BUDGET = {
-  buildings: { tris: 5000,  texturePx: 2048 },
-  props:      { tris: 500,   texturePx: 512  },
-  characters: { tris: 30000, texturePx: 2048 },
+  buildings: {
+    standard: { tris: 5000,   texturePx: 2048 },
+    medium:   { tris: 30000,  texturePx: 2048 },
+    hero:     { tris: 100000, texturePx: 4096 },
+  },
+  props: {
+    standard: { tris: 2000, texturePx: 512 },
+  },
+  characters: {
+    npc:  { tris: 15000, texturePx: 1024 },
+    hero: { tris: 50000, texturePx: 2048 },
+  },
 }
 
 // ─── Required meta.json fields per category ───────────────────────────────────
@@ -32,7 +42,7 @@ const META_FIELDS = {
   textures:     ['name', 'category', 'source', 'resolution', 'maps', 'format', 'license'],
 }
 
-const MODULE_META_FIELDS = ['name', 'version', 'category', 'description', 'status']
+const MODULE_META_FIELDS = ['name', 'version', 'category', 'description', 'status', 'dependencies']
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -185,13 +195,18 @@ function validateAsset(assetPath) {
   }
 
   // 10. Budget check (đọc từ meta.json, không cần parse GLB)
-  const budget = BUDGET[category]
-  if (budget && meta.polycount?.production) {
+  const catBudget = BUDGET[category]
+  const tier = meta.tier || (category === 'characters' ? 'npc' : 'standard')
+  const budget = catBudget ? (catBudget[tier] ?? null) : null
+
+  if (catBudget && !budget) {
+    warn(`tier "${tier}" không hợp lệ cho ${category} — bỏ qua budget check`)
+  } else if (budget && meta.polycount?.production) {
     const tris = meta.polycount.production
     if (tris > budget.tris) {
-      fail(`Polycount production ${tris.toLocaleString()} vượt budget ${budget.tris.toLocaleString()} (${category})`)
+      fail(`Polycount production ${tris.toLocaleString()} vượt budget ${budget.tris.toLocaleString()} (${category}/${tier})`)
     } else {
-      pass(`Polycount ${tris.toLocaleString()} trong budget (limit: ${budget.tris.toLocaleString()})`)
+      pass(`Polycount ${tris.toLocaleString()} trong budget ${tier} (limit: ${budget.tris.toLocaleString()})`)
     }
   } else if (budget && category !== 'environments' && category !== 'textures') {
     warn('polycount.production chưa điền — bỏ qua budget check')
@@ -202,7 +217,7 @@ function validateAsset(assetPath) {
     const px = parseInt(meta['texture-size'].split('x')[0])
     const limit = budget?.texturePx || 2048
     if (px > limit) {
-      fail(`texture-size ${meta['texture-size']} vượt limit ${limit}×${limit} (${category})`)
+      fail(`texture-size ${meta['texture-size']} vượt limit ${limit}×${limit} (${category}/${tier})`)
     } else {
       pass(`texture-size ${meta['texture-size']} trong budget`)
     }
@@ -240,11 +255,27 @@ function validateModule(modulePath) {
       return
     }
 
-    const missing = MODULE_META_FIELDS.filter(f => !meta[f])
+    const missing = MODULE_META_FIELDS.filter(f => !meta[f] && meta[f] !== 0)
     if (missing.length) {
       fail(`meta.json thiếu fields: ${missing.join(', ')}`)
     } else {
       pass('Tất cả module meta fields có mặt')
+    }
+
+    // Dependency existence check — chỉ kiểm tra local module (PascalCase), bỏ qua npm package
+    const deps = Array.isArray(meta.dependencies) ? meta.dependencies : []
+    const localDeps = deps.filter(dep => /^[A-Z]/.test(dep))
+    if (localDeps.length > 0) {
+      const tmRoot = modulePath.slice(0, modulePath.indexOf('threejs-modules') + 'threejs-modules'.length)
+      const depCategories = ['utils', 'shaders', 'hooks', 'components']
+      const missingDeps = localDeps.filter(
+        dep => !depCategories.some(cat => fs.existsSync(path.join(tmRoot, cat, dep)))
+      )
+      if (missingDeps.length) {
+        fail(`local dependencies chưa tồn tại trong threejs-modules: ${missingDeps.join(', ')}`)
+      } else {
+        pass(`Local dependencies tồn tại: ${localDeps.join(', ')}`)
+      }
     }
   }
 
@@ -339,6 +370,7 @@ if (isAsset) {
     cache[cacheKey] = currentHash
     saveCache(cache)
     if (meta) updateRegistry(meta)
+    execSync('node update-index.js', { cwd: __dirname, stdio: 'pipe' })
     console.log('✅ PASS — đạt chuẩn, có thể chuyển sang bước tiếp theo\n')
     process.exit(0)
   } else {
@@ -354,6 +386,7 @@ if (isAsset) {
   if (errors === 0) {
     cache[cacheKey] = currentHash
     saveCache(cache)
+    execSync('node update-index.js', { cwd: __dirname, stdio: 'pipe' })
     console.log('✅ PASS — đạt chuẩn, có thể chuyển sang bước tiếp theo\n')
     process.exit(0)
   } else {
