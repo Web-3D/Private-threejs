@@ -3,21 +3,37 @@
 ## Workspace layout
 
 ```
-THREEJS/
-├── ARCHITECTURE.md      ← file này — toàn bộ architecture + pipeline
-├── CLAUDE.md            ← rules active mỗi session (không sửa trực tiếp)
-├── GEMINI.md            ← context cho Gemini AI
-├── 00-Threejs/          ← project chính + testbed module (Vite + TS + Three.js 0.174)
-├── threejs-modules/     ← code library tái sử dụng (shaders, utils) — nguồn gốc
-├── assets/              ← 3D asset library dùng chung (buildings/characters/environments/props/textures)
-└── .claude/skills/      ← 8/12 skills đã build
+THREEJS/                         ← Engine workspace (git: Private-threejs)
+├── ARCHITECTURE.md              ← file này — toàn bộ architecture + pipeline
+├── CLAUDE.md                    ← engine rules + Living Index (auto-updated)
+├── README.md                    ← workspace entry point
+├── validate.js                  ← quality gate: kiểm tra module + asset
+├── check-imports.js             ← kiểm tra import path trong src/
+├── update-index.js              ← cập nhật Living Index tự động
+├── deferred/                    ← tính năng đã nghiên cứu, chưa build
+│
+├── 00-Threejs/                  ← [repo: Threejs-template] KHUÔN MẪU dự án
+│   ├── src/                     ← source code (world/, shaders/, utils/, templates/)
+│   ├── vite.config.js           ← build config
+│   └── CLAUDE.md                ← project-level coding rules
+│
+└── threejs-modules/             ← [repo: threejs-modules] KHO VẬT LIỆU
+    ├── shaders/                 ← shader modules (TSL/GLSL)
+    ├── utils/                   ← utility classes
+    ├── components/              ← Three.js components
+    └── hooks/                   ← reusable hooks
 ```
 
+**Shared (ecosystem level — không nằm trong thư mục này):**
+- Skills: `../../.claude/skills/` — dùng chung cho tất cả engines
+- Assets: `../assets/` — 3D asset library (git: threejs-assets)
+- Sync log: `../SYNC.md`
+
 **Workflow 2 AI:**
-| AI              | Vai trò                                                            |
-| --------------- | ------------------------------------------------------------------ |
-| **Claude Code** | Build source trong `threejs-modules/`, tích hợp vào `00-Threejs/`  |
-| **Gemini**      | Tìm/copy module từ `threejs-modules/` → project, viết `SUMMARY.md` |
+| AI              | Vai trò                                                             |
+| --------------- | ------------------------------------------------------------------- |
+| **Claude Code** | Build module trong `threejs-modules/`, validate, tích hợp `00-Threejs/` |
+| **Gemini**      | Tìm/copy module từ `threejs-modules/` → project, viết `SUMMARY.md`  |
 
 ---
 
