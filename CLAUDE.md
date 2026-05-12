@@ -3,7 +3,7 @@
 > Tầng này quản lý: Three.js stack, module patterns, skills, build order, Living Index.
 > KHÔNG can thiệp: ecosystem decisions, Babylon rules, asset structure (assets ở `../assets/`).
 > ← Tầng trên: `../CLAUDE.md` (ecosystem overview)
-> Skills: `../../.claude/skills/` | Architecture: `ARCHITECTURE.md`
+> Skills: `../.claude/skills/` | Architecture: `ARCHITECTURE.md`
 
 ---
 
@@ -45,10 +45,11 @@ Character pipeline → `character-modules/` (Phase C, chưa tạo).
 ## Phase hiện tại — Phase A (Environment Foundation)
 
 Build order:
-1. `GlobalUniforms` (utils) — chưa làm
-2. `TriplanarMapping` (shaders) — chưa làm
-3. `WorldNoise` (shaders) — chưa làm
-4. `RoundedCorners` (shaders) — chưa làm
+1. `GlobalUniforms` (utils) — ✅ unit-pass
+2. `RuntimeGuard` (utils) — ✅ unit-pass
+3. `TriplanarMapping` (shaders) — chưa làm
+4. `WorldNoise` (shaders) — chưa làm
+5. `RoundedCorners` (shaders) — chưa làm
 
 Target location: `threejs-modules/` (không phải `00-Threejs/src/` trực tiếp).
 
@@ -99,7 +100,7 @@ Khi user chỉnh tay hoặc Gemini copy file → **phải chạy thủ công**.
 | Asset nào production-ready?                 | Living Index → Assets                      |
 | Quyết định / context session trước?         | `../SYNC.md`                                   |
 | Tính năng đã nghiên cứu nhưng hoãn?         | `deferred/README.md`                           |
-| Workflow Gemini copy module → tích hợp?     | `../../.claude/skills/module-handoff/SKILL.md` |
+| Workflow Gemini copy module → tích hợp?     | `../.claude/skills/module-handoff/SKILL.md` |
 | Kế hoạch asset, budget tier, shaderProfile? | `../assets/ROADMAP.md`                         |
 
 ---
@@ -130,7 +131,7 @@ Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
 | `update-index.js`  | Cập nhật Living Index trong CLAUDE.md (file này)    |
 <!-- /INDEX:scripts -->
 
-### Skills (.claude/skills/)
+### Skills (../.claude/skills/)
 
 <!-- INDEX:skills -->
 | Skill                | Khi nào dùng                                                                     |

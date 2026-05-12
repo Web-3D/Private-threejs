@@ -94,7 +94,7 @@ function parseSkillDesc(skillDir) {
 }
 
 function scanSkills() {
-  const dir = path.join(ROOT, '.claude', 'skills')
+  const dir = path.join(ROOT, '..', '.claude', 'skills')
   if (!fs.existsSync(dir)) return '_Chưa có skill nào_'
   const skills = fs.readdirSync(dir)
     .filter(f => fs.statSync(path.join(dir, f)).isDirectory())
@@ -120,7 +120,7 @@ function extractPhrases(description) {
 }
 
 function scanTriggers() {
-  const dir = path.join(ROOT, '.claude', 'skills')
+  const dir = path.join(ROOT, '..', '.claude', 'skills')
   if (!fs.existsSync(dir)) return '_Chưa có skill nào_'
   const skills = fs.readdirSync(dir)
     .filter(f => fs.statSync(path.join(dir, f)).isDirectory())

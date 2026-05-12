@@ -8,6 +8,7 @@ threejs-modules/
 .gemini/
 SYNC.md
 GEMINI.md
+ECOSYSTEM.md
 
 # validate.js cache — local only, không share
 .validate-cache.json
