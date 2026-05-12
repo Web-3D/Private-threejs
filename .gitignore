@@ -4,11 +4,12 @@
 # threejs-modules/ — tracked directly by Private-threejs (no separate repo)
 
 # Ecosystem-level — managed by Web-3D root repo (Web-3D-Ecosystem)
-.claude/
 .gemini/
 SYNC.md
 GEMINI.md
 ECOSYSTEM.md
+
+# .claude/ tracked by Private-threejs — engine skills live here
 
 # validate.js cache — local only, không share
 .validate-cache.json

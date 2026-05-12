@@ -134,31 +134,17 @@ Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
 ### Skills (../.claude/skills/)
 
 <!-- INDEX:skills -->
-| Skill                | Khi nào dùng                                                                     |
-| -------------------- | -------------------------------------------------------------------------------- |
-| `dispose-pattern`    | Use when creating or modifying classes that own GPU resources in this Three      |
-| `global-uniforms`    | Use when setting up shared uniforms across multiple shaders, syncing uTime/uWeat |
-| `gltf-pipeline`      | Use when optimizing, cleaning, or compressing                                    |
-| `module-handoff`     | Use when importing modules from threejs-modules library into the project, adapti |
-| `new-module`         | Use when creating a new module in the threejs-modules library — scaffolding file |
-| `performance-budget` | Use when adding new objects to a scene, creating animation loops, designing Worl |
-| `shader-tsl`         | Use when writing or modifying shaders — vertex/fragment shaders, NodeMaterial, S |
-| `triplanar-mapping`  | Use when applying world-space textures to meshes without UV coordinates, or when |
+| Skill                  | Khi nào dùng                                  |
+| ---------------------- | --------------------------------------------- |
+| `shared-gltf-pipeline` | Use when optimizing, cleaning, or compressing |
 <!-- /INDEX:skills -->
 
 ### Skill Triggers — từ khóa → skill
 
 <!-- INDEX:triggers -->
-| Từ khóa nghe thấy                                                                                                               | Skill                |
-| ------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
-| tạo class, tạo mesh, tạo object, thêm vào scene, geometry, material, texture                                                    | `dispose-pattern`    |
-| uTime, uWeather, uDamage, global uniform, đồng bộ shader, sync shader, chia sẻ uniform, uniform chung                           | `global-uniforms`    |
-| làm sạch model, tối ưu model, nén model, weld, draco, simplify mesh, import geometry, chuẩn bị model                            | `gltf-pipeline`      |
-| lấy module, đưa module vào, copy module, adapt module, tích hợp module                                                          | `module-handoff`     |
-| tạo module mới, thêm module, scaffold module, module mới trong threejs-modules, viết module, tạo shader module, tạo util module | `new-module`         |
-| thêm object, thêm nhiều, tạo World, animation loop, FPS, draw call, nặng, lag, hiệu năng                                        | `performance-budget` |
-| viết shader, tạo shader, shader cho, uniform, GLSL, đổ màu, bề mặt                                                              | `shader-tsl`         |
-| tri-planar, triplanar, world-space texture, bypass UV, phủ texture không cần UV, texture theo normal, không cần UV              | `triplanar-mapping`  |
+| Từ khóa nghe thấy                                                                                    | Skill                  |
+| ---------------------------------------------------------------------------------------------------- | ---------------------- |
+| làm sạch model, tối ưu model, nén model, weld, draco, simplify mesh, import geometry, chuẩn bị model | `shared-gltf-pipeline` |
 <!-- /INDEX:triggers -->
 
 ### Modules (threejs-modules/)
