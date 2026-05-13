@@ -148,18 +148,18 @@ Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
 ### Modules (threejs-modules/)
 
 <!-- INDEX:modules -->
-| Module               | Category   | Version | Status    |
-| -------------------- | ---------- | ------- | --------- |
-| `GPUParticleSystem`  | components | 1.0.0   | unit-pass |
-| `SparkSystem`        | components | 1.0.0   | unit-pass |
-| `InteriorMapping`    | shaders    | 1.0.0   | unit-pass |
-| `ProceduralFracture` | shaders    | 1.0.0   | unit-pass |
-| `RoundedCorners`     | shaders    | 1.0.0   | unit-pass |
-| `TriplanarMapping`   | shaders    | 1.0.0   | unit-pass |
-| `WorldNoise`         | shaders    | 1.0.0   | unit-pass |
-| `GlobalUniforms`     | utils      | 1.0.0   | unit-pass |
-| `LODSystem`          | utils      | 1.0.0   | unit-pass |
-| `RuntimeGuard`       | utils      | 1.0.0   | unit-pass |
+| Module               | Category   | Version | Status    | Mô tả                                                                                                                          |
+| -------------------- | ---------- | ------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `GPUParticleSystem`  | components | 1.0.0   | unit-pass | Base class for GPU-driven particle systems — define custom physics, color curves, and size envelopes via TSL builder functions |
+| `SparkSystem`        | components | 1.0.0   | unit-pass | GPU-driven particle sparks — 100% vertex shader, zero CPU per-particle, additive blending                                      |
+| `InteriorMapping`    | shaders    | 1.0.0   | unit-pass | Parallax interior room illusion cho building window — 1 texture thay thế hàng trăm mesh                                        |
+| `ProceduralFracture` | shaders    | 1.0.0   | unit-pass | Vertex displacement dọc theo normal bằng triNoise3D — giả lập vết nứt/fracture động                                            |
+| `RoundedCorners`     | shaders    | 1.0.0   | unit-pass | UV-space SDF rounded rectangle — áp dụng lên PlaneGeometry, không cần modify geometry                                          |
+| `TriplanarMapping`   | shaders    | 1.0.0   | unit-pass | Phủ texture theo world-space bằng tri-planar sampling — không cần UV                                                           |
+| `WorldNoise`         | shaders    | 1.0.0   | unit-pass | Procedural world-space animated noise — dùng làm nền tảng cho wind, fracture, weather                                          |
+| `GlobalUniforms`     | utils      | 1.0.0   | unit-pass | Singleton cung cấp uTime/uWeather/uDamage đồng bộ cho mọi shader trong scene                                                   |
+| `LODSystem`          | utils      | 1.0.0   | unit-pass | Wrap THREE.LOD với typed interface — swap mesh detail theo khoảng cách camera                                                  |
+| `RuntimeGuard`       | utils      | 1.0.0   | unit-pass | Kiểm tra draw calls, triangle count, geometry leak mỗi frame                                                                   |
 <!-- /INDEX:modules -->
 
 ### Assets (assets/)

@@ -159,18 +159,19 @@ function scanModules() {
       try {
         const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'))
         modules.push({
-          name:    meta.name    || mod,
+          name:    meta.name        || mod,
           cat,
-          version: meta.version || '—',
-          status:  meta.status  || '—',
+          version: meta.version     || '—',
+          status:  meta.status      || '—',
+          desc:    meta.description || '—',
         })
       } catch { /* meta.json parse lỗi — bỏ qua */ }
     }
   }
 
   if (modules.length === 0) return '_Phase A — chưa có module nào (chỉ có _template)_'
-  const lines = ['| Module | Category | Version | Status |', '|--------|----------|---------|--------|']
-  for (const m of modules) lines.push(`| \`${m.name}\` | ${m.cat} | ${m.version} | ${m.status} |`)
+  const lines = ['| Module | Category | Version | Status | Mô tả |', '|--------|----------|---------|--------|-------|']
+  for (const m of modules) lines.push(`| \`${m.name}\` | ${m.cat} | ${m.version} | ${m.status} | ${m.desc} |`)
   return alignTable(lines.join('\n'))
 }
 

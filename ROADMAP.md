@@ -26,12 +26,13 @@ Exit criteria: tất cả module unit-pass + 00-Threejs import ít nhất 1 shad
 
 Mục tiêu: LOD, procedural destruction, interior occlusion, particle system.
 
-| #   | Module               | Category   | Status       | Dependency     |
-| --- | -------------------- | ---------- | ------------ | -------------- |
-| 1   | `LODSystem`          | utils      | ✅ unit-pass | RuntimeGuard   |
-| 2   | `ProceduralFracture` | shaders    | ✅ unit-pass | WorldNoise     |
-| 3   | `InteriorMapping`    | shaders    | ✅ unit-pass | GlobalUniforms |
-| 4   | `SparkSystem`        | components | ✅ unit-pass | — (GPU-driven) |
+| #   | Module               | Category   | Status       | Dependency        |
+| --- | -------------------- | ---------- | ------------ | ----------------- |
+| 1   | `LODSystem`          | utils      | ✅ unit-pass | RuntimeGuard      |
+| 2   | `ProceduralFracture` | shaders    | ✅ unit-pass | WorldNoise        |
+| 3   | `InteriorMapping`    | shaders    | ✅ unit-pass | GlobalUniforms    |
+| 4   | `GPUParticleSystem`  | components | ✅ unit-pass | —                 |
+| 5   | `SparkSystem`        | components | ✅ unit-pass | GPUParticleSystem |
 
 ---
 
@@ -65,6 +66,7 @@ Exit criteria: < 100 draw calls, < 500k tris, < 16.6ms/frame → live demo Verce
 
 | Ngày       | Thay đổi                                                                   |
 | ---------- | -------------------------------------------------------------------------- |
+| 2026-05-14 | Phase B mở rộng — thêm `GPUParticleSystem` (base class), refactor `SparkSystem` thành preset (composition). Phase B: 5/5 unit-pass |
 | 2026-05-13 | Phase B hoàn thành — 4/4 modules unit-pass (LODSystem, ProceduralFracture, InteriorMapping, SparkSystem) |
 | 2026-05-13 | Phase A hoàn thành — 5/5 modules unit-pass |
 | 2026-05-12 | Tạo file — tổng hợp từ `00-Threejs/ROADMAP.md` + `CLAUDE.md` Phase A build order |
