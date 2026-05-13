@@ -1,0 +1,12 @@
+{
+  "name": "ProceduralFracture",
+  "category": "shaders",
+  "version": "1.0.0",
+  "description": "Vertex displacement dọc theo normal bằng triNoise3D — giả lập vết nứt/fracture động",
+  "status": "unit-pass",
+  "dependencies": ["three"],
+  "tags": ["shader", "fracture", "crack", "displacement", "vertex", "noise", "tsl", "node-material", "animation"],
+  "complexity": "low",
+  "three-version": ">=0.174",
+  "exports": ["ProceduralFracture", "ProceduralFractureOptions"]
+}

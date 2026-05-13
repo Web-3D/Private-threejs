@@ -10,3 +10,5 @@
 | [rag-knowledge.md](rag-knowledge.md)               | RAG vector search cho AI knowledge base          | 15+ modules hoặc 3+ projects với history dài |
 | [asset-tag-search.md](asset-tag-search.md)         | Tag index ngược + search-assets.js script        | 30+ asset trong REGISTRY.json                |
 | [memory-vector-search.md](memory-vector-search.md) | Vector search (Palinode) cho AI memory zone      | 50+ memory files hoặc search chậm            |
+| [character-base-variant.md](character-base-variant.md) | Character Base + Variant Config pipeline     | Phase C — sau Phase A + B xong               |
+| [threejs-modules-workspace-package.md](threejs-modules-workspace-package.md) | Nâng cấp threejs-modules thành pnpm workspace package | ~15+ modules hoặc có project thứ 2 dùng chung |

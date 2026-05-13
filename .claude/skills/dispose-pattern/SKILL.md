@@ -16,7 +16,7 @@ WebGL/WebGPU không có garbage collector cho GPU memory. Mỗi `BufferGeometry`
 - [ ] Dòng đầu tiên của `dispose()` phải là `if (this.isDisposed) return`
 - [ ] Mọi field GPU phải nullable: `Type | null = null`
 - [ ] Gọi `.dispose()` tường minh trên từng resource GPU
-- [ ] Gọi `mesh?.parent?.remove(mesh)` trước khi null — tránh orphan trong scene graph
+- [ ] Gọi `mesh?.removeFromParent()` trước khi null — tránh orphan trong scene graph
 - [ ] Null toàn bộ reference sau khi dispose — giúp GC thu hồi CPU memory
 - [ ] Set `this.isDisposed = true` là dòng cuối cùng
 
@@ -61,7 +61,7 @@ class MyGPUClass {
     if (this.isDisposed) return          // Guard chống double-free
     this.geometry?.dispose()             // GPU memory giải phóng
     this.material?.dispose()             // GPU memory giải phóng
-    this.mesh?.parent?.remove(this.mesh) // Xóa khỏi scene graph
+    this.mesh?.removeFromParent()        // Xóa khỏi scene graph (Three.js r131+)
     this.geometry = null                 // CPU reference về null
     this.material = null
     this.mesh = null
@@ -69,6 +69,52 @@ class MyGPUClass {
   }
 }
 ```
+
+## Template với Texture tự tạo
+
+Texture là resource ngốn VRAM nhất (~16 MB mỗi 2048×2048). Nếu class tự tạo texture → phải khai báo field riêng và dispose tường minh. **Không dùng `Object.keys` scan** — fragile và không type-safe.
+
+```typescript
+class MyTexturedClass {
+  private geometry: THREE.BufferGeometry | null = null
+  private albedo: THREE.Texture | null = null      // field riêng cho từng texture
+  private normal: THREE.Texture | null = null
+  private material: THREE.MeshStandardMaterial | null = null
+  private mesh: THREE.Mesh | null = null
+  private isDisposed = false
+
+  constructor(albedoUrl: string, normalUrl: string) {
+    const loader = new THREE.TextureLoader()
+    this.albedo = loader.load(albedoUrl)
+    this.normal = loader.load(normalUrl)
+    this.geometry = new THREE.BoxGeometry()
+    this.material = new THREE.MeshStandardMaterial({
+      map: this.albedo,
+      normalMap: this.normal,
+    })
+    this.mesh = new THREE.Mesh(this.geometry, this.material)
+  }
+
+  dispose(): void {
+    if (this.isDisposed) return
+    this.albedo?.dispose()               // texture tự tạo → dispose
+    this.normal?.dispose()
+    this.geometry?.dispose()
+    this.material?.dispose()
+    this.mesh?.removeFromParent()
+    this.albedo = null
+    this.normal = null
+    this.geometry = null
+    this.material = null
+    this.mesh = null
+    this.isDisposed = true
+  }
+}
+```
+
+**Quy tắc ownership:**
+- Texture do class tự `new` / `loader.load()` → class đó dispose
+- Texture được truyền vào qua constructor (shared) → **KHÔNG dispose** — owner gốc chịu trách nhiệm
 
 Tham chiếu canonical: `src/templates/BaseShader.ts`
 

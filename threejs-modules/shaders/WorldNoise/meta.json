@@ -1,0 +1,12 @@
+{
+  "name": "WorldNoise",
+  "category": "shaders",
+  "version": "1.0.0",
+  "description": "Procedural world-space animated noise — dùng làm nền tảng cho wind, fracture, weather",
+  "status": "unit-pass",
+  "dependencies": ["three"],
+  "tags": ["shader", "noise", "world-space", "procedural", "animation", "tsl", "node-material"],
+  "complexity": "low",
+  "three-version": ">=0.174",
+  "exports": ["WorldNoise"]
+}

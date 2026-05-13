@@ -1,0 +1,12 @@
+{
+  "name": "RoundedCorners",
+  "category": "shaders",
+  "version": "1.0.0",
+  "description": "UV-space SDF rounded rectangle — áp dụng lên PlaneGeometry, không cần modify geometry",
+  "status": "unit-pass",
+  "dependencies": ["three"],
+  "tags": ["shader", "sdf", "rounded", "corners", "panel", "ui", "tsl", "node-material", "alpha"],
+  "complexity": "low",
+  "three-version": ">=0.174",
+  "exports": ["RoundedCorners"]
+}

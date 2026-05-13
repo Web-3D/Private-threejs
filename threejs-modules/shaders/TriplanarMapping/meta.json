@@ -1,0 +1,12 @@
+{
+  "name": "TriplanarMapping",
+  "category": "shaders",
+  "version": "1.0.0",
+  "description": "Phủ texture theo world-space bằng tri-planar sampling — không cần UV",
+  "status": "unit-pass",
+  "dependencies": ["three"],
+  "tags": ["shader", "texture", "triplanar", "world-space", "no-uv", "tsl", "node-material"],
+  "complexity": "medium",
+  "three-version": ">=0.174",
+  "exports": ["TriplanarMapping"]
+}

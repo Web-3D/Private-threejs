@@ -42,14 +42,12 @@ Character pipeline → `character-modules/` (Phase C, chưa tạo).
 
 ---
 
-## Phase hiện tại — Phase A (Environment Foundation)
+## Phase hiện tại — Phase B ✅ HOÀN THÀNH (2026-05-13)
 
-Build order:
-1. `GlobalUniforms` (utils) — ✅ unit-pass
-2. `RuntimeGuard` (utils) — ✅ unit-pass
-3. `TriplanarMapping` (shaders) — chưa làm
-4. `WorldNoise` (shaders) — chưa làm
-5. `RoundedCorners` (shaders) — chưa làm
+Phase A + B: 9 modules unit-pass. **Next: Phase C** — Character Pipeline (VATShader, LODBillboard, CharacterPool).
+
+**Phase A (✅):** GlobalUniforms, RuntimeGuard, TriplanarMapping, WorldNoise, RoundedCorners  
+**Phase B (✅):** LODSystem, ProceduralFracture, InteriorMapping, SparkSystem
 
 Target location: `threejs-modules/` (không phải `00-Threejs/src/` trực tiếp).
 
@@ -150,10 +148,17 @@ Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
 ### Modules (threejs-modules/)
 
 <!-- INDEX:modules -->
-| Module           | Category | Version | Status    |
-| ---------------- | -------- | ------- | --------- |
-| `GlobalUniforms` | utils    | 1.0.0   | unit-pass |
-| `RuntimeGuard`   | utils    | 1.0.0   | unit-pass |
+| Module               | Category   | Version | Status    |
+| -------------------- | ---------- | ------- | --------- |
+| `SparkSystem`        | components | 1.0.0   | unit-pass |
+| `InteriorMapping`    | shaders    | 1.0.0   | unit-pass |
+| `ProceduralFracture` | shaders    | 1.0.0   | unit-pass |
+| `RoundedCorners`     | shaders    | 1.0.0   | unit-pass |
+| `TriplanarMapping`   | shaders    | 1.0.0   | unit-pass |
+| `WorldNoise`         | shaders    | 1.0.0   | unit-pass |
+| `GlobalUniforms`     | utils      | 1.0.0   | unit-pass |
+| `LODSystem`          | utils      | 1.0.0   | unit-pass |
+| `RuntimeGuard`       | utils      | 1.0.0   | unit-pass |
 <!-- /INDEX:modules -->
 
 ### Assets (assets/)

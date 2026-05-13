@@ -1,0 +1,12 @@
+{
+  "name": "LODSystem",
+  "category": "utils",
+  "version": "1.0.0",
+  "description": "Wrap THREE.LOD với typed interface — swap mesh detail theo khoảng cách camera",
+  "status": "unit-pass",
+  "dependencies": ["three"],
+  "tags": ["lod", "performance", "detail", "distance", "mesh-swap", "optimization"],
+  "complexity": "low",
+  "three-version": ">=0.174",
+  "exports": ["LODSystem", "LODLevel", "LODSystemOptions"]
+}

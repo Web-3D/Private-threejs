@@ -1,0 +1,12 @@
+{
+  "name": "InteriorMapping",
+  "category": "shaders",
+  "version": "1.0.0",
+  "description": "Parallax interior room illusion cho building window — 1 texture thay thế hàng trăm mesh",
+  "status": "unit-pass",
+  "dependencies": ["three"],
+  "tags": ["shader", "interior", "parallax", "building", "window", "room", "tsl", "node-material", "tangent"],
+  "complexity": "medium",
+  "three-version": ">=0.174",
+  "exports": ["InteriorMapping", "InteriorMappingOptions"]
+}

@@ -1,9 +1,11 @@
 import * as THREE from 'three'
+import { WebGPURenderer } from 'three/webgpu'
 
 import { RuntimeGuard } from './index'
 
-export function createExample() {
-  const renderer = new THREE.WebGLRenderer()
+export async function createExample() {
+  const renderer = new WebGPURenderer()
+  await renderer.init()
   const scene = new THREE.Scene()
   const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000)
 

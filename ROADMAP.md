@@ -6,7 +6,7 @@
 
 ---
 
-## Phase A — Environment Foundation _(đang build)_
+## Phase A — Environment Foundation _(✅ hoàn thành 2026-05-13)_
 
 Mục tiêu: nền tảng shader + util cho mọi scene. Không có Phase A → không build được gì tiếp.
 
@@ -16,22 +16,22 @@ Exit criteria: tất cả module unit-pass + 00-Threejs import ít nhất 1 shad
 | --- | ----------------- | -------- | ------------ | --------------- |
 | 1   | `GlobalUniforms`  | utils    | ✅ unit-pass  | —               |
 | 2   | `RuntimeGuard`    | utils    | ✅ unit-pass  | —               |
-| 3   | `TriplanarMapping`| shaders  | ⏳ chưa code | GlobalUniforms  |
-| 4   | `WorldNoise`      | shaders  | ⏳ chưa code | GlobalUniforms  |
-| 5   | `RoundedCorners`  | shaders  | ⏳ chưa code | —               |
+| 3   | `TriplanarMapping`| shaders  | ✅ unit-pass  | GlobalUniforms  |
+| 4   | `WorldNoise`      | shaders  | ✅ unit-pass  | GlobalUniforms  |
+| 5   | `RoundedCorners`  | shaders  | ✅ unit-pass  | —               |
 
 ---
 
-## Phase B — Advanced Environment & Splats _(chờ Phase A)_
+## Phase B — Advanced Environment & Splats _(✅ hoàn thành 2026-05-13)_
 
 Mục tiêu: LOD, procedural destruction, interior occlusion, particle system.
 
 | #   | Module               | Category   | Status       | Dependency     |
 | --- | -------------------- | ---------- | ------------ | -------------- |
-| 1   | `LODSystem`          | utils      | ⏳ chưa code | RuntimeGuard   |
-| 2   | `ProceduralFracture` | shaders    | ⏳ chưa code | WorldNoise     |
-| 3   | `InteriorMapping`    | shaders    | ⏳ chưa code | GlobalUniforms |
-| 4   | `SparkSystem`        | components | ⏳ chưa code | GlobalUniforms |
+| 1   | `LODSystem`          | utils      | ✅ unit-pass | RuntimeGuard   |
+| 2   | `ProceduralFracture` | shaders    | ✅ unit-pass | WorldNoise     |
+| 3   | `InteriorMapping`    | shaders    | ✅ unit-pass | GlobalUniforms |
+| 4   | `SparkSystem`        | components | ✅ unit-pass | — (GPU-driven) |
 
 ---
 
@@ -65,4 +65,6 @@ Exit criteria: < 100 draw calls, < 500k tris, < 16.6ms/frame → live demo Verce
 
 | Ngày       | Thay đổi                                                                   |
 | ---------- | -------------------------------------------------------------------------- |
+| 2026-05-13 | Phase B hoàn thành — 4/4 modules unit-pass (LODSystem, ProceduralFracture, InteriorMapping, SparkSystem) |
+| 2026-05-13 | Phase A hoàn thành — 5/5 modules unit-pass |
 | 2026-05-12 | Tạo file — tổng hợp từ `00-Threejs/ROADMAP.md` + `CLAUDE.md` Phase A build order |

@@ -4,6 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "description": "Reusable Three.js / WebGPU module library — source-only, not compiled",
+  "exports": {
+    "./shaders/*": "./shaders/*/index.ts",
+    "./utils/*": "./utils/*/index.ts",
+    "./components/*": "./components/*/index.ts",
+    "./hooks/*": "./hooks/*/index.ts"
+  },
   "author": "NgQuan",
   "scripts": {
     "type-check": "tsc --noEmit",

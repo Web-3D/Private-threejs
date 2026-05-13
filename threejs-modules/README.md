@@ -18,26 +18,31 @@
 
 ## Shaders
 
-| Tên                | Mô tả | Tags | Complexity | Three.js |
-| ------------------ | ----- | ---- | ---------- | -------- |
-| _(chưa có module)_ | —     | —    | —          | —        |
+| Tên                  | Mô tả                                         | Tags                              | Complexity |
+| -------------------- | --------------------------------------------- | --------------------------------- | ---------- |
+| `TriplanarMapping`   | Texture không cần UV — blend 3 mặt phẳng      | triplanar, terrain, uv-free       | medium     |
+| `WorldNoise`         | 3D noise field trong world space              | noise, wind, animation            | low        |
+| `RoundedCorners`     | SDF rounded box trong fragment shader         | sdf, ui, stylized                 | low        |
+| `ProceduralFracture` | Vertex displacement dọc normal = vết nứt động | fracture, displacement, vertex    | low        |
+| `InteriorMapping`    | Parallax room illusion qua cửa sổ tòa nhà    | interior, parallax, building      | medium     |
 
 ---
 
 ## Utils
 
-| Tên            | Mô tả                                                   | Tags                                       | Complexity |
-| -------------- | ------------------------------------------------------- | ------------------------------------------ | ---------- |
-| RuntimeGuard   | Kiểm tra draw calls, triangles, geometry leak mỗi frame | performance, monitoring, debug             | low        |
-| GlobalUniforms | Singleton đồng bộ uTime/uWeather/uDamage cho mọi shader | uniform, singleton, animation, shader-sync | low        |
+| Tên              | Mô tả                                                   | Tags                                       | Complexity |
+| ---------------- | ------------------------------------------------------- | ------------------------------------------ | ---------- |
+| `RuntimeGuard`   | Kiểm tra draw calls, triangles, geometry leak mỗi frame | performance, monitoring, debug             | low        |
+| `GlobalUniforms` | Singleton đồng bộ uTime/uWeather/uDamage cho mọi shader | uniform, singleton, animation, shader-sync | low        |
+| `LODSystem`      | Wrap THREE.LOD — typed levels, auto/manual update       | lod, performance, distance                 | low        |
 
 ---
 
 ## Components
 
-| Tên                | Mô tả | Tags | Complexity | Deps |
-| ------------------ | ----- | ---- | ---------- | ---- |
-| _(chưa có module)_ | —     | —    | —          | —    |
+| Tên           | Mô tả                                                 | Tags                              | Complexity |
+| ------------- | ----------------------------------------------------- | --------------------------------- | ---------- |
+| `SparkSystem` | GPU-driven particles — zero CPU per-particle, additive | sparks, particles, vfx, gpu       | medium     |
 
 ---
 
