@@ -150,6 +150,7 @@ Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
 <!-- INDEX:modules -->
 | Module               | Category   | Version | Status    |
 | -------------------- | ---------- | ------- | --------- |
+| `GPUParticleSystem`  | components | 1.0.0   | unit-pass |
 | `SparkSystem`        | components | 1.0.0   | unit-pass |
 | `InteriorMapping`    | shaders    | 1.0.0   | unit-pass |
 | `ProceduralFracture` | shaders    | 1.0.0   | unit-pass |

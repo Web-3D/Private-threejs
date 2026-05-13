@@ -40,9 +40,10 @@
 
 ## Components
 
-| Tên           | Mô tả                                                 | Tags                              | Complexity |
-| ------------- | ----------------------------------------------------- | --------------------------------- | ---------- |
-| `SparkSystem` | GPU-driven particles — zero CPU per-particle, additive | sparks, particles, vfx, gpu       | medium     |
+| Tên                  | Mô tả                                                      | Tags                                    | Complexity |
+| -------------------- | ---------------------------------------------------------- | --------------------------------------- | ---------- |
+| `GPUParticleSystem`  | Base class GPU particles — custom physics via TSL builders | gpu, base-class, particles, extensible  | medium     |
+| `SparkSystem`        | GPU-driven sparks/embers — preset xây trên GPUParticleSystem | sparks, particles, vfx, gpu           | medium     |
 
 ---
 

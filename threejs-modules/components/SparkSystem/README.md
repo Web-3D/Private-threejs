@@ -1,6 +1,8 @@
 # SparkSystem
 
-GPU-driven particle system — toàn bộ animation chạy trong vertex shader. CPU chỉ cập nhật 1 uniform (`uTime`) mỗi frame, không loop qua từng particle.
+Preset particle system cho sparks/embers — xây trên [`GPUParticleSystem`](../GPUParticleSystem/README.md). Toàn bộ animation chạy trong vertex shader. CPU chỉ cập nhật 1 uniform (`uTime`) mỗi frame, không loop qua từng particle.
+
+> Cần hiệu ứng khác (fire, rain, magic)? Dùng `GPUParticleSystem` trực tiếp với custom builder functions.
 
 ## Props
 

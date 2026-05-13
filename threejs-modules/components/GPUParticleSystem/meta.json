@@ -1,0 +1,21 @@
+{
+  "name": "GPUParticleSystem",
+  "category": "components",
+  "version": "1.0.0",
+  "description": "Base class for GPU-driven particle systems — define custom physics, color curves, and size envelopes via TSL builder functions",
+  "status": "unit-pass",
+  "dependencies": ["three"],
+  "tags": [
+    "particles",
+    "gpu",
+    "base-class",
+    "tsl",
+    "node-material",
+    "extensible",
+    "points",
+    "custom-physics"
+  ],
+  "complexity": "medium",
+  "three-version": ">=0.174",
+  "exports": ["GPUParticleSystem", "GPUParticleSystemOptions", "ParticleNodeContext", "ParticleNode", "ParticleShape"]
+}
