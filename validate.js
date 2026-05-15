@@ -267,7 +267,7 @@ function validateModule(modulePath) {
     const localDeps = deps.filter(dep => /^[A-Z]/.test(dep))
     if (localDeps.length > 0) {
       const tmRoot = modulePath.slice(0, modulePath.indexOf('threejs-modules') + 'threejs-modules'.length)
-      const depCategories = ['utils', 'shaders', 'hooks', 'components']
+      const depCategories = ['utils', 'shaders', 'hooks', 'components', 'effects']
       const missingDeps = localDeps.filter(
         dep => !depCategories.some(cat => fs.existsSync(path.join(tmRoot, cat, dep)))
       )

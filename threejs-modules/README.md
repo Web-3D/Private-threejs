@@ -42,14 +42,21 @@
 
 ---
 
+## Effects
+
+| Tên                  | Mô tả                                                        | Tags                                   | Complexity |
+| -------------------- | ------------------------------------------------------------ | -------------------------------------- | ---------- |
+| `GPUParticleSystem`  | Base class GPU particles — custom physics via TSL builders   | gpu, base-class, particles, extensible | medium     |
+| `SparkSystem`        | GPU-driven sparks/embers — preset xây trên GPUParticleSystem | sparks, particles, vfx, gpu           | medium     |
+
+---
+
 ## Components
 
-| Tên                  | Mô tả                                                      | Tags                                    | Complexity |
-| -------------------- | ---------------------------------------------------------- | --------------------------------------- | ---------- |
-| `GPUParticleSystem`  | Base class GPU particles — custom physics via TSL builders | gpu, base-class, particles, extensible  | medium     |
-| `SparkSystem`        | GPU-driven sparks/embers — preset xây trên GPUParticleSystem | sparks, particles, vfx, gpu           | medium     |
-| `LODBillboard`       | Swap 3D mesh → billboard sprite khi xa — tiết kiệm draw call | lod, billboard, sprite, crowd, performance | medium |
-| `PostProcessing`     | WebGPU bloom pipeline — pass → bloom → tone mapping output | post-processing, bloom, webgpu, effects | medium     |
+| Tên              | Mô tả                                                       | Tags                                       | Complexity |
+| ---------------- | ----------------------------------------------------------- | ------------------------------------------ | ---------- |
+| `LODBillboard`   | Swap 3D mesh → billboard sprite khi xa — tiết kiệm draw call | lod, billboard, sprite, crowd, performance | medium     |
+| `PostProcessing` | WebGPU bloom pipeline — pass → bloom → tone mapping output  | post-processing, bloom, webgpu, effects    | medium     |
 
 ---
 

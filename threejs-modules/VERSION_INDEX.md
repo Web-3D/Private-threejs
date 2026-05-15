@@ -18,8 +18,8 @@
 | `LODSystem`          | 1.0.0   | 0.174.0           | B     | utils      | ✅ unit-pass |
 | `ProceduralFracture` | 1.0.0   | 0.174.0           | B     | shaders    | ✅ unit-pass |
 | `InteriorMapping`    | 1.0.0   | 0.174.0           | B     | shaders    | ✅ unit-pass |
-| `GPUParticleSystem`  | 1.0.0   | 0.174.0           | B     | components | ✅ unit-pass |
-| `SparkSystem`        | 1.0.0   | 0.174.0           | B     | components | ✅ unit-pass |
+| `GPUParticleSystem`  | 1.0.0   | 0.174.0           | B     | effects    | ✅ unit-pass |
+| `SparkSystem`        | 1.0.0   | 0.174.0           | B     | effects    | ✅ unit-pass |
 | `VATShader`          | 1.0.0   | 0.174.0           | C     | shaders    | ✅ unit-pass |
 | `LODBillboard`       | 1.0.0   | 0.174.0           | C     | components | ✅ unit-pass |
 | `CharacterPool`      | 1.0.0   | 0.174.0           | C     | utils      | ✅ unit-pass |

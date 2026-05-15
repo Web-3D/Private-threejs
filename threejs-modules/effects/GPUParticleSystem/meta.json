@@ -1,6 +1,6 @@
 {
   "name": "GPUParticleSystem",
-  "category": "components",
+  "category": "effects",
   "version": "1.0.0",
   "description": "Base class for GPU-driven particle systems — define custom physics, color curves, and size envelopes via TSL builder functions",
   "status": "unit-pass",

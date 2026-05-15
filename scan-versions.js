@@ -38,7 +38,7 @@ function findMetaFiles(dir) {
   return results
 }
 
-const categories = ['shaders', 'utils', 'components', 'hooks']
+const categories = ['shaders', 'utils', 'components', 'effects', 'hooks']
 const metaFiles = []
 for (const cat of categories) {
   const catDir = path.join(MODULES_DIR, cat)

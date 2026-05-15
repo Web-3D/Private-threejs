@@ -71,6 +71,7 @@ function scanScripts() {
     { file: 'validate.js',      desc: 'Validate asset / module — caching + registry update' },
     { file: 'check-imports.js', desc: 'Kiểm tra src/ không import từ raw/ hoặc optimized/' },
     { file: 'update-index.js',  desc: 'Cập nhật Living Index trong CLAUDE.md (file này)' },
+    { file: 'scan-versions.js', desc: 'Detect Three.js version drift — exit 1 nếu có module stale' },
   ]
   const rows = known.filter(s => fs.existsSync(path.join(ROOT, s.file)))
   const lines = ['| Script | Mô tả |', '|--------|-------|']

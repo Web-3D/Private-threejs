@@ -20,7 +20,7 @@ THREEJS/
 ```
 
 Assets dùng chung: `../assets/[category]/[name]/production/` — không nằm trong thư mục này.
-Character pipeline → `threejs-modules/components/` (LODBillboard, CharacterPool ✅ Phase C).
+Effects/VFX → `threejs-modules/effects/` (GPUParticleSystem, SparkSystem ✅ Phase B).
 
 ---
 
@@ -119,11 +119,12 @@ Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
 ### Scripts
 
 <!-- INDEX:scripts -->
-| Script             | Mô tả                                               |
-| ------------------ | --------------------------------------------------- |
-| `validate.js`      | Validate asset / module — caching + registry update |
-| `check-imports.js` | Kiểm tra src/ không import từ raw/ hoặc optimized/  |
-| `update-index.js`  | Cập nhật Living Index trong CLAUDE.md (file này)    |
+| Script             | Mô tả                                                      |
+| ------------------ | ---------------------------------------------------------- |
+| `validate.js`      | Validate asset / module — caching + registry update        |
+| `check-imports.js` | Kiểm tra src/ không import từ raw/ hoặc optimized/         |
+| `update-index.js`  | Cập nhật Living Index trong CLAUDE.md (file này)           |
+| `scan-versions.js` | Detect Three.js version drift — exit 1 nếu có module stale |
 <!-- /INDEX:scripts -->
 
 ### Skills (../.claude/skills/)
@@ -147,10 +148,10 @@ Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
 <!-- INDEX:modules -->
 | Module               | Category   | Version | Status    | Mô tả                                                                                                                          |
 | -------------------- | ---------- | ------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `GPUParticleSystem`  | components | 1.0.0   | unit-pass | Base class for GPU-driven particle systems — define custom physics, color curves, and size envelopes via TSL builder functions |
 | `LODBillboard`       | components | 1.0.0   | unit-pass | Swap 3D mesh → billboard sprite khi camera xa — tiết kiệm draw call và triangle count                                          |
 | `PostProcessing`     | components | 1.0.0   | unit-pass | WebGPU post-processing pipeline with bloom effect — wraps Three.js PostProcessing class                                        |
-| `SparkSystem`        | components | 1.0.0   | unit-pass | GPU-driven particle sparks — 100% vertex shader, zero CPU per-particle, additive blending                                      |
+| `GPUParticleSystem`  | effects    | 1.0.0   | unit-pass | Base class for GPU-driven particle systems — define custom physics, color curves, and size envelopes via TSL builder functions |
+| `SparkSystem`        | effects    | 1.0.0   | unit-pass | GPU-driven particle sparks — 100% vertex shader, zero CPU per-particle, additive blending                                      |
 | `InteriorMapping`    | shaders    | 1.0.0   | unit-pass | Parallax interior room illusion cho building window — 1 texture thay thế hàng trăm mesh                                        |
 | `ProceduralFracture` | shaders    | 1.0.0   | unit-pass | Vertex displacement dọc theo normal bằng triNoise3D — giả lập vết nứt/fracture động                                            |
 | `RoundedCorners`     | shaders    | 1.0.0   | unit-pass | UV-space SDF rounded rectangle — áp dụng lên PlaneGeometry, không cần modify geometry                                          |

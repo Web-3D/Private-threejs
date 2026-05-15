@@ -1,10 +1,10 @@
 {
   "name": "SparkSystem",
-  "category": "components",
+  "category": "effects",
   "version": "1.0.0",
   "description": "GPU-driven particle sparks — 100% vertex shader, zero CPU per-particle, additive blending",
   "status": "unit-pass",
-  "dependencies": ["three", "components/GPUParticleSystem"],
+  "dependencies": ["three", "GPUParticleSystem"],
   "tags": ["particles", "sparks", "gpu", "points", "tsl", "node-material", "additive", "fire", "vfx", "animation"],
   "complexity": "medium",
   "three-version": ">=0.174",
