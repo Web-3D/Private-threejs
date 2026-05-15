@@ -13,3 +13,6 @@ ECOSYSTEM.md
 
 # validate.js cache — local only, không share
 .validate-cache.json
+
+# Claude Code local settings — machine-specific paths
+.claude/settings.local.json

@@ -121,10 +121,9 @@ Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
 <!-- INDEX:scripts -->
 | Script             | Mô tả                                               |
 | ------------------ | --------------------------------------------------- |
-| `validate.js`      | Validate asset / module — caching + registry update          |
-| `check-imports.js` | Kiểm tra src/ không import từ raw/ hoặc optimized/           |
-| `update-index.js`  | Cập nhật Living Index trong CLAUDE.md (file này)             |
-| `scan-versions.js` | Detect Three.js version drift — exit 1 nếu có module stale  |
+| `validate.js`      | Validate asset / module — caching + registry update |
+| `check-imports.js` | Kiểm tra src/ không import từ raw/ hoặc optimized/  |
+| `update-index.js`  | Cập nhật Living Index trong CLAUDE.md (file này)    |
 <!-- /INDEX:scripts -->
 
 ### Skills (../.claude/skills/)
