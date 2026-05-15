@@ -65,17 +65,21 @@ THREEJS/                         ← Engine workspace (git: Private-threejs)
 | **GlobalUniforms**     | Sync `uTime`, `uWeather`, `uDamage` toàn scene | —                        |
 | **TriplanarMapping**   | Phủ texture theo world position — bypass UV    | GlobalUniforms           |
 | **WorldNoise**         | Surface micro-detail theo vị trí thế giới      | GlobalUniforms           |
-| **RoundedCorners**     | Normal hack tạo cạnh mềm                       | GlobalUniforms           |
-| **ProceduralFracture** | Clip planes + vertex displacement              | GlobalUniforms           |
-| **VATShader**          | Đọc VAT texture → replay animation trên GPU    | GlobalUniforms + VAT EXR |
+| **RoundedCorners**     | SDF rounded corners trong UV space             | —                        |
+| **ProceduralFracture** | Vertex displacement dọc normal = vết nứt động  | WorldNoise               |
+| **InteriorMapping**    | Parallax room illusion qua cửa sổ tòa nhà     | GlobalUniforms           |
+| **VATShader**          | Đọc VAT texture → replay animation trên GPU    | GlobalUniforms           |
+| **WindAnimation**      | triNoise3D → positionNode displacement (gió)   | WorldNoise               |
 
-### Layer 4 — LOD System
+### Layer 4 — LOD & Post-Processing
 
-| Module               | Vai trò                           | Kích hoạt khi        |
-| -------------------- | --------------------------------- | -------------------- |
-| **LODBillboard**     | Thay character bằng flat sprite   | Distance > threshold |
-| **InteriorMapping**  | Giả lập phòng bên trong tòa nhà   | Camera gần building  |
-| **SplatIntegration** | Bridge Spark.js + Phase A shaders | Environment splat    |
+| Module               | Vai trò                                         | Kích hoạt khi        |
+| -------------------- | ----------------------------------------------- | -------------------- |
+| **LODBillboard**     | Thay character bằng flat sprite (THREE.LOD)     | Distance > threshold |
+| **CharacterPool**    | Object pool — acquire/release O(1), crowd ready | Spawn/despawn nhiều  |
+| **DayNightCycle**    | Sun arc + ambient color theo normalized time    | Outdoor scene        |
+| **PostProcessing**   | scene pass → bloom → tone mapping (WebGPU)      | Emissive/HDR content |
+| **SplatIntegration** | Bridge Spark.js + Phase A shaders               | Environment splat    |
 
 ### Layer 5 — Framework Base
 
@@ -98,14 +102,20 @@ THREEJS/                         ← Engine workspace (git: Private-threejs)
                                 ↓
                          [Three.js Scene]
                                 ↓
-              ┌─────────────────┼─────────────────┐
-              ↓                 ↓                 ↓
-       [TriplanarMapping] [WorldNoise]    [RoundedCorners]
-       [ProceduralFracture][VATShader]   [InteriorMapping]
-              └─────────────────┼─────────────────┘
+              ┌─────────────────┼──────────────────────┐
+              ↓                 ↓                      ↓
+    [GlobalUniforms]      [RuntimeGuard]          [LODSystem]
+       uTime/uWeather          ↓                      ↓
+              ↓         [CharacterPool]         [LODBillboard]
+    ┌─────────┼──────────────────────┐
+    ↓         ↓         ↓            ↓
+[TriplanarMapping][WorldNoise][InteriorMapping][DayNightCycle]
+                       ↓
+          [ProceduralFracture][WindAnimation]
                                 ↓
-                       [GlobalUniforms]
-                   uTime / uWeather / uDamage
+                    [GPUParticleSystem] → [SparkSystem]
+                    [VATShader]
+                    [PostProcessing] ← scene pass → bloom
 ```
 
 ---
@@ -160,20 +170,6 @@ Asset dùng cho gì?
 
 ---
 
-## Build order Phase A–D
-
-```
-Phase A — Environment Foundation   Phase B — Advanced Env          Phase C — Characters             Phase D — Polish
-1. GlobalUniforms ✅               5. ProceduralFracture           9.  VATShader                    13. PostProcessing
-2. TriplanarMapping ← NEXT         6. LODSystem                    10. LODBillboard                 14. WindAnimation
-3. WorldNoise                      7. InteriorMapping              11. CharacterPool                15. DayNightCycle
-4. RoundedCorners                  8. SplatIntegration             12. CharacterController
-```
-
-Tất cả module build vào `threejs-modules/` — copy vào project qua Gemini workflow.
-
----
-
 ## Performance budget
 
 | Metric runtime   | Limit             |
@@ -191,21 +187,6 @@ Tất cả module build vào `threejs-modules/` — copy vào project qua Gemini
 | Building       | < 5,000 tris         | 2048×2048   |
 | NPC character  | < 10,000 tris        | 1024×1024   |
 | Hero character | < 30,000 tris        | 2048×2048   |
-
----
-
-## Roadmap
-
-| Giai đoạn             | Tasks                                                                    |
-| --------------------- | ------------------------------------------------------------------------ |
-| **Tuần 1** (hiện tại) | ✅ GlobalUniforms · Setup Claude Desktop + Blender MCP                   |
-| **Tuần 2–3**          | Trial 3D AI Studio · Code TriplanarMapping · Test Tripo→MCP→Three.js     |
-| **Tuần 4–6**          | WorldNoise · RoundedCorners · **Phase A complete** · Demo asset đầu tiên |
-| **Tuần 7–10**         | Phase B (LOD, Fracture, Interior, Splat)                                 |
-| **Tuần 11–14**        | Phase C (VAT, CharacterPool)                                             |
-| **Tuần 15–16**        | Phase D · Performance opt · Deploy Vercel                                |
-
-
 
 ---
 

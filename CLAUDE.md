@@ -15,11 +15,12 @@ THREEJS/
 ├── threejs-modules/   ← thư viện module tái sử dụng (environment only)
 ├── validate.js        ← Three.js module/asset validator
 ├── update-index.js    ← cập nhật Living Index trong file này
-└── check-imports.js   ← kiểm tra import path hợp lệ
+├── check-imports.js   ← kiểm tra import path hợp lệ
+└── scan-versions.js   ← detect Three.js version drift — chạy sau mỗi Three.js upgrade
 ```
 
 Assets dùng chung: `../assets/[category]/[name]/production/` — không nằm trong thư mục này.
-Character pipeline → `character-modules/` (Phase C, chưa tạo).
+Character pipeline → `threejs-modules/components/` (LODBillboard, CharacterPool ✅ Phase C).
 
 ---
 
@@ -42,14 +43,10 @@ Character pipeline → `character-modules/` (Phase C, chưa tạo).
 
 ---
 
-## Phase hiện tại — Phase B ✅ HOÀN THÀNH (2026-05-13)
+## Phase hiện tại — Phase D ✅ HOÀN THÀNH (2026-05-15)
 
-Phase A + B: 9 modules unit-pass. **Next: Phase C** — Character Pipeline (VATShader, LODBillboard, CharacterPool).
-
-**Phase A (✅):** GlobalUniforms, RuntimeGuard, TriplanarMapping, WorldNoise, RoundedCorners  
-**Phase B (✅):** LODSystem, ProceduralFracture, InteriorMapping, SparkSystem
-
-Target location: `threejs-modules/` (không phải `00-Threejs/src/` trực tiếp).
+16 modules unit-pass — Phase A–D hoàn chỉnh. Target: `threejs-modules/`.
+→ Tiến trình + next steps: [`/ROADMAP.md`](../ROADMAP.md) | Phase detail: [`ROADMAP.md`](ROADMAP.md)
 
 ---
 
@@ -124,9 +121,10 @@ Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
 <!-- INDEX:scripts -->
 | Script             | Mô tả                                               |
 | ------------------ | --------------------------------------------------- |
-| `validate.js`      | Validate asset / module — caching + registry update |
-| `check-imports.js` | Kiểm tra src/ không import từ raw/ hoặc optimized/  |
-| `update-index.js`  | Cập nhật Living Index trong CLAUDE.md (file này)    |
+| `validate.js`      | Validate asset / module — caching + registry update          |
+| `check-imports.js` | Kiểm tra src/ không import từ raw/ hoặc optimized/           |
+| `update-index.js`  | Cập nhật Living Index trong CLAUDE.md (file này)             |
+| `scan-versions.js` | Detect Three.js version drift — exit 1 nếu có module stale  |
 <!-- /INDEX:scripts -->
 
 ### Skills (../.claude/skills/)
@@ -151,12 +149,18 @@ Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
 | Module               | Category   | Version | Status    | Mô tả                                                                                                                          |
 | -------------------- | ---------- | ------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | `GPUParticleSystem`  | components | 1.0.0   | unit-pass | Base class for GPU-driven particle systems — define custom physics, color curves, and size envelopes via TSL builder functions |
+| `LODBillboard`       | components | 1.0.0   | unit-pass | Swap 3D mesh → billboard sprite khi camera xa — tiết kiệm draw call và triangle count                                          |
+| `PostProcessing`     | components | 1.0.0   | unit-pass | WebGPU post-processing pipeline with bloom effect — wraps Three.js PostProcessing class                                        |
 | `SparkSystem`        | components | 1.0.0   | unit-pass | GPU-driven particle sparks — 100% vertex shader, zero CPU per-particle, additive blending                                      |
 | `InteriorMapping`    | shaders    | 1.0.0   | unit-pass | Parallax interior room illusion cho building window — 1 texture thay thế hàng trăm mesh                                        |
 | `ProceduralFracture` | shaders    | 1.0.0   | unit-pass | Vertex displacement dọc theo normal bằng triNoise3D — giả lập vết nứt/fracture động                                            |
 | `RoundedCorners`     | shaders    | 1.0.0   | unit-pass | UV-space SDF rounded rectangle — áp dụng lên PlaneGeometry, không cần modify geometry                                          |
 | `TriplanarMapping`   | shaders    | 1.0.0   | unit-pass | Phủ texture theo world-space bằng tri-planar sampling — không cần UV                                                           |
+| `VATShader`          | shaders    | 1.0.0   | unit-pass | Vertex Animation Texture shader — bake animation vào DataTexture, reconstruct trên GPU                                         |
+| `WindAnimation`      | shaders    | 1.0.0   | unit-pass | Vertex displacement shader simulating wind using triNoise3D — animates foliage, grass, flags                                   |
 | `WorldNoise`         | shaders    | 1.0.0   | unit-pass | Procedural world-space animated noise — dùng làm nền tảng cho wind, fracture, weather                                          |
+| `CharacterPool`      | utils      | 1.0.0   | unit-pass | Generic object pool — pre-allocate slots, acquire/release không tạo mới GPU resource                                           |
+| `DayNightCycle`      | utils      | 1.0.0   | unit-pass | Day-night cycle utility driving DirectionalLight sun arc and AmbientLight color by normalized time                             |
 | `GlobalUniforms`     | utils      | 1.0.0   | unit-pass | Singleton cung cấp uTime/uWeather/uDamage đồng bộ cho mọi shader trong scene                                                   |
 | `LODSystem`          | utils      | 1.0.0   | unit-pass | Wrap THREE.LOD với typed interface — swap mesh detail theo khoảng cách camera                                                  |
 | `RuntimeGuard`       | utils      | 1.0.0   | unit-pass | Kiểm tra draw calls, triangle count, geometry leak mỗi frame                                                                   |

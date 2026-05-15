@@ -36,19 +36,32 @@ Mục tiêu: LOD, procedural destruction, interior occlusion, particle system.
 
 ---
 
+## Module Gallery _(✅ hoàn thành 2026-05-14)_
+
+Mục tiêu: giao diện trực quan cho toàn bộ module library — live Three.js canvas mini cho từng module.
+
+- `gallery.html` + `gallery.ts` + `gallery.css` — trang gallery standalone trong `00-Threejs/`
+- `galleryCard.ts` — DOM card builder, IntersectionObserver lazy-load
+- `galleryModules.ts` — danh sách 10 modules + dynamic import factory
+- 10 `example.ts` refactored sang `export async function createDemo(canvas)` pattern
+- `vite.config.js`: thêm `threejs-modules` alias + gallery build entry + fix ESLint checker
+- Truy cập: `http://localhost:3000/gallery.html`
+
+---
+
 ## Phase C — Character Pipeline _(chờ Phase B)_
 
 Mục tiêu: VAT animation, billboard LOD, crowd pooling.
 
 | #   | Module          | Category   | Status       | Dependency   |
 | --- | --------------- | ---------- | ------------ | ------------ |
-| 1   | `VATShader`     | shaders    | ⏳ chưa code | GlobalUniforms |
-| 2   | `LODBillboard`  | components | ⏳ chưa code | LODSystem    |
-| 3   | `CharacterPool` | utils      | ⏳ chưa code | RuntimeGuard |
+| 1   | `VATShader`     | shaders    | ✅ unit-pass | GlobalUniforms |
+| 2   | `LODBillboard`  | components | ✅ unit-pass | LODSystem    |
+| 3   | `CharacterPool` | utils      | ✅ unit-pass | RuntimeGuard |
 
 ---
 
-## Phase D — Polish & Deploy _(chờ Phase C)_
+## Phase D — Polish & Deploy _(✅ hoàn thành 2026-05-15)_
 
 Mục tiêu: post-processing, animation, dynamic lighting. Đạt performance budget → deploy.
 
@@ -56,16 +69,22 @@ Exit criteria: < 100 draw calls, < 500k tris, < 16.6ms/frame → live demo Verce
 
 | #   | Module           | Category   | Status       | Dependency     |
 | --- | ---------------- | ---------- | ------------ | -------------- |
-| 1   | `PostProcessing` | components | ⏳ chưa code | GlobalUniforms |
-| 2   | `WindAnimation`  | shaders    | ⏳ chưa code | WorldNoise     |
-| 3   | `DayNightCycle`  | utils      | ⏳ chưa code | GlobalUniforms |
+| 1   | `PostProcessing` | components | ✅ unit-pass | GlobalUniforms |
+| 2   | `WindAnimation`  | shaders    | ✅ unit-pass | WorldNoise     |
+| 3   | `DayNightCycle`  | utils      | ✅ unit-pass | GlobalUniforms |
 
 ---
 
 ## Changelog
 
+| 2026-05-15 | Phase D hoàn thành — PostProcessing (bloom WebGPU), WindAnimation (triNoise3D positionNode), DayNightCycle (sun arc + ambient lighting) |
+| 2026-05-15 | Gallery update — thêm 6 modules Phase C + D: VATShader, LODBillboard, CharacterPool, PostProcessing, WindAnimation, DayNightCycle |
 | Ngày       | Thay đổi                                                                   |
 | ---------- | -------------------------------------------------------------------------- |
+| 2026-05-14 | Module Gallery hoàn thành — gallery.html với 10 live Three.js canvas cards, lazy-load qua IntersectionObserver, refactor toàn bộ example.ts sang createDemo(canvas) pattern |
+| 2026-05-15 | Phase C hoàn thành — CharacterPool unit-pass: generic pool<T>, acquire/release O(1), warnThreshold analog RuntimeGuard |
+| 2026-05-15 | LODBillboard unit-pass: THREE.Sprite + SpriteMaterial, WebGPU auto-upgrade, LOD.addLevel với Object3D, getCurrentLevel() |
+| 2026-05-15 | Phase C bắt đầu — VATShader unit-pass: positionNode + normalNode từ DataTexture, vertexIndex TSL, update(time) loop |
 | 2026-05-14 | Phase B mở rộng — thêm `GPUParticleSystem` (base class), refactor `SparkSystem` thành preset (composition). Phase B: 5/5 unit-pass |
 | 2026-05-13 | Phase B hoàn thành — 4/4 modules unit-pass (LODSystem, ProceduralFracture, InteriorMapping, SparkSystem) |
 | 2026-05-13 | Phase A hoàn thành — 5/5 modules unit-pass |

@@ -25,6 +25,8 @@
 | `RoundedCorners`     | SDF rounded box trong fragment shader         | sdf, ui, stylized                 | low        |
 | `ProceduralFracture` | Vertex displacement dọc normal = vết nứt động | fracture, displacement, vertex    | low        |
 | `InteriorMapping`    | Parallax room illusion qua cửa sổ tòa nhà    | interior, parallax, building      | medium     |
+| `VATShader`          | Vertex Animation Texture — replay GPU animation từ DataTexture | vat, animation, gpu, vertex | high |
+| `WindAnimation`      | Vertex displacement giả lập gió — triNoise3D positionNode | wind, foliage, displacement, tsl | medium |
 
 ---
 
@@ -35,6 +37,8 @@
 | `RuntimeGuard`   | Kiểm tra draw calls, triangles, geometry leak mỗi frame | performance, monitoring, debug             | low        |
 | `GlobalUniforms` | Singleton đồng bộ uTime/uWeather/uDamage cho mọi shader | uniform, singleton, animation, shader-sync | low        |
 | `LODSystem`      | Wrap THREE.LOD — typed levels, auto/manual update       | lod, performance, distance                 | low        |
+| `CharacterPool`  | Generic object pool — acquire/release O(1), zero GPU alloc | pool, crowd, performance, reuse         | medium     |
+| `DayNightCycle`  | Chu kỳ ngày-đêm — drive DirectionalLight + AmbientLight | lighting, day-night, animation, ambient    | low        |
 
 ---
 
@@ -44,6 +48,8 @@
 | -------------------- | ---------------------------------------------------------- | --------------------------------------- | ---------- |
 | `GPUParticleSystem`  | Base class GPU particles — custom physics via TSL builders | gpu, base-class, particles, extensible  | medium     |
 | `SparkSystem`        | GPU-driven sparks/embers — preset xây trên GPUParticleSystem | sparks, particles, vfx, gpu           | medium     |
+| `LODBillboard`       | Swap 3D mesh → billboard sprite khi xa — tiết kiệm draw call | lod, billboard, sprite, crowd, performance | medium |
+| `PostProcessing`     | WebGPU bloom pipeline — pass → bloom → tone mapping output | post-processing, bloom, webgpu, effects | medium     |
 
 ---
 
