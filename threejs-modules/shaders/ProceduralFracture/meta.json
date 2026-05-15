@@ -8,5 +8,6 @@
   "tags": ["shader", "fracture", "crack", "displacement", "vertex", "noise", "tsl", "node-material", "animation"],
   "complexity": "low",
   "three-version": ">=0.174",
+  "three-version-verified": "0.174.0",
   "exports": ["ProceduralFracture", "ProceduralFractureOptions"]
 }

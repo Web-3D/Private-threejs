@@ -8,5 +8,6 @@
   "tags": ["uniform", "singleton", "animation", "time", "weather", "damage", "shader-sync"],
   "complexity": "low",
   "three-version": ">=0.174",
+  "three-version-verified": "0.174.0",
   "exports": ["GlobalUniforms"]
 }

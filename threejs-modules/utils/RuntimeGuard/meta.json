@@ -8,5 +8,7 @@
   "status": "unit-pass",
   "dependencies": [],
   "exports": ["RuntimeGuard"],
-  "usage": "guard.check() // gọi cuối mỗi frame trong animation loop, sau renderer.render()"
+  "usage": "guard.check() // gọi cuối mỗi frame trong animation loop, sau renderer.render()",
+  "three-version": ">=0.174",
+  "three-version-verified": "0.174.0"
 }

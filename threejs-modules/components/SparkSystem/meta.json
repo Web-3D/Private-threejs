@@ -8,5 +8,6 @@
   "tags": ["particles", "sparks", "gpu", "points", "tsl", "node-material", "additive", "fire", "vfx", "animation"],
   "complexity": "medium",
   "three-version": ">=0.174",
+  "three-version-verified": "0.174.0",
   "exports": ["SparkSystem", "SparkSystemOptions", "SparkShape"]
 }

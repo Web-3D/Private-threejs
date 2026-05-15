@@ -8,5 +8,6 @@
   "tags": ["shader", "noise", "world-space", "procedural", "animation", "tsl", "node-material"],
   "complexity": "low",
   "three-version": ">=0.174",
+  "three-version-verified": "0.174.0",
   "exports": ["WorldNoise"]
 }

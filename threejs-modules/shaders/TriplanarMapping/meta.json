@@ -8,5 +8,6 @@
   "tags": ["shader", "texture", "triplanar", "world-space", "no-uv", "tsl", "node-material"],
   "complexity": "medium",
   "three-version": ">=0.174",
+  "three-version-verified": "0.174.0",
   "exports": ["TriplanarMapping"]
 }

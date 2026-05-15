@@ -8,5 +8,6 @@
   "tags": ["shader", "interior", "parallax", "building", "window", "room", "tsl", "node-material", "tangent"],
   "complexity": "medium",
   "three-version": ">=0.174",
+  "three-version-verified": "0.174.0",
   "exports": ["InteriorMapping", "InteriorMappingOptions"]
 }

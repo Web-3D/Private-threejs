@@ -17,5 +17,6 @@
   ],
   "complexity": "medium",
   "three-version": ">=0.174",
+  "three-version-verified": "0.174.0",
   "exports": ["GPUParticleSystem", "GPUParticleSystemOptions", "ParticleNodeContext", "ParticleNode", "ParticleShape"]
 }
