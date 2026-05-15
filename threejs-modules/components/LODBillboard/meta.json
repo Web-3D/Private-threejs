@@ -1,0 +1,11 @@
+{
+  "name": "LODBillboard",
+  "version": "1.0.0",
+  "status": "unit-pass",
+  "category": "components",
+  "dependencies": ["three", "LODSystem"],
+  "tags": ["lod", "billboard", "sprite", "performance", "crowd"],
+  "description": "Swap 3D mesh → billboard sprite khi camera xa — tiết kiệm draw call và triangle count",
+  "three-version": ">=0.174",
+  "three-version-verified": "0.174.0"
+}

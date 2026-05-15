@@ -1,0 +1,11 @@
+{
+  "name": "CharacterPool",
+  "version": "1.0.0",
+  "status": "unit-pass",
+  "category": "utils",
+  "dependencies": ["three", "RuntimeGuard"],
+  "tags": ["pool", "crowd", "performance", "reuse", "instancing"],
+  "description": "Generic object pool — pre-allocate slots, acquire/release không tạo mới GPU resource",
+  "three-version": ">=0.174",
+  "three-version-verified": "0.174.0"
+}

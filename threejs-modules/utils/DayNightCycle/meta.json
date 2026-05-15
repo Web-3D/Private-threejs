@@ -1,0 +1,11 @@
+{
+  "name": "DayNightCycle",
+  "version": "1.0.0",
+  "description": "Day-night cycle utility driving DirectionalLight sun arc and AmbientLight color by normalized time",
+  "status": "unit-pass",
+  "category": "utils",
+  "dependencies": ["three", "GlobalUniforms"],
+  "tags": ["lighting", "day-night", "animation", "directional-light", "ambient"],
+  "three-version": ">=0.174",
+  "three-version-verified": "0.174.0"
+}

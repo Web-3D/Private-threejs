@@ -1,0 +1,11 @@
+{
+  "name": "VATShader",
+  "version": "1.0.0",
+  "status": "unit-pass",
+  "category": "shaders",
+  "dependencies": ["three", "GlobalUniforms"],
+  "tags": ["tsl", "webgpu", "animation", "vat", "instancing"],
+  "description": "Vertex Animation Texture shader — bake animation vào DataTexture, reconstruct trên GPU",
+  "three-version": ">=0.174",
+  "three-version-verified": "0.174.0"
+}

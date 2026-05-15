@@ -1,0 +1,11 @@
+{
+  "name": "PostProcessing",
+  "version": "1.0.0",
+  "description": "WebGPU post-processing pipeline with bloom effect — wraps Three.js PostProcessing class",
+  "status": "unit-pass",
+  "category": "components",
+  "dependencies": ["three", "GlobalUniforms"],
+  "tags": ["post-processing", "bloom", "webgpu", "effects", "pipeline"],
+  "three-version": ">=0.174",
+  "three-version-verified": "0.174.0"
+}

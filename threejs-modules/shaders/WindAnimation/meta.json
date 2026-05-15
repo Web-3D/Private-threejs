@@ -1,0 +1,11 @@
+{
+  "name": "WindAnimation",
+  "version": "1.0.0",
+  "description": "Vertex displacement shader simulating wind using triNoise3D — animates foliage, grass, flags",
+  "status": "unit-pass",
+  "category": "shaders",
+  "dependencies": ["three", "WorldNoise"],
+  "tags": ["wind", "animation", "vertex-displacement", "foliage", "tsl"],
+  "three-version": ">=0.174",
+  "three-version-verified": "0.174.0"
+}
