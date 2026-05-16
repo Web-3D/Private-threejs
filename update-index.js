@@ -72,6 +72,8 @@ function scanScripts() {
     { file: 'check-imports.js', desc: 'Kiểm tra src/ không import từ raw/ hoặc optimized/' },
     { file: 'update-index.js',  desc: 'Cập nhật Living Index trong CLAUDE.md (file này)' },
     { file: 'scan-versions.js', desc: 'Detect Three.js version drift — exit 1 nếu có module stale' },
+    { file: 'find-unused.js',   desc: 'Orphan detector — stale imports + unregistered modules' },
+    { file: 'lint-shaders.js',  desc: 'TSL/GLSL policy enforcer — ShaderMaterial, inline GLSL, console.log' },
   ]
   const rows = known.filter(s => fs.existsSync(path.join(ROOT, s.file)))
   const lines = ['| Script | Mô tả |', '|--------|-------|']
