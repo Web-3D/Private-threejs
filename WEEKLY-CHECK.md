@@ -1,27 +1,54 @@
 # WEEKLY-CHECK — Kiểm tra định kỳ đầu tuần
 
 > Chạy checklist này mỗi đầu tuần trước khi bắt đầu code.
-> Mục tiêu: phát hiện API drift sớm khi Three.js release version mới.
+> Mục tiêu: giữ toàn bộ dependencies ở version mới nhất, phát hiện API drift sớm.
 
 ---
 
 ## 1. Kiểm tra version Three.js
 
 ```bash
-# Xem version hiện tại và có bản mới không
 cd 00-Threejs
 npm outdated three
 ```
 
-| Kết quả                      | Hành động                                    |
-| ---------------------------- | -------------------------------------------- |
-| Không có bản mới             | Bỏ qua bước 2–3, sang bước 4                 |
-| Có patch (0.174.x → 0.174.y) | Chạy bước 2, thường không có breaking change |
-| Có minor (0.174 → 0.175+)    | Chạy đầy đủ bước 2–3, đọc CHANGELOG trước    |
+| Kết quả                      | Hành động                                     |
+| ---------------------------- | --------------------------------------------- |
+| Không có bản mới             | Bỏ qua bước 3–4, sang bước 5                  |
+| Có patch (0.174.x → 0.174.y) | Chạy bước 3, thường không có breaking change  |
+| Có minor (0.174 → 0.175+)    | Chạy đầy đủ bước 3–4, đọc CHANGELOG trước     |
+
+Nếu cần upgrade:
+```bash
+cd 00-Threejs      && npm install three@latest
+cd threejs-modules && npm install three@latest
+```
 
 ---
 
-## 2. Verify các API dễ thay đổi (khi có version mới)
+## 2. Kiểm tra npm packages còn lại
+
+```bash
+cd 00-Threejs      && npm outdated
+cd threejs-modules && npm outdated
+```
+
+| Kết quả              | Hành động                                                              |
+| -------------------- | ---------------------------------------------------------------------- |
+| Không có gì          | Bỏ qua                                                                 |
+| Có patch             | `npm update` — an toàn, không cần đọc changelog                       |
+| Có minor (non-Three) | `npm install pkg@latest` → chạy `tsc --noEmit` để confirm không break |
+| Có major (non-Three) | Đọc changelog trước → update → `tsc --noEmit` + chạy lại gallery      |
+
+Sau khi update bất kỳ package nào:
+```bash
+cd 00-Threejs && npx tsc --noEmit
+node find-unused.js
+```
+
+---
+
+## 3. Verify các API dễ thay đổi (khi có Three.js version mới)
 
 Grep trực tiếp trong `00-Threejs/node_modules/three/src/`:
 
@@ -32,7 +59,7 @@ grep -n "drawCalls\|frameCalls\|memory" 00-Threejs/node_modules/three/src/render
 ```
 
 Verify:
-- [ ] `render.drawCalls` vẫn tồn tại (per-frame draw calls)
+- [ ] `render.drawCalls` vẫn tồn tại
 - [ ] `render.triangles` vẫn tồn tại
 - [ ] `memory.geometries` vẫn tồn tại
 - [ ] `memory.textures` vẫn tồn tại
@@ -73,19 +100,20 @@ Verify:
 
 ---
 
-## 3. Nếu phát hiện API thay đổi
+## 4. Nếu phát hiện API thay đổi
 
 1. Tìm file bị ảnh hưởng:
    ```bash
    grep -r "tên_API_cũ" .claude/skills/ threejs-modules/ 00-Threejs/CLAUDE.md
    ```
-2. Fix từng file theo thứ tự: module source → skill doc → CLAUDE.md
+2. Fix theo thứ tự: module source → skill doc → CLAUDE.md
 3. Ghi vào `SYNC.md` — section "API Changes"
-4. Chạy `node validate.js` để confirm module vẫn pass
+4. Cập nhật `three-version-verified` trong meta.json của module đã fix
+5. Chạy `node validate.js` để confirm PASS
 
 ---
 
-## 4. Kiểm tra deferred/ — có item nào đủ điều kiện implement chưa
+## 5. Kiểm tra deferred/ — có item nào đủ điều kiện implement chưa
 
 | File                               | Revisit khi                           | Hiện tại                |
 | ---------------------------------- | ------------------------------------- | ----------------------- |
@@ -97,7 +125,7 @@ Verify:
 
 ---
 
-## 5. Spot-check 1 skill ngẫu nhiên
+## 6. Spot-check 1 skill ngẫu nhiên
 
 Chọn 1 skill trong `.claude/skills/`, đọc, verify ít nhất 3 API bất kỳ trong source.
 Mục tiêu: duy trì thói quen, không để drift tích lũy.
@@ -106,6 +134,6 @@ Mục tiêu: duy trì thói quen, không để drift tích lũy.
 
 ## Log
 
-| Tuần       | Three.js version | API thay đổi                                                 | Ghi chú            |
-| ---------- | ---------------- | ------------------------------------------------------------ | ------------------ |
-| 2026-05-11 | 0.174.0          | `render.calls` → `render.drawCalls`, bỏ `WebGPURenderTarget` | Full audit lần đầu |
+| Tuần       | Three.js | npm packages               | API thay đổi                                                 | Ghi chú            |
+| ---------- | -------- | -------------------------- | ------------------------------------------------------------ | ------------------ |
+| 2026-05-11 | 0.174.0  | —                          | `render.calls` → `render.drawCalls`, bỏ `WebGPURenderTarget` | Full audit lần đầu |
