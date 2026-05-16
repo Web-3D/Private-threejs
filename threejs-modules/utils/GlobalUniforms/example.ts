@@ -1,62 +1,59 @@
 import * as THREE from 'three'
+import { WebGPURenderer, NodeMaterial } from 'three/webgpu'
+import { vec3, mix, sin } from 'three/tsl'
 
-import { GlobalUniforms } from './index'
+import { uTime, uWeather, uDamage, updateTime, setWeather, setDamage } from './index'
 
 export async function createDemo(canvas: HTMLCanvasElement): Promise<{ dispose(): void }> {
   const w = canvas.clientWidth || 300
   const h = canvas.clientHeight || 200
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
+  const renderer = new WebGPURenderer({ canvas, antialias: true })
   renderer.setPixelRatio(1)
   renderer.setSize(w, h)
+  await renderer.init()
 
   const scene = new THREE.Scene()
+  scene.background = new THREE.Color(0x111111)
+
   const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 100)
   camera.position.z = 3
 
-  const material = new THREE.ShaderMaterial({
-    uniforms: {
-      uColor: { value: new THREE.Color(0x4488ff) },
-    },
-    vertexShader: `
-      uniform float uTime;
-      varying vec2 vUv;
-      void main() {
-        vUv = uv;
-        vec3 pos = position;
-        pos.y += sin(pos.x * 3.0 + uTime * 2.0) * 0.1;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-      }
-    `,
-    fragmentShader: `
-      uniform vec3 uColor;
-      uniform float uWeather;
-      varying vec2 vUv;
-      void main() {
-        vec3 col = uColor * (1.0 - uWeather * 0.5);
-        gl_FragColor = vec4(col, 1.0);
-      }
-    `,
-  })
+  // Demonstrates all 3 shared uniforms in one material:
+  // uWeather  → blends blue (clear) to grey (storm)
+  // uDamage   → overlays red tint
+  // uTime     → pulses brightness via sin wave
+  const clearColor  = vec3(0.27, 0.53, 1.0)
+  const stormColor  = vec3(0.20, 0.20, 0.35)
+  const damageColor = vec3(0.80, 0.10, 0.05)
 
-  const globalUniforms = GlobalUniforms.getInstance()
-  globalUniforms.inject(material)
+  const material = new NodeMaterial()
+  const blended = mix(mix(clearColor, stormColor, uWeather), damageColor, uDamage)
+  material.colorNode = blended.mul(sin(uTime).mul(0.2).add(0.8))
 
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2, 32, 32), material)
+  const geometry = new THREE.SphereGeometry(1, 32, 32)
+  const mesh = new THREE.Mesh(geometry, material)
   scene.add(mesh)
 
   const clock = new THREE.Clock()
 
   renderer.setAnimationLoop(() => {
-    globalUniforms.update(clock.getDelta())
+    const delta   = clock.getDelta()
+    const elapsed = clock.getElapsedTime()
+
+    updateTime(delta)
+    setWeather(Math.sin(elapsed * 0.5) * 0.5 + 0.5)
+    setDamage(Math.max(0, Math.sin(elapsed * 0.2)))
+
+    mesh.rotation.y += 0.005
     renderer.render(scene, camera)
   })
 
   return {
     dispose() {
       renderer.setAnimationLoop(null)
+      geometry.dispose()
       material.dispose()
-      mesh.geometry.dispose()
       renderer.dispose()
     },
   }

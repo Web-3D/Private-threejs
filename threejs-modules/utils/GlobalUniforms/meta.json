@@ -1,13 +1,13 @@
 {
   "name": "GlobalUniforms",
   "category": "utils",
-  "version": "1.0.0",
-  "description": "Singleton cung cấp uTime/uWeather/uDamage đồng bộ cho mọi shader trong scene",
+  "version": "2.0.0",
+  "description": "Shared TSL uniform nodes (uTime/uWeather/uDamage) — import directly, no inject() needed",
   "status": "unit-pass",
   "dependencies": ["three"],
-  "tags": ["uniform", "singleton", "animation", "time", "weather", "damage", "shader-sync"],
+  "tags": ["uniform", "tsl", "animation", "time", "weather", "damage", "shader-sync"],
   "complexity": "low",
   "three-version": ">=0.174",
   "three-version-verified": "0.174.0",
-  "exports": ["GlobalUniforms"]
+  "exports": ["uTime", "uWeather", "uDamage", "updateTime", "setWeather", "setDamage"]
 }

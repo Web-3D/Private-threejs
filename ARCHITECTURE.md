@@ -37,6 +37,143 @@ THREEJS/                         ← Engine workspace (git: Private-threejs)
 
 ---
 
+## Định danh file — File Registry
+
+> Mỗi file trong workspace có một vai trò duy nhất.
+> Hỏi "file này làm gì?" → tìm tên ở đây.
+
+### Root scripts — 6 công cụ tự động hóa
+
+| Script | Vai trò | Khi chạy |
+| --- | --- | --- |
+| `validate.js` | Quality gate: kiểm tra structure module, meta.json fields, export pattern; cập nhật REGISTRY.json; bỏ qua nếu file không đổi (hash cache) | Sau mỗi thêm/sửa module hoặc asset — tự động qua hook |
+| `check-imports.js` | Quét `src/` phát hiện import từ `raw/` hoặc `optimized/` — path bị cấm trong production | Sau khi Gemini copy module vào `00-Threejs/src/` |
+| `update-index.js` | Tái tạo hoàn toàn bảng Living Index (Scripts / Skills / Modules / Assets) trong CLAUDE.md | Tự động mỗi SessionStart + sau validate PASS |
+| `scan-versions.js` | So sánh `three-version-verified` trong mọi meta.json với Three.js đang cài; exit 1 nếu có module stale | Sau mỗi `npm install three@x.x.x` |
+| `find-unused.js` | 3 checks: stale import path trong `src/`, module có meta.json nhưng chưa ai import, file nằm ngoài chuẩn trong module folder | Định kỳ hoặc khi nghi ngờ orphan |
+| `lint-shaders.js` | 4 checks: ShaderMaterial (phải NodeMaterial), inline GLSL string dài, console.log trong update(), thiếu README.md hoặc example.ts; exit 1 nếu vi phạm | Trước merge hoặc code review |
+
+### Root docs — Tài liệu kỹ thuật
+
+| File | Vai trò | Khi đọc |
+| --- | --- | --- |
+| `CLAUDE.md` | Engine rules + Living Index (auto-generated). Điểm vào cho mọi session Claude Code | Đầu mỗi session — không sửa phần `<!-- INDEX -->` thủ công |
+| `ARCHITECTURE.md` | Kiến trúc 5 lớp, production pipeline, file registry | Khi cần big picture hoặc hỏi "file này làm gì" |
+| `README.md` | Workspace entry point: sơ đồ, 3 thành phần cốt lõi, quick start | Lần đầu tiếp cận workspace |
+| `ROADMAP.md` | Phase A–D plan, milestone log, next targets | Khi lên kế hoạch sprint hoặc bắt đầu phase mới |
+| `WEEKLY-CHECK.md` | Checklist API drift: npm outdated, grep TSL node names, verify renderer.info | Đầu tuần — quan trọng sau Three.js release |
+
+### Root config
+
+| File | Vai trò |
+| --- | --- |
+| `.gitignore` | Exclude `00-Threejs/` (repo riêng), `.validate-cache.json`, `node_modules/` |
+| `.gitattributes` | Line ending normalization (LF) cho mọi text file |
+| `.validate-cache.json` | Hash cache của validate.js — gitignored, auto-generated, không sửa tay |
+
+---
+
+### threejs-modules/ — Thư viện module
+
+**Config & tooling:**
+
+| File | Vai trò |
+| --- | --- |
+| `package.json` | Dependencies của library: `three`, `typescript`, `@types/three` — không có bundler |
+| `tsconfig.json` | Strict TS config (strictNullChecks, noImplicitAny, ES2020 target) |
+| `eslint.config.js` | ESLint flat config cho TypeScript module source |
+| `prettier.config.js` | Formatting rules — chạy qua pre-commit hook |
+| `CLAUDE.md` | Quy tắc khi thêm module: naming, bắt buộc dispose(), no global state |
+| `README.md` | Catalog tất cả modules theo category, usage snippet mỗi category |
+| `VERSION_INDEX.md` | Bảng version 20 modules: semver + `three-version-verified` + phase + status |
+
+**Anatomy của một module (`threejs-modules/[category]/[ModuleName]/`):**
+
+| File | Vai trò | Bắt buộc |
+| --- | --- | --- |
+| `index.ts` | Export chính — API surface duy nhất ra ngoài | ✅ |
+| `example.ts` | Minimal demo: `createDemo(canvas)` → `{ dispose() }` — dùng để visual test | ✅ |
+| `meta.json` | Metadata: name, version, status, three-version-verified, description, tags, dependencies | ✅ |
+| `README.md` | Props API, usage snippet, performance notes, dispose pattern | ✅ |
+
+**Shaders subcategory (`threejs-modules/shaders/`):**
+
+| Subfolder | Modules | Vai trò trong node graph |
+| --- | --- | --- |
+| `foundation/` | WorldNoise | Building block — không thuộc vertex hay fragment, chỉ tạo noise function |
+| `vertex/` | WindAnimation, ProceduralFracture, VATShader | `positionNode` — dịch chuyển vertex trên GPU |
+| `fragment/` | TriplanarMapping, InteriorMapping, RoundedCorners, DissolveShader | `colorNode` / `opacityNode` — xác định màu và opacity |
+| `README.md` | — | Giải thích 3 subfolder, interface pattern, hướng dẫn thêm shader mới |
+
+---
+
+### 00-Threejs/src/templates/ — Base classes
+
+| File | Vai trò | Kế thừa khi |
+| --- | --- | --- |
+| `BaseWorld.ts` | Canvas setup, WebGPU renderer, camera, resize handler, animation loop | Tạo World class mới |
+| `BaseShader.ts` | Uniforms map, NodeMaterial creation, dispose pattern | Tạo shader wrapper class |
+| `BaseComponent.ts` | Object3D độc lập: geometry + material + mesh + dispose chain | Tạo scene component |
+
+### 00-Threejs/src/utils/ — Project utilities
+
+| File | Vai trò |
+| --- | --- |
+| `GlobalUniforms.ts` | Singleton uTime / uWeather / uDamage — bridge đến threejs-modules/GlobalUniforms |
+| `RuntimeGuard.ts` | Per-frame draw call + triangle budget monitor — bridge đến threejs-modules/RuntimeGuard |
+| `InstancedMeshPool.ts` | InstancedMesh-based object pool: acquire/release O(1), no GPU alloc per spawn |
+| `InteractionHelper.ts` | Raycasting + pointer event normalization: click, hover, drag trên 3D objects |
+| `LoadingScreen.ts` | Asset loading progress UI: percentage overlay, hide on complete |
+| `PostProcessingManager.ts` | Pipeline manager: scene pass → bloom → tone mapping output |
+| `ResourceLoader.ts` | GLTFLoader + TextureLoader với caching: load once, reuse nhiều lần |
+| `ViewportLinker.ts` | Sync nhiều canvas về cùng 1 scene state (split-screen, minimap) |
+
+### 00-Threejs/src/gallery/ — Demo gallery app
+
+| File | Vai trò |
+| --- | --- |
+| `modules.ts` | `MODULES[]` array — registry mọi demo entry: name, category, complexity, lazy import factory |
+| `index.ts` | Gallery entry: render card grid, handle click → load demo vào canvas |
+| `card.ts` | Single card component: tên module, category badge, complexity indicator |
+| `README.md` | Hướng dẫn thêm demo mới vào gallery |
+
+### 00-Threejs/src/world/ — Scene orchestration
+
+| File | Vai trò |
+| --- | --- |
+| `World.ts` | Main scene orchestrator: extends BaseWorld, instantiates tất cả scene objects |
+
+### 00-Threejs/ config — Build toolchain
+
+| File | Vai trò |
+| --- | --- |
+| `vite.config.js` | Dev server port 3000, build → `../dist`, hot reload, TS path aliases |
+| `tsconfig.json` | Strict TS, path aliases: `@/`, `@shaders/`, `@world/`, `@utils/`, `@templates/`, `threejs-modules/` |
+| `eslint.config.js` | ESLint flat config với TypeScript rules |
+| `prettier.config.js` | Formatting rules |
+| `vitest.config.js` | Test runner config cho unit tests của module class |
+| `.husky/pre-commit` | Git hook: `tsc --noEmit && eslint` — block commit nếu có type error hoặc lint error |
+| `.env` / `.env.example` | Environment variables (API keys, dev flags) — `.env` gitignored |
+
+### deferred/ — Tính năng nghiên cứu, chưa build
+
+> Mỗi file = 1 tính năng đã research xong với "revisit khi" trigger rõ ràng.
+> Đọc `deferred/README.md` trước khi đề xuất implement bất kỳ tính năng nào.
+
+| File | Revisit khi |
+| --- | --- |
+| `turborepo-nx.md` | 5+ projects, build > 5 phút |
+| `release-workflow.md` | Có collaborator hoặc muốn publish npm |
+| `rag-knowledge.md` | 15+ modules hoặc 3+ projects |
+| `asset-tag-search.md` | 30+ assets trong REGISTRY.json |
+| `memory-vector-search.md` | 50+ memory files |
+| `future-effects.md` | Cần thêm VFX (Phase E) |
+| `future-shaders.md` | Cần thêm shader module (Phase E) |
+| `future-postprocessing.md` | Cần DOF / motion blur / SSR |
+| `character-base-variant.md` | Bắt đầu character system |
+
+---
+
 ## Kiến trúc 5 lớp kỹ thuật
 
 | AI Generation + Blender MCP + Three.js Shaders + Web Delivery |

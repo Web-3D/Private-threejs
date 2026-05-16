@@ -77,6 +77,9 @@ Template Vite + TypeScript + Three.js 0.174. Mọi dự án mới clone từ đ�
 | `validate.js` | Sau khi build/sửa module | Kiểm tra structure, meta.json, exports |
 | `check-imports.js` | Sau khi Gemini copy module | Phát hiện import từ raw/ hoặc optimized/ |
 | `update-index.js` | Tự động (SessionStart hook) | Sync Living Index trong CLAUDE.md |
+| `scan-versions.js` | Sau mỗi `npm install three@x` | Detect module chưa verify với Three.js mới |
+| `find-unused.js` | Định kỳ / khi nghi orphan | Stale imports + unregistered modules + orphan files |
+| `lint-shaders.js` | Trước merge hoặc review | ShaderMaterial + inline GLSL + console.log trong loop |
 
 ---
 
