@@ -167,7 +167,7 @@ Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
 | `WindAnimation`      | shaders    | 1.0.0   | unit-pass | Vertex displacement shader simulating wind using triNoise3D — animates foliage, grass, flags                                   |
 | `CharacterPool`      | utils      | 1.0.0   | unit-pass | Generic object pool — pre-allocate slots, acquire/release không tạo mới GPU resource                                           |
 | `DayNightCycle`      | utils      | 1.0.0   | unit-pass | Day-night cycle utility driving DirectionalLight sun arc and AmbientLight color by normalized time                             |
-| `GlobalUniforms`     | utils      | 1.0.0   | unit-pass | Singleton cung cấp uTime/uWeather/uDamage đồng bộ cho mọi shader trong scene                                                   |
+| `GlobalUniforms`     | utils      | 2.0.0   | unit-pass | Shared TSL uniform nodes (uTime/uWeather/uDamage) — import directly, no inject() needed                                        |
 | `LODSystem`          | utils      | 1.0.0   | unit-pass | Wrap THREE.LOD với typed interface — swap mesh detail theo khoảng cách camera                                                  |
 | `RuntimeGuard`       | utils      | 1.0.0   | unit-pass | Kiểm tra draw calls, triangle count, geometry leak mỗi frame                                                                   |
 <!-- /INDEX:modules -->
