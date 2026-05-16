@@ -12,3 +12,6 @@
 | [memory-vector-search.md](memory-vector-search.md) | Vector search (Palinode) cho AI memory zone      | 50+ memory files hoặc search chậm            |
 | [character-base-variant.md](character-base-variant.md) | Character Base + Variant Config pipeline     | Phase C — sau Phase A + B xong               |
 | [threejs-modules-workspace-package.md](threejs-modules-workspace-package.md) | Nâng cấp threejs-modules thành pnpm workspace package | ~15+ modules hoặc có project thứ 2 dùng chung |
+| [future-shaders.md](future-shaders.md)         | GlassShader · DissolveShader · OutlineShader           | Bắt đầu tích hợp modules vào scene thực tế           |
+| [future-effects.md](future-effects.md)         | FireSystem · FluidSystem · TrailSystem                 | Có scene cần effect (FluidSystem: cần WebGPU compute) |
+| [future-postprocessing.md](future-postprocessing.md) | SSAOPass · MotionBlurPass                        | Scene có geometry phức tạp hoặc object di chuyển nhanh |
