@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 // scan-versions.js — detect (and optionally fix) Three.js version drift
-// Usage:
-//   node scan-versions.js           → scan + report only
-//   node scan-versions.js --update  → scan + auto-update stale meta.json files
-// Exit code 0 = all up-to-date | Exit code 1 = drift detected (or fixed)
+// Usage: node scan-versions.js
+// Exit code 0 = all up-to-date | Exit code 1 = drift detected
 
 const fs = require('fs')
 const path = require('path')
@@ -11,8 +9,6 @@ const path = require('path')
 const ROOT        = __dirname
 const MODULES_DIR = path.join(ROOT, 'threejs-modules')
 const THREE_PKG   = path.join(MODULES_DIR, 'node_modules', 'three', 'package.json')
-const shouldUpdate = process.argv.includes('--update')
-
 // ─── Get installed Three.js version ──────────────────────────────────────────
 
 if (!fs.existsSync(THREE_PKG)) {
@@ -93,16 +89,5 @@ if (needsFix.length === 0) {
   process.exit(0)
 }
 
-if (!shouldUpdate) {
-  console.log('\nRun with --update to auto-fix all stale entries.\n')
-  process.exit(1)
-}
-
-console.log(`\n🔧  Updating ${needsFix.length} module(s)...`)
-for (const m of needsFix) {
-  const meta = JSON.parse(fs.readFileSync(m.absPath, 'utf8'))
-  meta['three-version-verified'] = installedVersion
-  fs.writeFileSync(m.absPath, JSON.stringify(meta, null, 2) + '\n')
-  console.log(`    ✅  ${m.category}/${m.name}  ${m.verified ?? '(missing)'} → ${installedVersion}`)
-}
-console.log('\n✅  Done — all meta.json updated.\n')
+console.log('\nTo mark a module as re-verified: update "three-version-verified" in its meta.json\n')
+process.exit(1)
