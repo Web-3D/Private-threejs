@@ -85,7 +85,6 @@ THREEJS/                         ← Engine workspace (git: Private-threejs)
 | `prettier.config.js` | Formatting rules — chạy qua pre-commit hook |
 | `CLAUDE.md` | Quy tắc khi thêm module: naming, bắt buộc dispose(), no global state |
 | `README.md` | Catalog tất cả modules theo category, usage snippet mỗi category |
-| `VERSION_INDEX.md` | Bảng version 20 modules: semver + `three-version-verified` + phase + status |
 
 **Anatomy của một module (`threejs-modules/[category]/[ModuleName]/`):**
 

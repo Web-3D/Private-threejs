@@ -97,7 +97,6 @@ if (stale.length === 0 && missing.length === 0) {
   console.log('\n✅  All modules verified against current Three.js.\n')
   process.exit(0)
 } else {
-  console.log('\nTo mark a module as re-verified: update "three-version-verified" in its meta.json')
-  console.log('Then update the row in threejs-modules/VERSION_INDEX.md\n')
+  console.log('\nTo mark a module as re-verified: update "three-version-verified" in its meta.json\n')
   process.exit(1)
 }
