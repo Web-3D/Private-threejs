@@ -36,7 +36,7 @@
 | Tên              | Mô tả                                                   | Tags                                       | Complexity |
 | ---------------- | ------------------------------------------------------- | ------------------------------------------ | ---------- |
 | `RuntimeGuard`   | Kiểm tra draw calls, triangles, geometry leak mỗi frame | performance, monitoring, debug             | low        |
-| `GlobalUniforms` | Singleton đồng bộ uTime/uWeather/uDamage cho mọi shader | uniform, singleton, animation, shader-sync | low        |
+| `GlobalUniforms` | Shared TSL nodes uTime/uWeather/uDamage — import trực tiếp, không cần inject() | uniform, tsl, animation, shader-sync | low        |
 | `LODSystem`      | Wrap THREE.LOD — typed levels, auto/manual update       | lod, performance, distance                 | low        |
 | `CharacterPool`  | Generic object pool — acquire/release O(1), zero GPU alloc | pool, crowd, performance, reuse         | medium     |
 | `DayNightCycle`  | Chu kỳ ngày-đêm — drive DirectionalLight + AmbientLight | lighting, day-night, animation, ambient    | low        |
