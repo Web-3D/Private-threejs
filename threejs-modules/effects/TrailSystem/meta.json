@@ -1,0 +1,13 @@
+{
+  "name": "TrailSystem",
+  "category": "effects",
+  "version": "1.0.0",
+  "description": "Camera-facing ribbon trail behind moving objects — sword swing, vehicle, projectile",
+  "status": "unit-pass",
+  "dependencies": ["three"],
+  "tags": ["trail", "ribbon", "vfx", "sword", "motion", "billboard", "additive"],
+  "complexity": "medium",
+  "three-version": ">=0.174",
+  "three-version-verified": "0.174.0",
+  "exports": ["TrailSystem", "TrailSystemOptions"]
+}

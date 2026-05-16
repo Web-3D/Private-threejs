@@ -10,6 +10,8 @@
 | ------------------- | ---------- | ------------------------------------------------- | ---------- |
 | `GPUParticleSystem` | Base class | Cần custom physics: fire, smoke, magic, rain, ... | medium     |
 | `SparkSystem`       | Preset     | Sparks/embers đơn giản, cắm vào chạy ngay         | medium     |
+| `FireSystem`        | Preset     | Lửa campfire/torch — cắm vào chạy ngay, wind API  | medium     |
+| `TrailSystem`       | Standalone | Ribbon trail theo sau moving object                | medium     |
 
 ---
 

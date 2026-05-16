@@ -6,7 +6,7 @@
 
 ---
 
-## Index (16 modules)
+## Index (20 modules)
 
 | Module               | Version | Three.js Verified | Phase | Category   | Status       |
 | -------------------- | ------- | ----------------- | ----- | ---------- | ------------ |
@@ -26,6 +26,10 @@
 | `PostProcessing`     | 1.0.0   | 0.174.0           | D     | components | ✅ unit-pass |
 | `WindAnimation`      | 1.0.0   | 0.174.0           | D     | shaders    | ✅ unit-pass |
 | `DayNightCycle`      | 1.0.0   | 0.174.0           | D     | utils      | ✅ unit-pass |
+| `FireSystem`         | 1.0.0   | 0.174.0           | —     | effects    | ✅ unit-pass |
+| `DissolveShader`     | 1.0.0   | 0.174.0           | —     | shaders    | ✅ unit-pass |
+| `TrailSystem`        | 1.0.0   | 0.174.0           | —     | effects    | ✅ unit-pass |
+| `OutlineShader`      | 1.0.0   | 0.174.0           | —     | components | ✅ unit-pass |
 
 ---
 

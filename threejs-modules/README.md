@@ -26,6 +26,7 @@
 | `ProceduralFracture` | Vertex displacement dọc normal = vết nứt động | fracture, displacement, vertex    | low        |
 | `InteriorMapping`    | Parallax room illusion qua cửa sổ tòa nhà    | interior, parallax, building      | medium     |
 | `VATShader`          | Vertex Animation Texture — replay GPU animation từ DataTexture | vat, animation, gpu, vertex | high |
+| `DissolveShader`     | Noise-based dissolve với edge glow — spawn/despawn cinematic   | dissolve, noise, vfx, tsl   | low  |
 | `WindAnimation`      | Vertex displacement giả lập gió — triNoise3D positionNode | wind, foliage, displacement, tsl | medium |
 
 ---
@@ -48,6 +49,8 @@
 | -------------------- | ------------------------------------------------------------ | -------------------------------------- | ---------- |
 | `GPUParticleSystem`  | Base class GPU particles — custom physics via TSL builders   | gpu, base-class, particles, extensible | medium     |
 | `SparkSystem`        | GPU-driven sparks/embers — preset xây trên GPUParticleSystem | sparks, particles, vfx, gpu           | medium     |
+| `FireSystem`         | GPU-driven fire — inner + outer flame, wind support           | fire, flame, particles, gpu, vfx      | medium     |
+| `TrailSystem`        | Camera-facing ribbon trail — sword, vehicle, projectile       | trail, ribbon, motion, vfx            | medium     |
 
 ---
 
@@ -57,6 +60,7 @@
 | ---------------- | ----------------------------------------------------------- | ------------------------------------------ | ---------- |
 | `LODBillboard`   | Swap 3D mesh → billboard sprite khi xa — tiết kiệm draw call | lod, billboard, sprite, crowd, performance | medium     |
 | `PostProcessing` | WebGPU bloom pipeline — pass → bloom → tone mapping output  | post-processing, bloom, webgpu, effects    | medium     |
+| `OutlineShader`  | Per-object outline via BackSide scaled mesh — no post-processing | outline, highlight, select, backside    | low        |
 
 ---
 

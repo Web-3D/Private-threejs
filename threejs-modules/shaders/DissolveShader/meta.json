@@ -1,0 +1,13 @@
+{
+  "name": "DissolveShader",
+  "category": "shaders",
+  "version": "1.0.0",
+  "description": "Noise-based dissolve effect with edge glow — spawn/despawn cinematic, death animation",
+  "status": "unit-pass",
+  "dependencies": ["three"],
+  "tags": ["dissolve", "noise", "vfx", "spawn", "despawn", "tsl", "node-material", "cinematic"],
+  "complexity": "low",
+  "three-version": ">=0.174",
+  "three-version-verified": "0.174.0",
+  "exports": ["DissolveShader", "DissolveShaderOptions"]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "FireSystem",
+  "category": "effects",
+  "version": "1.0.0",
+  "description": "GPU-driven fire — inner flame + outer turbulent flame, 2 draw calls, wind support",
+  "status": "unit-pass",
+  "dependencies": ["three", "GPUParticleSystem"],
+  "tags": ["fire", "flame", "particles", "gpu", "vfx", "tsl", "node-material", "additive"],
+  "complexity": "medium",
+  "three-version": ">=0.174",
+  "three-version-verified": "0.174.0",
+  "exports": ["FireSystem", "FireSystemOptions"]
+}

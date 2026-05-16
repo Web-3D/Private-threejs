@@ -1,0 +1,13 @@
+{
+  "name": "OutlineShader",
+  "category": "components",
+  "version": "1.0.0",
+  "description": "Per-object outline via BackSide scaled mesh — no post-processing, follows parent transform",
+  "status": "unit-pass",
+  "dependencies": ["three"],
+  "tags": ["outline", "highlight", "select", "target", "backside", "mesh"],
+  "complexity": "low",
+  "three-version": ">=0.174",
+  "three-version-verified": "0.174.0",
+  "exports": ["OutlineShader", "OutlineShaderOptions"]
+}

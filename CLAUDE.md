@@ -149,9 +149,13 @@ Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
 | Module               | Category   | Version | Status    | Mô tả                                                                                                                          |
 | -------------------- | ---------- | ------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | `LODBillboard`       | components | 1.0.0   | unit-pass | Swap 3D mesh → billboard sprite khi camera xa — tiết kiệm draw call và triangle count                                          |
+| `OutlineShader`      | components | 1.0.0   | unit-pass | Per-object outline via BackSide scaled mesh — no post-processing, follows parent transform                                     |
 | `PostProcessing`     | components | 1.0.0   | unit-pass | WebGPU post-processing pipeline with bloom effect — wraps Three.js PostProcessing class                                        |
+| `FireSystem`         | effects    | 1.0.0   | unit-pass | GPU-driven fire — inner flame + outer turbulent flame, 2 draw calls, wind support                                              |
 | `GPUParticleSystem`  | effects    | 1.0.0   | unit-pass | Base class for GPU-driven particle systems — define custom physics, color curves, and size envelopes via TSL builder functions |
 | `SparkSystem`        | effects    | 1.0.0   | unit-pass | GPU-driven particle sparks — 100% vertex shader, zero CPU per-particle, additive blending                                      |
+| `TrailSystem`        | effects    | 1.0.0   | unit-pass | Camera-facing ribbon trail behind moving objects — sword swing, vehicle, projectile                                            |
+| `DissolveShader`     | shaders    | 1.0.0   | unit-pass | Noise-based dissolve effect with edge glow — spawn/despawn cinematic, death animation                                          |
 | `InteriorMapping`    | shaders    | 1.0.0   | unit-pass | Parallax interior room illusion cho building window — 1 texture thay thế hàng trăm mesh                                        |
 | `ProceduralFracture` | shaders    | 1.0.0   | unit-pass | Vertex displacement dọc theo normal bằng triNoise3D — giả lập vết nứt/fracture động                                            |
 | `RoundedCorners`     | shaders    | 1.0.0   | unit-pass | UV-space SDF rounded rectangle — áp dụng lên PlaneGeometry, không cần modify geometry                                          |
