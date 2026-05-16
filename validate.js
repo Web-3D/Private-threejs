@@ -269,7 +269,16 @@ function validateModule(modulePath) {
       const tmRoot = modulePath.slice(0, modulePath.indexOf('threejs-modules') + 'threejs-modules'.length)
       const depCategories = ['utils', 'shaders', 'hooks', 'components', 'effects']
       const missingDeps = localDeps.filter(
-        dep => !depCategories.some(cat => fs.existsSync(path.join(tmRoot, cat, dep)))
+        dep => !depCategories.some(cat => {
+          const catPath = path.join(tmRoot, cat)
+          if (fs.existsSync(path.join(catPath, dep))) return true
+          // Also check one level of subdirectories (e.g. shaders/foundation/WorldNoise)
+          if (!fs.existsSync(catPath)) return false
+          return fs.readdirSync(catPath).some(sub => {
+            const subPath = path.join(catPath, sub)
+            return fs.statSync(subPath).isDirectory() && fs.existsSync(path.join(subPath, dep))
+          })
+        })
       )
       if (missingDeps.length) {
         fail(`local dependencies chưa tồn tại trong threejs-modules: ${missingDeps.join(', ')}`)

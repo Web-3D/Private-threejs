@@ -153,20 +153,29 @@ function scanModules() {
     if (cat.startsWith('_') || cat.startsWith('.')) continue
     const catDir = path.join(tmDir, cat)
     if (!fs.statSync(catDir).isDirectory()) continue
-    for (const mod of fs.readdirSync(catDir).sort()) {
-      if (mod.startsWith('_') || mod.startsWith('.')) continue
-      const metaPath = path.join(catDir, mod, 'meta.json')
-      if (!fs.existsSync(metaPath)) continue
-      try {
-        const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'))
-        modules.push({
-          name:    meta.name        || mod,
-          cat,
-          version: meta.version     || '—',
-          status:  meta.status      || '—',
-          desc:    meta.description || '—',
-        })
-      } catch { /* meta.json parse lỗi — bỏ qua */ }
+    for (const entry of fs.readdirSync(catDir).sort()) {
+      if (entry.startsWith('_') || entry.startsWith('.')) continue
+      const entryPath = path.join(catDir, entry)
+      if (!fs.statSync(entryPath).isDirectory()) continue
+      const directMeta = path.join(entryPath, 'meta.json')
+      if (fs.existsSync(directMeta)) {
+        // Direct module — meta.json at category/module/meta.json
+        try {
+          const meta = JSON.parse(fs.readFileSync(directMeta, 'utf8'))
+          modules.push({ name: meta.name || entry, cat, version: meta.version || '—', status: meta.status || '—', desc: meta.description || '—' })
+        } catch { /* parse lỗi — bỏ qua */ }
+        continue
+      }
+      // Subcategory folder (e.g. shaders/vertex/) — scan one level deeper
+      for (const mod of fs.readdirSync(entryPath).sort()) {
+        if (mod.startsWith('_') || mod.startsWith('.')) continue
+        const metaPath = path.join(entryPath, mod, 'meta.json')
+        if (!fs.existsSync(metaPath)) continue
+        try {
+          const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'))
+          modules.push({ name: meta.name || mod, cat, version: meta.version || '—', status: meta.status || '—', desc: meta.description || '—' })
+        } catch { /* parse lỗi — bỏ qua */ }
+      }
     }
   }
 

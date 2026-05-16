@@ -155,14 +155,14 @@ Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
 | `GPUParticleSystem`  | effects    | 1.0.0   | unit-pass | Base class for GPU-driven particle systems — define custom physics, color curves, and size envelopes via TSL builder functions |
 | `SparkSystem`        | effects    | 1.0.0   | unit-pass | GPU-driven particle sparks — 100% vertex shader, zero CPU per-particle, additive blending                                      |
 | `TrailSystem`        | effects    | 1.0.0   | unit-pass | Camera-facing ribbon trail behind moving objects — sword swing, vehicle, projectile                                            |
+| `WorldNoise`         | shaders    | 1.0.0   | unit-pass | Procedural world-space animated noise — dùng làm nền tảng cho wind, fracture, weather                                          |
 | `DissolveShader`     | shaders    | 1.0.0   | unit-pass | Noise-based dissolve effect with edge glow — spawn/despawn cinematic, death animation                                          |
 | `InteriorMapping`    | shaders    | 1.0.0   | unit-pass | Parallax interior room illusion cho building window — 1 texture thay thế hàng trăm mesh                                        |
-| `ProceduralFracture` | shaders    | 1.0.0   | unit-pass | Vertex displacement dọc theo normal bằng triNoise3D — giả lập vết nứt/fracture động                                            |
 | `RoundedCorners`     | shaders    | 1.0.0   | unit-pass | UV-space SDF rounded rectangle — áp dụng lên PlaneGeometry, không cần modify geometry                                          |
 | `TriplanarMapping`   | shaders    | 1.0.0   | unit-pass | Phủ texture theo world-space bằng tri-planar sampling — không cần UV                                                           |
+| `ProceduralFracture` | shaders    | 1.0.0   | unit-pass | Vertex displacement dọc theo normal bằng triNoise3D — giả lập vết nứt/fracture động                                            |
 | `VATShader`          | shaders    | 1.0.0   | unit-pass | Vertex Animation Texture shader — bake animation vào DataTexture, reconstruct trên GPU                                         |
 | `WindAnimation`      | shaders    | 1.0.0   | unit-pass | Vertex displacement shader simulating wind using triNoise3D — animates foliage, grass, flags                                   |
-| `WorldNoise`         | shaders    | 1.0.0   | unit-pass | Procedural world-space animated noise — dùng làm nền tảng cho wind, fracture, weather                                          |
 | `CharacterPool`      | utils      | 1.0.0   | unit-pass | Generic object pool — pre-allocate slots, acquire/release không tạo mới GPU resource                                           |
 | `DayNightCycle`      | utils      | 1.0.0   | unit-pass | Day-night cycle utility driving DirectionalLight sun arc and AmbientLight color by normalized time                             |
 | `GlobalUniforms`     | utils      | 1.0.0   | unit-pass | Singleton cung cấp uTime/uWeather/uDamage đồng bộ cho mọi shader trong scene                                                   |
