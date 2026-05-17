@@ -1,8 +1,11 @@
 {
   "name": "BeamEffect",
+  "version": "1.0.0",
+  "description": "Line beam từ điểm A đến B — laser, lightning, connection, rope",
   "category": "effects",
   "complexity": "low",
   "status": "unit-pass",
+  "dependencies": ["BaseGPUEffect"],
   "tags": ["beam", "laser", "lightning", "line", "connection", "rope"],
   "exports": ["BeamEffect", "BeamEffectOptions"]
 }

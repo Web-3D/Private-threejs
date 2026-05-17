@@ -1,8 +1,11 @@
 {
   "name": "ShockwaveRing",
+  "version": "1.0.0",
+  "description": "Ring mở rộng theo thời gian — shockwave, impact, explosion",
   "category": "effects",
   "complexity": "low",
   "status": "unit-pass",
+  "dependencies": ["BaseGPUEffect"],
   "tags": ["shockwave", "ring", "impact", "explosion", "animation", "timed"],
   "exports": ["ShockwaveRing", "ShockwaveRingOptions"]
 }

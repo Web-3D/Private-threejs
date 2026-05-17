@@ -1,8 +1,11 @@
 {
   "name": "BillboardSprite",
+  "version": "1.0.0",
+  "description": "Sprite luôn xoay mặt về camera — icon, marker, glow, particle",
   "category": "effects",
   "complexity": "low",
   "status": "unit-pass",
+  "dependencies": ["BaseGPUEffect"],
   "tags": ["sprite", "billboard", "camera-facing", "icon", "marker", "glow"],
   "exports": ["BillboardSprite", "BillboardSpriteOptions"]
 }
