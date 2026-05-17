@@ -25,7 +25,7 @@ export async function createDemo(canvas: HTMLCanvasElement): Promise<{ dispose()
   scene.add(sphere)
 
   const trail = new TrailSystem({ maxLength: 50, width: 0.12, headColor: 0x4488ff })
-  scene.add(trail.mesh)
+  scene.add(trail.root)
 
   const clock = new THREE.Clock()
 

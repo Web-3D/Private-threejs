@@ -212,10 +212,8 @@ function scanAssets() {
 
 let content = fs.readFileSync(CLAUDE_MD, 'utf8')
 
-content = replaceSection(content, 'scripts',  scanScripts())
 content = replaceSection(content, 'skills',   scanSkills())
 content = replaceSection(content, 'triggers', scanTriggers())
-content = replaceSection(content, 'modules',  scanModules())
 content = replaceSection(content, 'assets',   scanAssets())
 
 fs.writeFileSync(CLAUDE_MD, content)

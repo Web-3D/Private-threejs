@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { color, float, mix, triNoise3D, uniform, vec3 } from 'three/tsl'
 import { GPUParticleSystem } from '../GPUParticleSystem'
+import { BaseGPUEffect } from '../BaseGPUEffect'
 
 export interface FireSystemOptions {
   /** Total particle count split across inner + outer flames. Default: 400 */
@@ -11,19 +12,17 @@ export interface FireSystemOptions {
   windZ?: number
 }
 
-export class FireSystem {
+export class FireSystem extends BaseGPUEffect {
   private readonly inner: GPUParticleSystem
   private readonly outer: GPUParticleSystem
   private readonly uWindX = uniform(0.0)
   private readonly uWindZ = uniform(0.0)
-  /** Add this to your scene. Move it to reposition the emitter. */
-  readonly group: THREE.Group
-  private isDisposed = false
+  readonly root = new THREE.Group()
 
   constructor(opts: FireSystemOptions = {}) {
+    super()
     this.uWindX.value = opts.windX ?? 0
     this.uWindZ.value = opts.windZ ?? 0
-    this.group = new THREE.Group()
 
     // Capture for TSL closure — builder functions execute in GPUParticleSystem constructor
     const uWindX = this.uWindX
@@ -70,8 +69,8 @@ export class FireSystem {
       buildOpacity: ({ bell }) => bell.mul(float(0.65)),
     })
 
-    this.group.add(this.inner.points)
-    this.group.add(this.outer.points)
+    this.root.add(this.inner.points)
+    this.root.add(this.outer.points)
   }
 
   /** Update wind direction. x/z in world units/s. */
@@ -88,10 +87,8 @@ export class FireSystem {
     this.outer.update(time)
   }
 
-  dispose(): void {
-    if (this.isDisposed) return
+  protected onDispose(): void {
     this.inner.dispose()
     this.outer.dispose()
-    this.isDisposed = true
   }
 }

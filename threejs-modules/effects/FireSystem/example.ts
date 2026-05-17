@@ -27,7 +27,7 @@ export async function createDemo(canvas: HTMLCanvasElement): Promise<{ dispose()
   scene.add(ground)
 
   const fire = new FireSystem({ count: 400 })
-  scene.add(fire.group)
+  scene.add(fire.root)
 
   // Wind demo — slow drift
   let windAngle = 0

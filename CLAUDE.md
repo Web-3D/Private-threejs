@@ -43,10 +43,9 @@ Effects/VFX → `threejs-modules/effects/` (GPUParticleSystem, SparkSystem ✅ P
 
 ---
 
-## Phase hiện tại — Phase D ✅ HOÀN THÀNH (2026-05-15)
+## Phase hiện tại
 
-16 modules unit-pass — Phase A–D hoàn chỉnh. Target: `threejs-modules/`.
-→ Tiến trình + next steps: [`/ROADMAP.md`](../ROADMAP.md) | Phase detail: [`ROADMAP.md`](ROADMAP.md)
+**Phase D ✅ — 20 modules unit-pass.** Chi tiết: [`ROADMAP.md`](ROADMAP.md)
 
 ---
 
@@ -94,6 +93,7 @@ Khi user chỉnh tay hoặc Gemini copy file → **phải chạy thủ công**.
 | Module nào đã build xong?                   | Living Index → Modules                     |
 | Asset nào production-ready?                 | Living Index → Assets                      |
 | Quyết định / context session trước?         | `../SYNC.md`                                   |
+| Tại sao chọn pattern/stack này?             | `decisions/` — ADR index                       |
 | Tính năng đã nghiên cứu nhưng hoãn?         | `deferred/README.md`                           |
 | Workflow Gemini copy module → tích hợp?     | `../.claude/skills/module-handoff/SKILL.md` |
 | Kế hoạch asset, budget tier, shaderProfile? | `../assets/ROADMAP.md`                         |
@@ -116,18 +116,7 @@ Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
 > Auto-generated bởi `update-index.js` — **không sửa tay** phần trong thẻ `<!-- INDEX -->`.
 > Cập nhật: mỗi lần mở session (SessionStart hook) + sau mỗi validate PASS.
 
-### Scripts
-
-<!-- INDEX:scripts -->
-| Script             | Mô tả                                                               |
-| ------------------ | ------------------------------------------------------------------- |
-| `validate.js`      | Validate asset / module — caching + registry update                 |
-| `check-imports.js` | Kiểm tra src/ không import từ raw/ hoặc optimized/                  |
-| `update-index.js`  | Cập nhật Living Index trong CLAUDE.md (file này)                    |
-| `scan-versions.js` | Detect Three.js version drift — exit 1 nếu có module stale          |
-| `find-unused.js`   | Orphan detector — stale imports + unregistered modules              |
-| `lint-shaders.js`  | TSL/GLSL policy enforcer — ShaderMaterial, inline GLSL, console.log |
-<!-- /INDEX:scripts -->
+### Scripts → [`ARCHITECTURE.md`](ARCHITECTURE.md) (File Registry section)
 
 ### Skills (../.claude/skills/)
 
@@ -145,32 +134,7 @@ Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
 | làm sạch model, tối ưu model, nén model, weld, draco, simplify mesh, import geometry, chuẩn bị model | `shared-gltf-pipeline` |
 <!-- /INDEX:triggers -->
 
-### Modules (threejs-modules/)
-
-<!-- INDEX:modules -->
-| Module               | Category   | Version | Status    | Mô tả                                                                                                                          |
-| -------------------- | ---------- | ------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `LODBillboard`       | components | 1.0.0   | unit-pass | Swap 3D mesh → billboard sprite khi camera xa — tiết kiệm draw call và triangle count                                          |
-| `OutlineShader`      | components | 1.0.0   | unit-pass | Per-object outline via BackSide scaled mesh — no post-processing, follows parent transform                                     |
-| `PostProcessing`     | components | 1.0.0   | unit-pass | WebGPU post-processing pipeline with bloom effect — wraps Three.js PostProcessing class                                        |
-| `FireSystem`         | effects    | 1.0.0   | unit-pass | GPU-driven fire — inner flame + outer turbulent flame, 2 draw calls, wind support                                              |
-| `GPUParticleSystem`  | effects    | 1.0.0   | unit-pass | Base class for GPU-driven particle systems — define custom physics, color curves, and size envelopes via TSL builder functions |
-| `SparkSystem`        | effects    | 1.0.0   | unit-pass | GPU-driven particle sparks — 100% vertex shader, zero CPU per-particle, additive blending                                      |
-| `TrailSystem`        | effects    | 1.0.0   | unit-pass | Camera-facing ribbon trail behind moving objects — sword swing, vehicle, projectile                                            |
-| `WorldNoise`         | shaders    | 1.0.0   | unit-pass | Procedural world-space animated noise — dùng làm nền tảng cho wind, fracture, weather                                          |
-| `DissolveShader`     | shaders    | 1.0.0   | unit-pass | Noise-based dissolve effect with edge glow — spawn/despawn cinematic, death animation                                          |
-| `InteriorMapping`    | shaders    | 1.0.0   | unit-pass | Parallax interior room illusion cho building window — 1 texture thay thế hàng trăm mesh                                        |
-| `RoundedCorners`     | shaders    | 1.0.0   | unit-pass | UV-space SDF rounded rectangle — áp dụng lên PlaneGeometry, không cần modify geometry                                          |
-| `TriplanarMapping`   | shaders    | 1.0.0   | unit-pass | Phủ texture theo world-space bằng tri-planar sampling — không cần UV                                                           |
-| `ProceduralFracture` | shaders    | 1.0.0   | unit-pass | Vertex displacement dọc theo normal bằng triNoise3D — giả lập vết nứt/fracture động                                            |
-| `VATShader`          | shaders    | 1.0.0   | unit-pass | Vertex Animation Texture shader — bake animation vào DataTexture, reconstruct trên GPU                                         |
-| `WindAnimation`      | shaders    | 1.0.0   | unit-pass | Vertex displacement shader simulating wind using triNoise3D — animates foliage, grass, flags                                   |
-| `CharacterPool`      | utils      | 1.0.0   | unit-pass | Generic object pool — pre-allocate slots, acquire/release không tạo mới GPU resource                                           |
-| `DayNightCycle`      | utils      | 1.0.0   | unit-pass | Day-night cycle utility driving DirectionalLight sun arc and AmbientLight color by normalized time                             |
-| `GlobalUniforms`     | utils      | 2.0.0   | unit-pass | Shared TSL uniform nodes (uTime/uWeather/uDamage) — import directly, no inject() needed                                        |
-| `LODSystem`          | utils      | 1.0.0   | unit-pass | Wrap THREE.LOD với typed interface — swap mesh detail theo khoảng cách camera                                                  |
-| `RuntimeGuard`       | utils      | 1.0.0   | unit-pass | Kiểm tra draw calls, triangle count, geometry leak mỗi frame                                                                   |
-<!-- /INDEX:modules -->
+### Modules → [`threejs-modules/README.md`](threejs-modules/README.md)
 
 ### Assets (assets/)
 

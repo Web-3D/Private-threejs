@@ -1,0 +1,8 @@
+{
+  "name": "BeamEffect",
+  "category": "effects",
+  "complexity": "low",
+  "status": "unit-pass",
+  "tags": ["beam", "laser", "lightning", "line", "connection", "rope"],
+  "exports": ["BeamEffect", "BeamEffectOptions"]
+}

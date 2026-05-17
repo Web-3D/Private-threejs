@@ -10,6 +10,7 @@ THREEJS/                         ← Engine workspace (git: Private-threejs)
 ├── validate.js                  ← quality gate: kiểm tra module + asset
 ├── check-imports.js             ← kiểm tra import path trong src/
 ├── update-index.js              ← cập nhật Living Index tự động
+├── decisions/                   ← ADR — lý do đằng sau quyết định kiến trúc
 ├── deferred/                    ← tính năng đã nghiên cứu, chưa build
 │
 ├── 00-Threejs/                  ← [repo: Threejs-template] KHUÔN MẪU dự án — clone riêng khi tạo project mới

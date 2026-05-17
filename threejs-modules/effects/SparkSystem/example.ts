@@ -28,7 +28,7 @@ export async function createDemo(canvas: HTMLCanvasElement): Promise<{ dispose()
     turbulence: true,
     shape: 'cone',
   })
-  scene.add(sparks.points)
+  scene.add(sparks.root)
 
   const clock = new THREE.Clock()
 

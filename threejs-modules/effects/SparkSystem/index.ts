@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { color, float, mix, triNoise3D, uniform, vec3 } from 'three/tsl'
 import { GPUParticleSystem } from '../GPUParticleSystem'
 import type { ParticleShape } from '../GPUParticleSystem'
+import { BaseGPUEffect } from '../BaseGPUEffect'
 
 export type SparkShape = ParticleShape
 
@@ -19,19 +20,16 @@ export interface SparkSystemOptions {
   shape?: SparkShape
 }
 
-export class SparkSystem {
-  private readonly system: GPUParticleSystem
+export class SparkSystem extends BaseGPUEffect {
   private readonly uSpeed = uniform(4.0)
   private readonly uGravity = uniform(4.0)
   private readonly uSizeMin = uniform(2.0)
   private readonly uSizeMax = uniform(6.0)
-  private isDisposed = false
-
-  get points(): THREE.Points {
-    return this.system.points
-  }
+  private readonly system: GPUParticleSystem
+  readonly root = new THREE.Group()
 
   constructor(opts: SparkSystemOptions = {}) {
+    super()
     this.uSpeed.value = opts.speed ?? 4.0
     this.uGravity.value = opts.gravity ?? 4.0
     this.uSizeMin.value = opts.sizeMin ?? 2.0
@@ -66,6 +64,7 @@ export class SparkSystem {
       buildSize: ({ bell }) => mix(uSizeMin, uSizeMax, bell),
       buildOpacity: ({ bell }) => bell,
     })
+    this.root.add(this.system.points)
   }
 
   update(time: number): void {
@@ -88,9 +87,7 @@ export class SparkSystem {
     this.system.setLifetime(value)
   }
 
-  dispose(): void {
-    if (this.isDisposed) return
+  protected onDispose(): void {
     this.system.dispose()
-    this.isDisposed = true
   }
 }

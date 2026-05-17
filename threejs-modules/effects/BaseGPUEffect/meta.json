@@ -1,0 +1,13 @@
+{
+  "name": "BaseGPUEffect",
+  "category": "effects",
+  "version": "1.0.0",
+  "description": "Abstract base for geometry-based GPU effects — root Object3D, isDisposed guard, setVisible, dispose with onDispose hook",
+  "status": "unit-pass",
+  "dependencies": ["three"],
+  "tags": ["base-class", "abstract", "effects", "dispose", "extensible", "geometry", "gpu"],
+  "complexity": "low",
+  "three-version": ">=0.174",
+  "three-version-verified": "0.174.0",
+  "exports": ["BaseGPUEffect"]
+}

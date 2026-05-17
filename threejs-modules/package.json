@@ -5,8 +5,12 @@
   "type": "module",
   "description": "Reusable Three.js / WebGPU module library — source-only, not compiled",
   "exports": {
-    "./shaders/*": "./shaders/*/index.ts",
+    ".": "./index.ts",
+    "./shaders/foundation/*": "./shaders/foundation/*/index.ts",
+    "./shaders/vertex/*": "./shaders/vertex/*/index.ts",
+    "./shaders/fragment/*": "./shaders/fragment/*/index.ts",
     "./utils/*": "./utils/*/index.ts",
+    "./effects/*": "./effects/*/index.ts",
     "./components/*": "./components/*/index.ts",
     "./hooks/*": "./hooks/*/index.ts"
   },

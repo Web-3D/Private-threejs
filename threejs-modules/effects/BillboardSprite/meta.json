@@ -1,0 +1,8 @@
+{
+  "name": "BillboardSprite",
+  "category": "effects",
+  "complexity": "low",
+  "status": "unit-pass",
+  "tags": ["sprite", "billboard", "camera-facing", "icon", "marker", "glow"],
+  "exports": ["BillboardSprite", "BillboardSpriteOptions"]
+}

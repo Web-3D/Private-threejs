@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { BaseGPUEffect } from '../BaseGPUEffect'
 
 export interface TrailSystemOptions {
   /** Max positions kept in trail history. Default: 40 */
@@ -11,10 +12,10 @@ export interface TrailSystemOptions {
 
 const _UP = new THREE.Vector3(0, 1, 0)
 
-export class TrailSystem {
+export class TrailSystem extends BaseGPUEffect {
   private readonly geo: THREE.BufferGeometry
   private readonly mat: THREE.MeshBasicMaterial
-  readonly mesh: THREE.Mesh
+  readonly root: THREE.Mesh
   private readonly positions: THREE.Vector3[] = []
   private readonly maxLength: number
   private width: number
@@ -22,9 +23,9 @@ export class TrailSystem {
   private readonly _tangent = new THREE.Vector3()
   private readonly _camDir  = new THREE.Vector3()
   private readonly _side    = new THREE.Vector3()
-  private isDisposed = false
 
   constructor(opts: TrailSystemOptions = {}) {
+    super()
     this.maxLength = Math.max(2, opts.maxLength ?? 40)
     this.width     = opts.width ?? 0.08
     this.headColor = new THREE.Color(opts.headColor ?? 0xffffff)
@@ -54,7 +55,7 @@ export class TrailSystem {
       side: THREE.DoubleSide,
     })
 
-    this.mesh = new THREE.Mesh(this.geo, this.mat)
+    this.root = new THREE.Mesh(this.geo, this.mat)
   }
 
   /**
@@ -122,11 +123,8 @@ export class TrailSystem {
     this.geo.setDrawRange(0, (n - 1) * 6)
   }
 
-  dispose(): void {
-    if (this.isDisposed) return
-    this.mesh.parent?.remove(this.mesh)
+  protected onDispose(): void {
     this.geo.dispose()
     this.mat.dispose()
-    this.isDisposed = true
   }
 }
