@@ -74,11 +74,22 @@ Khi user chỉnh tay hoặc Gemini copy file → **phải chạy thủ công**.
 
 ---
 
+## Session opener chuẩn
+
+Câu đầu tiên khi mở THREEJS session:
+
+```
+Đọc CLAUDE.md + ../SYNC.md + c:\Projects\web3d-projects\STATUS.md rồi báo cáo trạng thái.
+```
+
+---
+
 ## Shared AI Context
 
 | File                      | Mục đích                                                                                   |
 | ------------------------- | ------------------------------------------------------------------------------------------ |
 | `../SYNC.md`              | Log quyết định + trạng thái workspace — **đọc đầu session**, ghi sau thay đổi lớn          |
+| `c:\Projects\web3d-projects\STATUS.md` | Command center — active project, phase, blockers cross-repo          |
 | `deferred/`               | Tính năng đã nghiên cứu nhưng hoãn — mỗi file 1 tính năng, đọc trước khi đề xuất implement |
 | `../assets/REGISTRY.json` | Index tổng hợp tất cả assets đã validate — auto-generated, không sửa tay                   |
 
