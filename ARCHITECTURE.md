@@ -345,3 +345,4 @@ Asset dùng cho gì?
 | 3D AI Studio                    | https://www.3daistudio.com/                                       |
 | Three.js TSL                    | https://github.com/mrdoob/three.js/wiki/Three.js-Shading-Language |
 | GaussianSplats3D (Spark.js alt) | https://github.com/mkkellogg/GaussianSplats3D                     |
+| Docs site (VitePress)           | https://docs-3d-ng.vercel.app                                     |
