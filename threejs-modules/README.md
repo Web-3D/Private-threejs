@@ -39,7 +39,10 @@
 | `GlobalUniforms` | Shared TSL nodes uTime/uWeather/uDamage — import trực tiếp, không cần inject() | uniform, tsl, animation, shader-sync | low        |
 | `LODSystem`      | Wrap THREE.LOD — typed levels, auto/manual update       | lod, performance, distance                 | low        |
 | `CharacterPool`  | Generic object pool — acquire/release O(1), zero GPU alloc | pool, crowd, performance, reuse         | medium     |
-| `DayNightCycle`  | Chu kỳ ngày-đêm — drive DirectionalLight + AmbientLight | lighting, day-night, animation, ambient    | low        |
+| `DayNightCycle`      | Chu kỳ ngày-đêm — drive DirectionalLight + AmbientLight | lighting, day-night, animation, ambient    | low        |
+| `InteractionSystem`  | Raycaster wrapper — hover/click/pointer events trên 3D mesh | raycaster, interaction, hover, click   | medium     |
+| `AnimationSystem`    | AnimationMixer wrapper — play/pause/crossfade glTF clips | animation, gltf, mixer, crossfade, skeletal | medium  |
+| `ScrollTimeline`     | Scroll-driven camera path — map scroll lên CatmullRomCurve3 | scroll, camera, path, curve, storytelling | medium  |
 
 ---
 

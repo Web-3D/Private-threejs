@@ -1,0 +1,11 @@
+{
+  "name": "InteractionSystem",
+  "category": "utils",
+  "version": "1.0.0",
+  "description": "Raycaster wrapper — hover/click/pointer events trên 3D Object3D, không cần global state",
+  "tags": ["raycaster", "interaction", "hover", "click", "events", "pointer"],
+  "complexity": "medium",
+  "status": "unit-pass",
+  "dependencies": ["RuntimeGuard"],
+  "exports": ["InteractionSystem", "InteractionHandlers", "InteractionEvent", "InteractionSystemOptions"]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "AnimationSystem",
+  "category": "utils",
+  "version": "1.0.0",
+  "description": "AnimationMixer wrapper — play/pause/crossfade glTF AnimationClip, typed API",
+  "tags": ["animation", "gltf", "mixer", "crossfade", "skeletal"],
+  "complexity": "medium",
+  "status": "unit-pass",
+  "dependencies": ["RuntimeGuard"],
+  "exports": ["AnimationSystem", "PlayOptions", "AnimationSystemOptions"]
+}

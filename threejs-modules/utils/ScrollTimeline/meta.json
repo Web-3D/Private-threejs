@@ -1,0 +1,11 @@
+{
+  "name": "ScrollTimeline",
+  "category": "utils",
+  "version": "1.0.0",
+  "description": "Scroll-driven camera path — map window scroll position lên CatmullRomCurve3, smooth lerp",
+  "tags": ["scroll", "camera", "animation", "path", "curve", "storytelling"],
+  "complexity": "medium",
+  "status": "unit-pass",
+  "dependencies": ["GlobalUniforms"],
+  "exports": ["ScrollTimeline", "ScrollTimelineOptions", "LookAtMode"]
+}
