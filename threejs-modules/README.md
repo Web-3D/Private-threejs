@@ -62,6 +62,13 @@
 | `AnimationSystem`| AnimationMixer wrapper — play/pause/crossfade glTF clips     | animation, gltf, mixer, crossfade, skeletal   | medium     |
 | `ScrollTimeline` | Scroll-driven camera path — map scroll lên CatmullRomCurve3  | scroll, camera, path, curve, storytelling     | medium     |
 
+### physics/
+| Tên                   | Mô tả                                                             | Tags                                              | Complexity |
+| --------------------- | ----------------------------------------------------------------- | ------------------------------------------------- | ---------- |
+| `PhysicsWorld`        | Rapier.js world wrapper — async WASM init, gravity, step loop     | physics, rapier, wasm, gravity, simulation        | medium     |
+| `RigidBody`           | Attach Rapier body + collider vào Three.js mesh, sync sau step()  | physics, rapier, rigid-body, collider, sync       | medium     |
+| `CharacterController` | Kinematic movement — collision-resolved WASD + jump, gravity tích lũy | physics, rapier, character, movement, jump   | high       |
+
 ---
 
 ## Effects

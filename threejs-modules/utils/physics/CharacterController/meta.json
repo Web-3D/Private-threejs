@@ -1,0 +1,11 @@
+{
+  "name": "CharacterController",
+  "category": "utils",
+  "version": "1.0.0",
+  "description": "Kinematic character movement — collision-resolved WASD + jump, gravity tích lũy",
+  "tags": ["physics", "rapier", "character", "movement", "jump", "kinematic", "collision"],
+  "complexity": "high",
+  "status": "unit-pass",
+  "dependencies": ["PhysicsWorld", "RigidBody"],
+  "exports": ["CharacterController", "CharacterControllerOptions"]
+}

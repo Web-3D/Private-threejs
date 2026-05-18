@@ -1,0 +1,11 @@
+{
+  "name": "PhysicsWorld",
+  "category": "utils",
+  "version": "1.0.0",
+  "description": "Rapier.js world wrapper — async WASM init, gravity config, fixed-step simulation",
+  "tags": ["physics", "rapier", "rigid-body", "gravity", "simulation", "wasm"],
+  "complexity": "medium",
+  "status": "unit-pass",
+  "dependencies": ["RuntimeGuard"],
+  "exports": ["PhysicsWorld", "PhysicsWorldOptions"]
+}

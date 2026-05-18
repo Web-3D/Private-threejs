@@ -1,0 +1,11 @@
+{
+  "name": "RigidBody",
+  "category": "utils",
+  "version": "1.0.0",
+  "description": "Attach Rapier physics body + collider vào Three.js mesh — sync position/rotation sau step()",
+  "tags": ["physics", "rapier", "rigid-body", "collider", "sync", "dynamic", "kinematic"],
+  "complexity": "medium",
+  "status": "unit-pass",
+  "dependencies": ["PhysicsWorld"],
+  "exports": ["RigidBody", "RigidBodyOptions", "RigidBodyType", "ColliderShape"]
+}

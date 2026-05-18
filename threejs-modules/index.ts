@@ -32,6 +32,11 @@ export * from './utils/interaction/InteractionSystem/index'
 export * from './utils/animation/AnimationSystem/index'
 export * from './utils/animation/ScrollTimeline/index'
 
+// Utils — physics
+export * from './utils/physics/PhysicsWorld/index'
+export * from './utils/physics/RigidBody/index'
+export * from './utils/physics/CharacterController/index'
+
 // Effects
 export * from './effects/BaseGPUEffect/index'
 export * from './effects/BeamEffect/index'

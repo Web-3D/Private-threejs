@@ -89,22 +89,23 @@ Exit criteria: click vào mesh trigger event, glTF animation play/crossfade, scr
 
 ---
 
-## Phase F — Physics _(⏳ chờ Phase E)_
+## Phase F — Physics _(✅ hoàn thành 2026-05-18)_
 
 Mục tiêu: object rơi, va chạm, character di chuyển có physics. Dùng Rapier.js (WebAssembly).
 
 Exit criteria: rigid body rơi đúng gravity, CharacterController di chuyển + jump, debug visualizer hoạt động.
 
-| #   | Module                | Category | Status      | Dependency  |
-| --- | --------------------- | -------- | ----------- | ----------- |
-| 1   | `PhysicsWorld`        | utils    | ⏳ chờ build | RuntimeGuard |
-| 2   | `RigidBody`           | utils    | ⏳ chờ build | PhysicsWorld |
-| 3   | `CharacterController` | utils    | ⏳ chờ build | PhysicsWorld |
+| #   | Module                | Category | Status       | Dependency   |
+| --- | --------------------- | -------- | ------------ | ------------ |
+| 1   | `PhysicsWorld`        | utils    | ✅ unit-pass | RuntimeGuard |
+| 2   | `RigidBody`           | utils    | ✅ unit-pass | PhysicsWorld |
+| 3   | `CharacterController` | utils    | ✅ unit-pass | PhysicsWorld |
 
 ---
 
 ## Changelog
 
+| 2026-05-18 | Phase F hoàn thành — PhysicsWorld (Rapier WASM wrap), RigidBody (dynamic/fixed/kinematic + cuboid/ball/capsule), CharacterController (collision-resolved movement + jump + gravity) |
 | 2026-05-18 | Phase E hoàn thành — InteractionSystem (Raycaster hover/click), AnimationSystem (AnimationMixer crossfade), ScrollTimeline (CatmullRomCurve3 scroll-driven camera) |
 | 2026-05-15 | Phase D hoàn thành — PostProcessing (bloom WebGPU), WindAnimation (triNoise3D positionNode), DayNightCycle (sun arc + ambient lighting) |
 | 2026-05-15 | Gallery update — thêm 6 modules Phase C + D: VATShader, LODBillboard, CharacterPool, PostProcessing, WindAnimation, DayNightCycle |
