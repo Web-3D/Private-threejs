@@ -75,6 +75,34 @@ Exit criteria: < 100 draw calls, < 500k tris, < 16.6ms/frame → live demo Verce
 
 ---
 
+## Phase E — Interaction & Animation _(⏳ chưa bắt đầu)_
+
+Mục tiêu: user tương tác được với object 3D, character chạy animation từ glTF, scene phản ứng theo scroll.
+
+Exit criteria: click vào mesh trigger event, glTF animation play/crossfade, scroll điều khiển camera path.
+
+| #   | Module              | Category | Status      | Dependency     |
+| --- | ------------------- | -------- | ----------- | -------------- |
+| 1   | `InteractionSystem` | utils    | ⏳ chờ build | RuntimeGuard   |
+| 2   | `AnimationSystem`   | utils    | ⏳ chờ build | RuntimeGuard   |
+| 3   | `ScrollTimeline`    | utils    | ⏳ chờ build | GlobalUniforms |
+
+---
+
+## Phase F — Physics _(⏳ chờ Phase E)_
+
+Mục tiêu: object rơi, va chạm, character di chuyển có physics. Dùng Rapier.js (WebAssembly).
+
+Exit criteria: rigid body rơi đúng gravity, CharacterController di chuyển + jump, debug visualizer hoạt động.
+
+| #   | Module                | Category | Status      | Dependency  |
+| --- | --------------------- | -------- | ----------- | ----------- |
+| 1   | `PhysicsWorld`        | utils    | ⏳ chờ build | RuntimeGuard |
+| 2   | `RigidBody`           | utils    | ⏳ chờ build | PhysicsWorld |
+| 3   | `CharacterController` | utils    | ⏳ chờ build | PhysicsWorld |
+
+---
+
 ## Changelog
 
 | 2026-05-15 | Phase D hoàn thành — PostProcessing (bloom WebGPU), WindAnimation (triNoise3D positionNode), DayNightCycle (sun arc + ambient lighting) |
