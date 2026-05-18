@@ -89,7 +89,7 @@ function saveCache(cache) {
 // Registry giúp scan toàn bộ assets nhanh mà không cần walk thư mục.
 
 function updateRegistry(meta) {
-  const registryPath = path.join(__dirname, 'assets', 'REGISTRY.json')
+  const registryPath = path.join(__dirname, '..', 'assets', 'REGISTRY.json')
   let reg = { buildings: [], characters: [], environments: [], props: [], textures: [] }
   try { reg = JSON.parse(fs.readFileSync(registryPath, 'utf8')) } catch { /* use default */ }
 
