@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { BaseWorld } from '../../utils/BaseWorld'
+import { BaseWorld } from '../../utils/core/BaseWorld'
 import { BillboardSprite } from './index'
 
 function makeGlowTexture(size = 128): THREE.CanvasTexture {

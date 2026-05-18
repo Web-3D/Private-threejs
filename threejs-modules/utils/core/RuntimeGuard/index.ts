@@ -33,17 +33,15 @@ export class RuntimeGuard {
     const { render, memory } = this.renderer.info
 
     if (render.drawCalls > this.options.drawCallLimit)
-      console.warn(`[Budget] Draw calls: ${render.drawCalls}/${this.options.drawCallLimit}`)
+      console.warn('[Budget] Draw calls: ' + render.drawCalls + '/' + this.options.drawCallLimit)
 
     if (render.triangles > this.options.triangleLimit)
-      console.warn(`[Budget] Triangles: ${render.triangles}/${this.options.triangleLimit}`)
+      console.warn('[Budget] Triangles: ' + render.triangles + '/' + this.options.triangleLimit)
 
     if (memory.geometries > this.prevGeometries) {
       this.leakFrames++
       if (this.leakFrames >= 3)
-        console.warn(
-          `[Budget] Geometry leak? Count rising: ${memory.geometries} (${this.leakFrames} frames)`
-        )
+        console.warn('[Budget] Geometry leak? Count rising: ' + memory.geometries + ' (' + this.leakFrames + ' frames)')
     } else {
       this.leakFrames = 0
     }
@@ -53,9 +51,7 @@ export class RuntimeGuard {
     if (memory.textures > this.prevTextures) {
       this.textureLeakFrames++
       if (this.textureLeakFrames >= 3)
-        console.warn(
-          `[Budget] Texture leak? Count rising: ${memory.textures} (${this.textureLeakFrames} frames)`
-        )
+        console.warn('[Budget] Texture leak? Count rising: ' + memory.textures + ' (' + this.textureLeakFrames + ' frames)')
     } else {
       this.textureLeakFrames = 0
     }

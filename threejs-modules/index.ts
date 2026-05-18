@@ -13,13 +13,24 @@ export * from './shaders/fragment/InteriorMapping/index'
 export * from './shaders/fragment/RoundedCorners/index'
 export * from './shaders/fragment/TriplanarMapping/index'
 
-// Utils
-export * from './utils/BaseWorld/index'
-export * from './utils/CharacterPool/index'
-export * from './utils/DayNightCycle/index'
-export * from './utils/GlobalUniforms/index'
-export * from './utils/LODSystem/index'
-export * from './utils/RuntimeGuard/index'
+// Utils — core
+export * from './utils/core/BaseWorld/index'
+export * from './utils/core/GlobalUniforms/index'
+export * from './utils/core/RuntimeGuard/index'
+
+// Utils — performance
+export * from './utils/performance/CharacterPool/index'
+export * from './utils/performance/LODSystem/index'
+
+// Utils — environment
+export * from './utils/environment/DayNightCycle/index'
+
+// Utils — interaction
+export * from './utils/interaction/InteractionSystem/index'
+
+// Utils — animation
+export * from './utils/animation/AnimationSystem/index'
+export * from './utils/animation/ScrollTimeline/index'
 
 // Effects
 export * from './effects/BaseGPUEffect/index'

@@ -33,16 +33,34 @@
 
 ## Utils
 
-| Tên              | Mô tả                                                   | Tags                                       | Complexity |
-| ---------------- | ------------------------------------------------------- | ------------------------------------------ | ---------- |
-| `RuntimeGuard`   | Kiểm tra draw calls, triangles, geometry leak mỗi frame | performance, monitoring, debug             | low        |
-| `GlobalUniforms` | Shared TSL nodes uTime/uWeather/uDamage — import trực tiếp, không cần inject() | uniform, tsl, animation, shader-sync | low        |
-| `LODSystem`      | Wrap THREE.LOD — typed levels, auto/manual update       | lod, performance, distance                 | low        |
-| `CharacterPool`  | Generic object pool — acquire/release O(1), zero GPU alloc | pool, crowd, performance, reuse         | medium     |
-| `DayNightCycle`      | Chu kỳ ngày-đêm — drive DirectionalLight + AmbientLight | lighting, day-night, animation, ambient    | low        |
-| `InteractionSystem`  | Raycaster wrapper — hover/click/pointer events trên 3D mesh | raycaster, interaction, hover, click   | medium     |
-| `AnimationSystem`    | AnimationMixer wrapper — play/pause/crossfade glTF clips | animation, gltf, mixer, crossfade, skeletal | medium  |
-| `ScrollTimeline`     | Scroll-driven camera path — map scroll lên CatmullRomCurve3 | scroll, camera, path, curve, storytelling | medium  |
+### core/
+| Tên              | Mô tả                                                              | Tags                                       | Complexity |
+| ---------------- | ------------------------------------------------------------------ | ------------------------------------------ | ---------- |
+| `RuntimeGuard`   | Kiểm tra draw calls, triangles, geometry leak mỗi frame           | performance, monitoring, debug             | low        |
+| `GlobalUniforms` | Shared TSL nodes uTime/uWeather/uDamage — import trực tiếp        | uniform, tsl, animation, shader-sync       | low        |
+| `BaseWorld`      | Abstract scene setup — WebGPURenderer + camera + loop trong 1 class | base-class, abstract, scene, webgpu       | low        |
+
+### performance/
+| Tên             | Mô tả                                                   | Tags                                    | Complexity |
+| --------------- | ------------------------------------------------------- | --------------------------------------- | ---------- |
+| `LODSystem`     | Wrap THREE.LOD — typed levels, auto/manual update       | lod, performance, distance              | low        |
+| `CharacterPool` | Generic object pool — acquire/release O(1), zero GPU alloc | pool, crowd, performance, reuse      | medium     |
+
+### environment/
+| Tên            | Mô tả                                                   | Tags                                    | Complexity |
+| -------------- | ------------------------------------------------------- | --------------------------------------- | ---------- |
+| `DayNightCycle`| Chu kỳ ngày-đêm — drive DirectionalLight + AmbientLight | lighting, day-night, animation, ambient | low        |
+
+### interaction/
+| Tên                 | Mô tả                                                   | Tags                                  | Complexity |
+| ------------------- | ------------------------------------------------------- | ------------------------------------- | ---------- |
+| `InteractionSystem` | Raycaster wrapper — hover/click/pointer events trên 3D mesh | raycaster, interaction, hover, click | medium |
+
+### animation/
+| Tên              | Mô tả                                                        | Tags                                          | Complexity |
+| ---------------- | ------------------------------------------------------------ | --------------------------------------------- | ---------- |
+| `AnimationSystem`| AnimationMixer wrapper — play/pause/crossfade glTF clips     | animation, gltf, mixer, crossfade, skeletal   | medium     |
+| `ScrollTimeline` | Scroll-driven camera path — map scroll lên CatmullRomCurve3  | scroll, camera, path, curve, storytelling     | medium     |
 
 ---
 

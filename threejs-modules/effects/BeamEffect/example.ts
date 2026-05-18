@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { BaseWorld } from '../../utils/BaseWorld'
+import { BaseWorld } from '../../utils/core/BaseWorld'
 import { BeamEffect } from './index'
 
 const PIVOT_A = new THREE.Vector3(-2, 1, 0)
