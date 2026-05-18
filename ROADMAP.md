@@ -75,17 +75,17 @@ Exit criteria: < 100 draw calls, < 500k tris, < 16.6ms/frame → live demo Verce
 
 ---
 
-## Phase E — Interaction & Animation _(⏳ chưa bắt đầu)_
+## Phase E — Interaction & Animation _(✅ hoàn thành 2026-05-18)_
 
 Mục tiêu: user tương tác được với object 3D, character chạy animation từ glTF, scene phản ứng theo scroll.
 
 Exit criteria: click vào mesh trigger event, glTF animation play/crossfade, scroll điều khiển camera path.
 
-| #   | Module              | Category | Status      | Dependency     |
-| --- | ------------------- | -------- | ----------- | -------------- |
-| 1   | `InteractionSystem` | utils    | ⏳ chờ build | RuntimeGuard   |
-| 2   | `AnimationSystem`   | utils    | ⏳ chờ build | RuntimeGuard   |
-| 3   | `ScrollTimeline`    | utils    | ⏳ chờ build | GlobalUniforms |
+| #   | Module              | Category | Status       | Dependency     |
+| --- | ------------------- | -------- | ------------ | -------------- |
+| 1   | `InteractionSystem` | utils    | ✅ unit-pass | RuntimeGuard   |
+| 2   | `AnimationSystem`   | utils    | ✅ unit-pass | RuntimeGuard   |
+| 3   | `ScrollTimeline`    | utils    | ✅ unit-pass | GlobalUniforms |
 
 ---
 
@@ -105,6 +105,7 @@ Exit criteria: rigid body rơi đúng gravity, CharacterController di chuyển +
 
 ## Changelog
 
+| 2026-05-18 | Phase E hoàn thành — InteractionSystem (Raycaster hover/click), AnimationSystem (AnimationMixer crossfade), ScrollTimeline (CatmullRomCurve3 scroll-driven camera) |
 | 2026-05-15 | Phase D hoàn thành — PostProcessing (bloom WebGPU), WindAnimation (triNoise3D positionNode), DayNightCycle (sun arc + ambient lighting) |
 | 2026-05-15 | Gallery update — thêm 6 modules Phase C + D: VATShader, LODBillboard, CharacterPool, PostProcessing, WindAnimation, DayNightCycle |
 | Ngày       | Thay đổi                                                                   |
