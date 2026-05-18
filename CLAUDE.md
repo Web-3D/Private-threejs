@@ -79,7 +79,7 @@ Khi user chỉnh tay hoặc Gemini copy file → **phải chạy thủ công**.
 Câu đầu tiên khi mở THREEJS session:
 
 ```
-Đọc CLAUDE.md + ../SYNC.md + c:\Projects\studio-3D\STATUS.md rồi báo cáo trạng thái.
+Đọc CLAUDE.md + ../SYNC.md + c:\Editions\studio-3D\STATUS.md rồi báo cáo trạng thái.
 ```
 
 ---
@@ -89,7 +89,7 @@ Câu đầu tiên khi mở THREEJS session:
 | File                      | Mục đích                                                                                   |
 | ------------------------- | ------------------------------------------------------------------------------------------ |
 | `../SYNC.md`              | Log quyết định + trạng thái workspace — **đọc đầu session**, ghi sau thay đổi lớn          |
-| `c:\Projects\studio-3D\STATUS.md` | Command center — active project, phase, blockers cross-repo          |
+| `c:\Editions\studio-3D\STATUS.md` | Command center — active project, phase, blockers cross-repo          |
 | `deferred/`               | Tính năng đã nghiên cứu nhưng hoãn — mỗi file 1 tính năng, đọc trước khi đề xuất implement |
 | `../assets/REGISTRY.json` | Index tổng hợp tất cả assets đã validate — auto-generated, không sửa tay                   |
 
