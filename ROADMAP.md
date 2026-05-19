@@ -100,11 +100,13 @@ Exit criteria: rigid body rơi đúng gravity, CharacterController di chuyển +
 | 1   | `PhysicsWorld`        | utils    | ✅ unit-pass | RuntimeGuard |
 | 2   | `RigidBody`           | utils    | ✅ unit-pass | PhysicsWorld |
 | 3   | `CharacterController` | utils    | ✅ unit-pass | PhysicsWorld |
+| 4   | `CollisionEventBus`   | utils    | ✅ unit-pass | PhysicsWorld + RigidBody |
 
 ---
 
 ## Changelog
 
+| 2026-05-19 | Phase F mở rộng — CollisionEventBus (event bus collision → handler, force threshold, ImpactEvent dispatch cho VAT/Particle/Audio) |
 | 2026-05-18 | Phase F hoàn thành — PhysicsWorld (Rapier WASM wrap), RigidBody (dynamic/fixed/kinematic + cuboid/ball/capsule), CharacterController (collision-resolved movement + jump + gravity) |
 | 2026-05-18 | Phase E hoàn thành — InteractionSystem (Raycaster hover/click), AnimationSystem (AnimationMixer crossfade), ScrollTimeline (CatmullRomCurve3 scroll-driven camera) |
 | 2026-05-15 | Phase D hoàn thành — PostProcessing (bloom WebGPU), WindAnimation (triNoise3D positionNode), DayNightCycle (sun arc + ambient lighting) |

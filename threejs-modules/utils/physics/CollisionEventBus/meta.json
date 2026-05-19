@@ -1,0 +1,11 @@
+{
+  "name": "CollisionEventBus",
+  "category": "utils",
+  "version": "1.0.0",
+  "description": "Event bus kết nối Rapier collision detection với VAT/Particle/Audio — per-body handler với force threshold, dispatch ImpactEvent đúng timing",
+  "tags": ["physics", "rapier", "collision", "events", "choreography", "vat", "particles"],
+  "complexity": "medium",
+  "status": "unit-pass",
+  "dependencies": ["PhysicsWorld", "RigidBody"],
+  "exports": ["CollisionEventBus", "CollisionEventBusOptions", "CollisionHandler", "ImpactEvent"]
+}

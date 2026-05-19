@@ -68,6 +68,7 @@
 | `PhysicsWorld`        | Rapier.js world wrapper — async WASM init, gravity, step loop     | physics, rapier, wasm, gravity, simulation        | medium     |
 | `RigidBody`           | Attach Rapier body + collider vào Three.js mesh, sync sau step()  | physics, rapier, rigid-body, collider, sync       | medium     |
 | `CharacterController` | Kinematic movement — collision-resolved WASD + jump, gravity tích lũy | physics, rapier, character, movement, jump   | high       |
+| `CollisionEventBus`   | Event bus collision → handler — force threshold, dispatch VAT/Particle/Audio | physics, rapier, collision, events, choreography | medium |
 
 ---
 

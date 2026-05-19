@@ -36,6 +36,7 @@ export * from './utils/animation/ScrollTimeline/index'
 export * from './utils/physics/PhysicsWorld/index'
 export * from './utils/physics/RigidBody/index'
 export * from './utils/physics/CharacterController/index'
+export * from './utils/physics/CollisionEventBus/index'
 
 // Effects
 export * from './effects/BaseGPUEffect/index'
