@@ -114,6 +114,40 @@ Mục tiêu: spatial audio system — positional SFX tại world position, tích
 
 ---
 
+## Phase H — Procedural World _(⏳ kế hoạch)_
+
+Mục tiêu: tạo nội dung procedural — terrain, building, prop — không cần asset file.
+
+| #   | Module               | Category | Status  | Dependency          |
+| --- | -------------------- | -------- | ------- | ------------------- |
+| 1   | `TerrainSystem`      | utils    | ⏳ plan | WorldNoise          |
+| 2   | `ProceduralBuilding` | utils    | ⏳ plan | TerrainSystem       |
+| 3   | `CityLayout`         | utils    | ⏳ plan | ProceduralBuilding  |
+
+---
+
+## Phase I — Scene Streaming _(⏳ kế hoạch)_
+
+Mục tiêu: load/unload chunks theo camera position — city lớn không giới hạn bởi GPU budget.
+
+| #   | Module          | Category | Status  | Dependency      |
+| --- | --------------- | -------- | ------- | --------------- |
+| 1   | `ChunkManager`  | utils    | ⏳ plan | CityLayout      |
+| 2   | `AssetStreamer` | utils    | ⏳ plan | ChunkManager    |
+
+---
+
+## Phase J — Navigation _(⏳ kế hoạch)_
+
+Mục tiêu: NPC tìm đường trong city — NavMesh bake + pathfinding.
+
+| #   | Module           | Category | Status  | Dependency  |
+| --- | ---------------- | -------- | ------- | ----------- |
+| 1   | `NavMesh`        | utils    | ⏳ plan | CityLayout  |
+| 2   | `NPCController`  | utils    | ⏳ plan | NavMesh     |
+
+---
+
 ## Changelog
 
 | 2026-05-23 | Phase G hoàn thành — AudioSystem (spatial PositionalAudio, load/cache/play, tích hợp CollisionEventBus.onImpact) |
