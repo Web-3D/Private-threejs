@@ -1,0 +1,12 @@
+{
+  "name": "AudioSystem",
+  "category": "utils",
+  "version": "1.0.0",
+  "description": "Spatial audio system — load/cache sounds, play positional SFX at world position for impact/VFX choreography",
+  "dependencies": ["three"],
+  "tags": ["audio", "spatial", "positional", "impact", "sfx", "web-audio", "choreography"],
+  "three-version": ">=0.174",
+  "complexity": "medium",
+  "status": "unit-pass",
+  "exports": ["AudioSystem", "AudioSystemOptions", "SoundPosition"]
+}

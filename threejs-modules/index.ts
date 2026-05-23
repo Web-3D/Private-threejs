@@ -38,6 +38,9 @@ export * from './utils/physics/RigidBody/index'
 export * from './utils/physics/CharacterController/index'
 export * from './utils/physics/CollisionEventBus/index'
 
+// Utils — audio
+export * from './utils/audio/AudioSystem/index'
+
 // Effects
 export * from './effects/BaseGPUEffect/index'
 export * from './effects/BeamEffect/index'

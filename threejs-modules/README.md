@@ -70,6 +70,11 @@
 | `CharacterController` | Kinematic movement — collision-resolved WASD + jump, gravity tích lũy | physics, rapier, character, movement, jump   | high       |
 | `CollisionEventBus`   | Event bus collision → handler — force threshold, dispatch VAT/Particle/Audio | physics, rapier, collision, events, choreography | medium |
 
+### audio/
+| Tên            | Mô tả                                                                        | Tags                                              | Complexity |
+| -------------- | ---------------------------------------------------------------------------- | ------------------------------------------------- | ---------- |
+| `AudioSystem`  | Spatial audio — load/cache sounds, play positional SFX tại world position    | audio, spatial, positional, sfx, web-audio        | medium     |
+
 ---
 
 ## Effects

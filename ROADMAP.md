@@ -104,8 +104,19 @@ Exit criteria: rigid body rơi đúng gravity, CharacterController di chuyển +
 
 ---
 
+## Phase G — Audio _(✅ hoàn thành 2026-05-23)_
+
+Mục tiêu: spatial audio system — positional SFX tại world position, tích hợp CollisionEventBus choreography.
+
+| #   | Module        | Category | Status       | Dependency   |
+| --- | ------------- | -------- | ------------ | ------------ |
+| 1   | `AudioSystem` | utils    | ✅ unit-pass | —            |
+
+---
+
 ## Changelog
 
+| 2026-05-23 | Phase G hoàn thành — AudioSystem (spatial PositionalAudio, load/cache/play, tích hợp CollisionEventBus.onImpact) |
 | 2026-05-19 | Phase F mở rộng — CollisionEventBus (event bus collision → handler, force threshold, ImpactEvent dispatch cho VAT/Particle/Audio) |
 | 2026-05-18 | Phase F hoàn thành — PhysicsWorld (Rapier WASM wrap), RigidBody (dynamic/fixed/kinematic + cuboid/ball/capsule), CharacterController (collision-resolved movement + jump + gravity) |
 | 2026-05-18 | Phase E hoàn thành — InteractionSystem (Raycaster hover/click), AnimationSystem (AnimationMixer crossfade), ScrollTimeline (CatmullRomCurve3 scroll-driven camera) |
