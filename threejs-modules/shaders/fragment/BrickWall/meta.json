@@ -1,0 +1,24 @@
+{
+  "name": "BrickWall",
+  "category": "shaders/fragment",
+  "version": "1.0.0",
+  "description": "Procedural brick wall — triplanar world-space, no UV needed. Running bond pattern + mortar smoothstep + per-brick variation.",
+  "tags": ["brick", "building", "procedural", "triplanar", "surface", "world-space", "no-uv"],
+  "complexity": "medium",
+  "performance-cost": "medium",
+  "performance": "~3× texture sample equivalent per fragment (triplanar). 60fps tại geometry < 200k tris.",
+  "three-version": ">=0.174",
+  "status": "stable",
+  "dependencies": ["three"],
+  "props": [
+    { "name": "brickW",         "type": "number",                  "default": "0.40",     "description": "Brick width in world units (metres)" },
+    { "name": "brickH",         "type": "number",                  "default": "0.20",     "description": "Brick height in world units" },
+    { "name": "mortar",         "type": "number",                  "default": "0.015",    "description": "Mortar joint thickness in world units" },
+    { "name": "variation",      "type": "number",                  "default": "0.08",     "description": "Per-brick lightness variation amplitude [0-0.3]" },
+    { "name": "roughness",      "type": "number",                  "default": "0.025",    "description": "Surface micro-roughness amplitude [0-0.15]" },
+    { "name": "blendSharpness", "type": "number",                  "default": "8.0",      "description": "Triplanar blend sharpness [1-20]. Higher = crisper seams." },
+    { "name": "brickColor",     "type": "THREE.ColorRepresentation","default": "0xb86042", "description": "Brick base colour (terra cotta default)" },
+    { "name": "mortarColor",    "type": "THREE.ColorRepresentation","default": "0xc7c4be", "description": "Mortar joint colour" }
+  ],
+  "usage": "const m = new BrickWall({ brickW: 0.4, brickColor: 0xb86042 }); mesh.material = m.getMaterial()"
+}

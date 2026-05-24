@@ -28,6 +28,7 @@
 | `VATShader`          | Vertex Animation Texture — replay GPU animation từ DataTexture | vat, animation, gpu, vertex | high |
 | `DissolveShader`     | Noise-based dissolve với edge glow — spawn/despawn cinematic   | dissolve, noise, vfx, tsl   | low  |
 | `WindAnimation`      | Vertex displacement giả lập gió — triNoise3D positionNode | wind, foliage, displacement, tsl | medium |
+| `BrickWall`          | Procedural brick — triplanar world-space, no UV, running bond + mortar | brick, building, procedural, triplanar, surface | medium |
 
 ---
 
