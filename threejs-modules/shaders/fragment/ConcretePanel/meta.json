@@ -1,0 +1,24 @@
+{
+  "name": "ConcretePanel",
+  "category": "shaders/fragment",
+  "version": "1.0.0",
+  "description": "Procedural concrete panel material — triplanar world-space, no UV. Regular seam grid + 3-octave fbm pour variation + micro roughness.",
+  "tags": ["concrete", "building", "procedural", "triplanar", "surface", "world-space", "no-uv", "panel", "seam"],
+  "complexity": "medium",
+  "performance-cost": "medium",
+  "performance": "3× triNoise3D per octave per projection. 60fps tại geometry < 200k tris.",
+  "three-version": ">=0.174",
+  "status": "stable",
+  "dependencies": ["three"],
+  "props": [
+    { "name": "panelW",         "type": "number",                   "default": "1.20",   "description": "Panel width in world units (m)" },
+    { "name": "panelH",         "type": "number",                   "default": "2.40",   "description": "Panel height in world units" },
+    { "name": "seamW",          "type": "number",                   "default": "0.010",  "description": "Seam joint width in world units" },
+    { "name": "fbmAmp",         "type": "number",                   "default": "0.055",  "description": "fbm surface colour variation amplitude [0-0.2]" },
+    { "name": "roughness",      "type": "number",                   "default": "0.018",  "description": "Micro-roughness amplitude [0-0.1]" },
+    { "name": "blendSharpness", "type": "number",                   "default": "8.0",    "description": "Triplanar blend sharpness [1-20]" },
+    { "name": "baseColor",      "type": "THREE.ColorRepresentation", "default": "0xacaba4", "description": "Concrete base colour" },
+    { "name": "seamColor",      "type": "THREE.ColorRepresentation", "default": "0x706f6a", "description": "Seam groove colour" }
+  ],
+  "usage": "const m = new ConcretePanel({ panelW: 1.2, panelH: 2.4 }); mesh.material = m.getMaterial()"
+}

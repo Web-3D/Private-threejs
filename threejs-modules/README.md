@@ -29,6 +29,8 @@
 | `DissolveShader`     | Noise-based dissolve với edge glow — spawn/despawn cinematic   | dissolve, noise, vfx, tsl   | low  |
 | `WindAnimation`      | Vertex displacement giả lập gió — triNoise3D positionNode | wind, foliage, displacement, tsl | medium |
 | `BrickWall`          | Procedural brick — triplanar world-space, no UV, running bond + mortar | brick, building, procedural, triplanar, surface | medium |
+| `ConcretePanel`      | Procedural concrete panel — seam grid + 3-octave fbm variation         | concrete, building, procedural, triplanar, surface | medium |
+| `RoofTileJP`         | Procedural kawara roof tile — sdRoundBox corners + S-profile ridge      | roof, tile, japanese, procedural, triplanar, sdf   | medium |
 
 ---
 

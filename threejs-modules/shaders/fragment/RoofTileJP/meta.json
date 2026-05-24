@@ -1,0 +1,23 @@
+{
+  "name": "RoofTileJP",
+  "category": "shaders/fragment",
+  "version": "1.0.0",
+  "description": "Procedural Japanese kawara roof tile — triplanar world-space, no UV. Running bond S-profile tiles with sdRoundBox corners + cosine ridge shading.",
+  "tags": ["roof", "tile", "japanese", "kawara", "building", "procedural", "triplanar", "surface", "world-space", "no-uv", "sdf"],
+  "complexity": "medium",
+  "performance-cost": "medium",
+  "performance": "sdRoundBox2D + triNoise3D per projection. 60fps tại geometry < 200k tris.",
+  "three-version": ">=0.174",
+  "status": "stable",
+  "dependencies": ["three"],
+  "props": [
+    { "name": "tileW",         "type": "number",                   "default": "0.28",   "description": "Tile width in world units (m)" },
+    { "name": "tileH",         "type": "number",                   "default": "0.34",   "description": "Tile height along slope in world units" },
+    { "name": "gap",           "type": "number",                   "default": "0.008",  "description": "Gap between tiles" },
+    { "name": "blendSharpness","type": "number",                   "default": "8.0",    "description": "Triplanar blend sharpness [1-20]" },
+    { "name": "tileColor",     "type": "THREE.ColorRepresentation", "default": "0x383839", "description": "Tile face colour (dark charcoal kawara)" },
+    { "name": "ridgeColor",    "type": "THREE.ColorRepresentation", "default": "0x464647", "description": "Ridge highlight colour" },
+    { "name": "gapColor",      "type": "THREE.ColorRepresentation", "default": "0x1e1d1d", "description": "Gap / shadow colour" }
+  ],
+  "usage": "const m = new RoofTileJP({ tileW: 0.28, tileH: 0.34 }); mesh.material = m.getMaterial()"
+}
