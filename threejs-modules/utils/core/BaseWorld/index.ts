@@ -45,7 +45,7 @@ export abstract class BaseWorld {
     const w = canvas.clientWidth || 300
     const h = canvas.clientHeight || 200
     this.renderer = new WebGPURenderer({ canvas, antialias: true })
-    this.renderer.setPixelRatio(1)
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     this.renderer.setSize(w, h)
     this.scene = new THREE.Scene()
     this.camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000)
