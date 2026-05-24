@@ -23,6 +23,9 @@
     "format:check": "prettier --check \"**/*.{ts,json,md}\"",
     "prepare": "husky"
   },
+  "peerDependencies": {
+    "three": ">=0.174.0"
+  },
   "devDependencies": {
     "@dimforge/rapier3d-compat": "^0.19.3",
     "@eslint/js": "^9.0.0",

@@ -1,5 +1,6 @@
-# 00-Threejs — has its own git repo (Threejs-template), cloned standalone for new projects
+# Project apps — each has its own git repo, cloned standalone
 00-Threejs/
+01-Doreamon/
 
 # threejs-modules/ — tracked directly by Private-threejs (no separate repo)
 

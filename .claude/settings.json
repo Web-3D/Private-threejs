@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"c:\\\\Engine\\\\THREEJS\" add ROADMAP.md)",
+      "Bash(git -C \"c:\\\\Engine\\\\THREEJS\" commit -m \"feat: add Phase E \\(Interaction & Animation\\) + Phase F \\(Physics\\) to ROADMAP\")",
+      "Bash(git -C \"c:\\\\Docs\" add status.md .vitepress/config.ts)",
+      "Bash(git -C \"c:\\\\Docs\" commit -m \"feat: add /status dashboard + nav link — cross-repo phase overview\")",
+      "Bash(git -C \"c:\\\\Engine\\\\THREEJS\" push)",
+      "Bash(git -C \"c:\\\\Docs\" push)",
+      "Bash(git -C \"c:\\\\Docs\" pull origin master)",
+      "Read(//c/Edocs/**)",
+      "Bash(git -C \"c:\\\\Edocs\" add sync.js)",
+      "Bash(git -C \"c:\\\\Edocs\" commit -m \"chore: rename Docs → Edocs — update default DOCS_PATH\")",
+      "Bash(git -C \"c:\\\\Edocs\" push)",
+      "Bash(node -e \"const fs = require\\('fs'\\); const src = fs.readFileSync\\('c:/Engine/THREEJS/threejs-modules/utils/AnimationSystem/index.ts', 'utf8'\\); const re = /\\\\x60[^\\\\x60]{150,}\\\\x60/g; const m = src.match\\(re\\); console.log\\('matches:', m ? m.length : 0\\); if\\(m\\) m.forEach\\(s => console.log\\('len:', s.length, '|', s.slice\\(0,80\\)\\)\\)\")",
+      "Bash(node validate.js threejs-modules/utils/core/RuntimeGuard)",
+      "Bash(node validate.js threejs-modules/utils/animation/AnimationSystem)",
+      "Bash(node validate.js threejs-modules/utils/interaction/InteractionSystem)",
+      "Bash(node validate.js threejs-modules/utils/animation/ScrollTimeline)",
+      "Bash(node validate.js threejs-modules/utils/performance/LODSystem)",
+      "Bash(git commit -m ' *)",
+      "Bash(node validate.js)",
+      "Bash(node validate.js threejs-modules/utils/core/GlobalUniforms)",
+      "Bash(node validate.js threejs-modules/shaders/fragment/TriplanarMapping)",
+      "Bash(node validate-asset.js)",
+      "Bash(\\\\[\" c:/Engine/THREEJS/validate.js)",
+      "Bash(grep -n \"inline\\\\|150,\\\\|shader.*string\\\\|`\\\\[\" c:/Engine/THREEJS/validate.js)",
+      "Bash(dir c:\\\\Engine\\\\THREEJS\\\\threejs-modules\\\\utils /b)",
+      "Bash(node -e \"const pkg = require\\('./threejs-modules/package.json'\\); console.log\\(pkg.devDependencies['@dimforge/rapier3d-compat']\\)\")",
+      "Bash(node -e \"const pkg = require\\('./00-Threejs/package.json'\\); console.log\\(pkg.dependencies['@dimforge/rapier3d-compat']\\)\")",
+      "Bash(node -e \"const pkg = require\\('c:/Engine/THREEJS/threejs-modules/package.json'\\); console.log\\('threejs-modules:', pkg.devDependencies['@dimforge/rapier3d-compat']\\)\")",
+      "Bash(node -e \"const pkg = require\\('c:/Engine/THREEJS/00-Threejs/package.json'\\); console.log\\('00-Threejs:', pkg.dependencies['@dimforge/rapier3d-compat']\\)\")",
+      "Bash(node validate.js threejs-modules/utils/physics/PhysicsWorld)",
+      "Bash(node validate.js threejs-modules/utils/physics/RigidBody)",
+      "Bash(node validate.js threejs-modules/utils/physics/CharacterController)",
+      "Bash(node validate.js threejs-modules/utils/physics/CollisionEventBus)"
+    ],
+    "additionalDirectories": [
+      "c:\\Edocs"
+    ]
+  }
+}

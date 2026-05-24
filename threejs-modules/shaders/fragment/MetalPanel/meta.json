@@ -1,0 +1,10 @@
+{
+  "name": "MetalPanel",
+  "category": "shaders",
+  "version": "1.0.0",
+  "description": "Triplanar corrugated metal panel shader — horizontal ridges with sinusoidal profile, panel seam, galvanized per-panel variation. No UV required.",
+  "dependencies": ["three"],
+  "tags": ["metal", "corrugated", "ridge", "panel", "industrial", "surface", "triplanar", "world-space", "fragment", "tsl"],
+  "three-version": ">=0.174",
+  "status": "stable"
+}

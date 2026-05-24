@@ -15,3 +15,6 @@
 | [future-shaders.md](future-shaders.md)         | GlassShader · DissolveShader · OutlineShader           | Bắt đầu tích hợp modules vào scene thực tế           |
 | [future-effects.md](future-effects.md)         | FireSystem · FluidSystem · TrailSystem                 | Có scene cần effect (FluidSystem: cần WebGPU compute) |
 | [future-postprocessing.md](future-postprocessing.md) | SSAOPass · MotionBlurPass                        | Scene có geometry phức tạp hoặc object di chuyển nhanh |
+| [building-iq-techniques.md](building-iq-techniques.md) | IQ math tricks cho building (palette, periodic windows, fBm height) | Khi building system cần visual phong phú hơn |
+| [building-sdf-phases.md](building-sdf-phases.md)   | SDF ray march cho từng building component — Lab preview + bake pipeline | Khi bắt đầu Phase 1 (column/beam) |
+| [lab-base-template.md](lab-base-template.md)       | LabBase abstract class — extract từ BuildingLab khi có ≥3 Lab | Khi có TerrainLab hoặc VegetationLab |

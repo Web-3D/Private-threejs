@@ -1,0 +1,10 @@
+{
+  "name": "Weathering",
+  "category": "shaders",
+  "version": "1.0.0",
+  "description": "Triplanar layered weathering shader — 4 additive layers: moss (low fbm), dirt streak (elongated fbm), rust patches, rain stain. Each layer independently controlled by amount uniforms.",
+  "dependencies": ["three"],
+  "tags": ["weathering", "moss", "rust", "dirt", "stain", "aging", "surface", "triplanar", "world-space", "fragment", "tsl"],
+  "three-version": ">=0.174",
+  "status": "stable"
+}

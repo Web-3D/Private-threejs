@@ -1,0 +1,10 @@
+{
+  "name": "WoodPlank",
+  "category": "shaders",
+  "version": "1.0.0",
+  "description": "Triplanar wood plank shader — horizontal row seam, directional grain noise, end-grain darkening, per-row hue variation. No UV required.",
+  "dependencies": ["three"],
+  "tags": ["wood", "plank", "grain", "surface", "triplanar", "world-space", "fragment", "tsl"],
+  "three-version": ">=0.174",
+  "status": "stable"
+}

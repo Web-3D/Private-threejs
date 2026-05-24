@@ -31,6 +31,9 @@
 | `BrickWall`          | Procedural brick — triplanar world-space, no UV, running bond + mortar | brick, building, procedural, triplanar, surface | medium |
 | `ConcretePanel`      | Procedural concrete panel — seam grid + 3-octave fbm variation         | concrete, building, procedural, triplanar, surface | medium |
 | `RoofTileJP`         | Procedural kawara roof tile — sdRoundBox corners + S-profile ridge      | roof, tile, japanese, procedural, triplanar, sdf   | medium |
+| `WoodPlank`          | Procedural wood plank — row seam, directional grain, end-grain darkening | wood, plank, grain, surface, triplanar, world-space | medium |
+| `MetalPanel`         | Procedural corrugated metal — horizontal ridges + panel seam, galvanized variation | metal, corrugated, ridge, industrial, surface, triplanar | medium |
+| `Weathering`         | Layered weathering overlay — moss, dirt streak, rust, rain stain (4 independent amounts) | weathering, moss, rust, dirt, aging, surface, triplanar | medium |
 
 ---
 
