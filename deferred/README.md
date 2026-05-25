@@ -1,20 +1,74 @@
-# deferred/ — Tính năng hoãn lại
+# Deferred — Tính năng đã nghiên cứu, chưa implement
 
-> Mỗi file = 1 nhóm tính năng đã nghiên cứu nhưng chưa implement vì over-engineered với scale hiện tại.
-> Đọc file tương ứng trước khi đề xuất implement bất kỳ tính năng nào ở đây.
+> Đọc file này trước khi đề xuất tính năng mới — tránh nghiên cứu lại cái đã có.
+> Mỗi subdirectory = 1 domain. Mỗi file = 1 quyết định cụ thể + điều kiện revisit.
 
-| File                                               | Tính năng                                        | Revisit khi                                  |
-| -------------------------------------------------- | ------------------------------------------------ | -------------------------------------------- |
-| [turborepo-nx.md](turborepo-nx.md)                 | Workspace task orchestration (build cache local) | 5+ projects, build time > 5 phút             |
-| [release-workflow.md](release-workflow.md)         | SemVer + CI/CD — publish npm + auto-deploy       | Có collaborator hoặc muốn publish npm        |
-| [rag-knowledge.md](rag-knowledge.md)               | RAG vector search cho AI knowledge base          | 15+ modules hoặc 3+ projects với history dài |
-| [asset-tag-search.md](asset-tag-search.md)         | Tag index ngược + search-assets.js script        | 30+ asset trong REGISTRY.json                |
-| [memory-vector-search.md](memory-vector-search.md) | Vector search (Palinode) cho AI memory zone      | 50+ memory files hoặc search chậm            |
-| [character-base-variant.md](character-base-variant.md) | Character Base + Variant Config pipeline     | Phase C — sau Phase A + B xong               |
-| [threejs-modules-workspace-package.md](threejs-modules-workspace-package.md) | Nâng cấp threejs-modules thành pnpm workspace package | ~15+ modules hoặc có project thứ 2 dùng chung |
-| [future-shaders.md](future-shaders.md)         | GlassShader · DissolveShader · OutlineShader           | Bắt đầu tích hợp modules vào scene thực tế           |
-| [future-effects.md](future-effects.md)         | FireSystem · FluidSystem · TrailSystem                 | Có scene cần effect (FluidSystem: cần WebGPU compute) |
-| [future-postprocessing.md](future-postprocessing.md) | SSAOPass · MotionBlurPass                        | Scene có geometry phức tạp hoặc object di chuyển nhanh |
-| [building-iq-techniques.md](building-iq-techniques.md) | IQ math tricks cho building (palette, periodic windows, fBm height) | Khi building system cần visual phong phú hơn |
-| [building-sdf-phases.md](building-sdf-phases.md)   | SDF ray march cho từng building component — Lab preview + bake pipeline | Khi bắt đầu Phase 1 (column/beam) |
-| [lab-base-template.md](lab-base-template.md)       | LabBase abstract class — extract từ BuildingLab khi có ≥3 Lab | Khi có TerrainLab hoặc VegetationLab |
+---
+
+## Cấu trúc
+
+```
+deferred/
+├── README.md       ← file này — index tổng
+├── geometry/       ← mesh, SDF, procedural shape, building techniques
+├── rendering/      ← shader, material, effect, post-processing
+├── systems/        ← kiến trúc, data pipeline, abstract patterns
+├── tooling/        ← build system, CI/CD, asset search, workspace
+└── ai/             ← AI knowledge base, memory, RAG
+```
+
+---
+
+## geometry/
+
+| File | Tính năng | Revisit khi |
+|---|---|---|
+| [building-iq-techniques.md](geometry/building-iq-techniques.md) | IQ math tricks cho building: palette, periodic windows, fBm height | Building system cần visual phong phú hơn |
+| [building-sdf-phases.md](geometry/building-sdf-phases.md) | SDF ray march per component → bake pipeline | Bắt đầu Phase 1 SDF (column/beam) — xem `01-Doraemon/deferred/geometry/` |
+
+---
+
+## rendering/
+
+| File | Tính năng | Revisit khi |
+|---|---|---|
+| [future-shaders.md](rendering/future-shaders.md) | GlassShader · DissolveShader · OutlineShader | Có scene thực tế cần các effect này |
+| [future-effects.md](rendering/future-effects.md) | FireSystem · FluidSystem · TrailSystem | Scene cần particle effect (FluidSystem: cần WebGPU compute) |
+| [future-postprocessing.md](rendering/future-postprocessing.md) | SSAOPass · MotionBlurPass | Scene geometry phức tạp hoặc object di chuyển nhanh |
+
+---
+
+## systems/
+
+| File | Tính năng | Revisit khi |
+|---|---|---|
+| [character-base-variant.md](systems/character-base-variant.md) | Character Base + Variant Config pipeline | Phase C — sau Phase A + B xong |
+| [lab-base-template.md](systems/lab-base-template.md) | LabBase abstract class — extract từ BuildingLab | Khi có ≥3 Lab (TerrainLab, VegetationLab...) |
+| [threejs-modules-workspace-package.md](systems/threejs-modules-workspace-package.md) | Nâng cấp threejs-modules thành pnpm workspace package | ~15+ modules hoặc có project thứ 2 dùng chung |
+
+---
+
+## tooling/
+
+| File | Tính năng | Revisit khi |
+|---|---|---|
+| [turborepo-nx.md](tooling/turborepo-nx.md) | Workspace task orchestration (build cache) | 5+ projects, build time > 5 phút |
+| [release-workflow.md](tooling/release-workflow.md) | SemVer + CI/CD — publish npm + auto-deploy | Có collaborator hoặc muốn publish npm |
+| [asset-tag-search.md](tooling/asset-tag-search.md) | Tag index ngược + search-assets.js script | 30+ asset trong REGISTRY.json |
+
+---
+
+## ai/
+
+| File | Tính năng | Revisit khi |
+|---|---|---|
+| [rag-knowledge.md](ai/rag-knowledge.md) | RAG vector search cho AI knowledge base | 15+ modules hoặc 3+ projects với history dài |
+| [memory-vector-search.md](ai/memory-vector-search.md) | Vector search (Palinode) cho AI memory zone | 50+ memory files hoặc search chậm |
+
+---
+
+## Quy tắc
+
+- **Thêm file mới** → đặt vào đúng subdirectory + thêm dòng vào bảng tương ứng.
+- **Implement xong** → xóa khỏi deferred, ghi vào ROADMAP/CHANGELOG.
+- **Quyết định đổi** → cập nhật file + ghi rõ ngày + lý do đổi.
