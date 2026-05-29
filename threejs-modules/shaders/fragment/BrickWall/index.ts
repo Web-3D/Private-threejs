@@ -283,12 +283,13 @@ export class BrickWall {
         float(0), float(0),
       ).sub(float(0.5)).mul(uRoughness)
 
-      // Brick: base color + per-brick + roughness; mortar: flat
+      // Brick: base color + per-brick + roughness
       const brickFinal  = uBrickColor.add(vec3(cellHash.add(roughNoise)))
-      const mortarFinal = uMortarColor
+      // Color bleed: rãnh vữa hút màu đỏ gạch lân cận (radiosity giả) → ấm, liền khối, sâu hơn
+      const mortarFinal = mix(uMortarColor, uBrickColor, float(0.35))
 
-      // AO: darken near joints
-      const ao     = isBrick.mul(float(0.12)).add(float(0.88))
+      // AO sâu hơn ở rãnh (contact occlusion): mặt gạch sáng (1.0) → đáy rãnh tối (0.62)
+      const ao     = isBrick.mul(float(0.38)).add(float(0.62))
       const blended = mix(mortarFinal, brickFinal, isBrick).mul(ao)
       return blended
     }

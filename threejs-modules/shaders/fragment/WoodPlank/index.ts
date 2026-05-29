@@ -15,14 +15,18 @@
 import * as THREE from 'three'
 import { NodeMaterial } from 'three/webgpu'
 import {
+  faceDirection,
   float,
   min,
   mix,
+  normalView,
   normalWorld,
+  positionView,
   positionWorld,
   smoothstep,
   triNoise3D,
   uniform,
+  vec2,
   vec3,
 } from 'three/tsl'
 import type { ShaderNodeObject } from 'three/tsl'
@@ -49,12 +53,16 @@ export interface WoodPlankOptions {
   darkColor?: THREE.ColorRepresentation
   /** Seam crack colour. Default: near-black */
   seamColor?: THREE.ColorRepresentation
+  /** Bump intensity của seam ván (dùng getNormalNode). Default: 0.5 */
+  bumpScale?: number
 }
 
 // ── WoodPlank ─────────────────────────────────────────────────────────────────
 
 export class WoodPlank {
   private material: NodeMaterial | null = null
+  private normalNode: TSLNode | null = null
+  private roughnessNode: TSLNode | null = null
   private isDisposed = false
 
   private readonly uScale:     ReturnType<typeof uniform>
@@ -64,6 +72,7 @@ export class WoodPlank {
   private readonly uWoodColor: ReturnType<typeof uniform>
   private readonly uDarkColor: ReturnType<typeof uniform>
   private readonly uSeamColor: ReturnType<typeof uniform>
+  private readonly uBumpScale: ReturnType<typeof uniform>
 
   constructor(opts: WoodPlankOptions = {}) {
     this.uScale     = uniform(opts.scale    ?? 1.0)
@@ -73,6 +82,7 @@ export class WoodPlank {
     this.uWoodColor = uniform(new THREE.Color(opts.woodColor ?? 0xb88548))
     this.uDarkColor = uniform(new THREE.Color(opts.darkColor ?? 0x61361e))
     this.uSeamColor = uniform(new THREE.Color(opts.seamColor ?? 0x2e1f13))
+    this.uBumpScale = uniform(opts.bumpScale ?? 0.5)
 
     const mat = new NodeMaterial()
     mat.colorNode = this._buildColorNode()
@@ -122,16 +132,68 @@ export class WoodPlank {
     return this.material
   }
 
+  /** Normal node — bump từ seam ván (Mikkelsen screen-space). */
+  getNormalNode(): NodeMaterial['normalNode'] {
+    if (!this.material) throw new Error('WoodPlank: đã dispose')
+    if (this.normalNode === null) this.normalNode = this._perturbNormal(this._plankMask())
+    return this.normalNode as NodeMaterial['normalNode']
+  }
+
+  /** Roughness node — seam nhám, mặt ván mịn hơn + grain. */
+  getRoughnessNode(): TSLNode {
+    if (!this.material) throw new Error('WoodPlank: đã dispose')
+    return this.roughnessNode ?? (this.roughnessNode = this._buildRoughnessNode())
+  }
+
   // ── Dispose ───────────────────────────────────────────────────────────────
 
   dispose(): void {
     if (this.isDisposed) return
     this.material?.dispose()
     this.material = null
+    this.normalNode = null
+    this.roughnessNode = null
     this.isDisposed = true
   }
 
   // ── TSL node graph ────────────────────────────────────────────────────────
+
+  // Plank mask blend triplanar: seam ngang (0, lõm) → mặt ván (1). Dùng cho normal + roughness.
+  private _plankMask(): TSLNode {
+    const { uScale, uPlankH, uSeamFrac } = this
+    const bevel = (pv: TSLNode): TSLNode => {
+      const rowLoc = pv.div(uPlankH.mul(float(1).add(uSeamFrac))).fract()
+      const seamThr = float(1).sub(uSeamFrac)
+      const d = min(rowLoc, seamThr.sub(rowLoc)) // >0 trong ván, <0 trong seam
+      return smoothstep(float(0), uSeamFrac.mul(float(0.8)), d)
+    }
+    const hY = bevel(positionWorld.y.mul(uScale)) // wall: seam ngang theo Y
+    const hZ = bevel(positionWorld.z.mul(uScale)) // floor/roof: theo Z
+    const sharp = normalWorld.abs().pow(vec3(8.0))
+    const w = sharp.div(sharp.dot(vec3(1.0)).max(float(0.001)))
+    return hY.mul(w.x).add(hZ.mul(w.y)).add(hY.mul(w.z)) as TSLNode
+  }
+
+  private _buildRoughnessNode(): TSLNode {
+    const grain = triNoise3D(positionWorld.mul(this.uScale).mul(float(8.0)), float(0), float(0))
+      .sub(float(0.5))
+      .mul(float(0.14))
+    return mix(float(0.9), float(0.7), this._plankMask())
+      .add(grain)
+      .clamp(float(0.5), float(1.0)) as TSLNode
+  }
+
+  // Port three BumpMapNode.perturbNormalArb (không export): normal view-space từ screen-space dH.
+  private _perturbNormal(h: TSLNode): TSLNode {
+    const dHdxy = vec2(h.dFdx(), h.dFdy()).mul(this.uBumpScale)
+    const sigmaX = positionView.dFdx().normalize()
+    const sigmaY = positionView.dFdy().normalize()
+    const r1 = sigmaY.cross(normalView)
+    const r2 = normalView.cross(sigmaX)
+    const fDet = sigmaX.dot(r1).mul(faceDirection)
+    const vGrad = fDet.sign().mul(dHdxy.x.mul(r1).add(dHdxy.y.mul(r2)))
+    return fDet.abs().mul(normalView).sub(vGrad).normalize() as TSLNode
+  }
 
   private _buildColorNode(): TSLNode {
     const { uScale } = this

@@ -15,14 +15,18 @@
 import * as THREE from 'three'
 import { NodeMaterial } from 'three/webgpu'
 import {
+  faceDirection,
   float,
   min,
   mix,
+  normalView,
   normalWorld,
+  positionView,
   positionWorld,
   smoothstep,
   triNoise3D,
   uniform,
+  vec2,
   vec3,
 } from 'three/tsl'
 import type { ShaderNodeObject } from 'three/tsl'
@@ -49,12 +53,16 @@ export interface ConcretePanelOptions {
   baseColor?: THREE.ColorRepresentation
   /** Seam groove colour. Default: 0x706f6a (dark grey) */
   seamColor?: THREE.ColorRepresentation
+  /** Bump intensity của seam (dùng getNormalNode). Default: 0.4 */
+  bumpScale?: number
 }
 
 // ── ConcretePanel class ───────────────────────────────────────────────────────
 
 export class ConcretePanel {
   private material: NodeMaterial | null = null
+  private normalNode: TSLNode | null = null
+  private roughnessNode: TSLNode | null = null
   private isDisposed = false
 
   private readonly uPanelW: ReturnType<typeof uniform>
@@ -65,6 +73,7 @@ export class ConcretePanel {
   private readonly uBlend: ReturnType<typeof uniform>
   private readonly uBaseColor: ReturnType<typeof uniform>
   private readonly uSeamColor: ReturnType<typeof uniform>
+  private readonly uBumpScale: ReturnType<typeof uniform>
 
   constructor(opts: ConcretePanelOptions = {}) {
     this.uPanelW    = uniform(opts.panelW         ?? 1.20)
@@ -75,6 +84,7 @@ export class ConcretePanel {
     this.uBlend     = uniform(opts.blendSharpness ?? 8.0)
     this.uBaseColor = uniform(new THREE.Color(opts.baseColor ?? 0xacaba4))
     this.uSeamColor = uniform(new THREE.Color(opts.seamColor ?? 0x706f6a))
+    this.uBumpScale = uniform(opts.bumpScale ?? 0.4)
 
     const mat = new NodeMaterial()
     mat.colorNode = this._buildColorNode()
@@ -136,14 +146,68 @@ export class ConcretePanel {
     return this.material
   }
 
+  /** Normal node — bump từ seam (Mikkelsen screen-space). */
+  getNormalNode(): NodeMaterial['normalNode'] {
+    if (!this.material) throw new Error('ConcretePanel: already disposed')
+    if (this.normalNode === null) this.normalNode = this._perturbNormal(this._panelMask())
+    return this.normalNode as NodeMaterial['normalNode']
+  }
+
+  /** Roughness node — concrete rất nhám, seam nhám hơn + grain. */
+  getRoughnessNode(): TSLNode {
+    if (!this.material) throw new Error('ConcretePanel: already disposed')
+    return this.roughnessNode ?? (this.roughnessNode = this._buildRoughnessNode())
+  }
+
   dispose(): void {
     if (this.isDisposed) return
     this.material?.dispose()
     this.material = null
+    this.normalNode = null
+    this.roughnessNode = null
     this.isDisposed = true
   }
 
   // ── Private ────────────────────────────────────────────────────────────────
+
+  // Panel mask blend triplanar: seam (0, lõm/nhám) → mặt panel (1). Dùng cho normal + roughness.
+  private _panelMask(): TSLNode {
+    const { uPanelW, uPanelH, uSeamW, uBlend } = this
+    const bevel = (px: TSLNode, py: TSLNode): TSLNode => {
+      const localU = px.div(uPanelW).fract()
+      const localV = py.div(uPanelH).fract()
+      const minDist = min(min(localU, localU.oneMinus()), min(localV, localV.oneMinus()))
+      const bevelW = uSeamW.div(uPanelW).mul(float(4)) // rãnh vát quanh seam
+      return smoothstep(float(0), bevelW, minDist)
+    }
+    const hXY = bevel(positionWorld.x, positionWorld.y)
+    const hZY = bevel(positionWorld.z, positionWorld.y)
+    const hXZ = bevel(positionWorld.x, positionWorld.z)
+    const sharp = normalWorld.abs().pow(vec3(uBlend))
+    const w = sharp.div(sharp.dot(vec3(1.0)).max(float(0.001)))
+    return hZY.mul(w.x).add(hXZ.mul(w.y)).add(hXY.mul(w.z)) as TSLNode
+  }
+
+  private _buildRoughnessNode(): TSLNode {
+    const grain = triNoise3D(positionWorld.mul(float(10.0)), float(0), float(0))
+      .sub(float(0.5))
+      .mul(float(0.12))
+    return mix(float(1.0), float(0.9), this._panelMask())
+      .add(grain)
+      .clamp(float(0.6), float(1.0)) as TSLNode
+  }
+
+  // Port three BumpMapNode.perturbNormalArb (không export): normal view-space từ screen-space dH.
+  private _perturbNormal(h: TSLNode): TSLNode {
+    const dHdxy = vec2(h.dFdx(), h.dFdy()).mul(this.uBumpScale)
+    const sigmaX = positionView.dFdx().normalize()
+    const sigmaY = positionView.dFdy().normalize()
+    const r1 = sigmaY.cross(normalView)
+    const r2 = normalView.cross(sigmaX)
+    const fDet = sigmaX.dot(r1).mul(faceDirection)
+    const vGrad = fDet.sign().mul(dHdxy.x.mul(r1).add(dHdxy.y.mul(r2)))
+    return fDet.abs().mul(normalView).sub(vGrad).normalize() as TSLNode
+  }
 
   private _buildColorNode(): TSLNode {
     const {
@@ -195,8 +259,8 @@ export class ConcretePanel {
       const panelCol = uBaseColor.add(vec3(fbmShift.add(rough)))
       const blended  = mix(uSeamColor, panelCol, isPanel)
 
-      // AO: slightly darken at seam edges
-      const ao = isPanel.mul(float(0.10)).add(float(0.90))
+      // AO sâu hơn ở seam (contact occlusion) → tạo độ sâu rõ
+      const ao = isPanel.mul(float(0.28)).add(float(0.72))
       return blended.mul(ao)
     }
 

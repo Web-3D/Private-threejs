@@ -14,14 +14,18 @@
 import * as THREE from 'three'
 import { NodeMaterial } from 'three/webgpu'
 import {
+  faceDirection,
   float,
   mix,
   min,
+  normalView,
   normalWorld,
+  positionView,
   positionWorld,
   smoothstep,
   triNoise3D,
   uniform,
+  vec2,
   vec3,
 } from 'three/tsl'
 import type { ShaderNodeObject } from 'three/tsl'
@@ -52,12 +56,16 @@ export interface MetalPanelOptions {
   darkColor?: THREE.ColorRepresentation
   /** Panel seam color. Default: very dark */
   seamColor?: THREE.ColorRepresentation
+  /** Bump intensity của gân tôn (dùng getNormalNode). Default: 0.5 */
+  bumpScale?: number
 }
 
 // ── MetalPanel ────────────────────────────────────────────────────────────────
 
 export class MetalPanel {
   private material: NodeMaterial | null = null
+  private normalNode: TSLNode | null = null
+  private roughnessNode: TSLNode | null = null
   private isDisposed = false
 
   private readonly uScale:          ReturnType<typeof uniform>
@@ -69,6 +77,7 @@ export class MetalPanel {
   private readonly uMetalColor:     ReturnType<typeof uniform>
   private readonly uDarkColor:      ReturnType<typeof uniform>
   private readonly uSeamColor:      ReturnType<typeof uniform>
+  private readonly uBumpScale:      ReturnType<typeof uniform>
 
   constructor(opts: MetalPanelOptions = {}) {
     this.uScale          = uniform(opts.scale          ?? 1.0)
@@ -80,6 +89,7 @@ export class MetalPanel {
     this.uMetalColor     = uniform(new THREE.Color(opts.metalColor ?? 0xb9bdbc))
     this.uDarkColor      = uniform(new THREE.Color(opts.darkColor  ?? 0x616161))
     this.uSeamColor      = uniform(new THREE.Color(opts.seamColor  ?? 0x383838))
+    this.uBumpScale      = uniform(opts.bumpScale ?? 0.5)
 
     const mat = new NodeMaterial()
     mat.colorNode = this._buildColorNode()
@@ -122,14 +132,69 @@ export class MetalPanel {
     return this.material
   }
 
+  /** Normal node — bump từ gân tôn (corrugation profile, Mikkelsen screen-space). */
+  getNormalNode(): NodeMaterial['normalNode'] {
+    if (!this.material) throw new Error('MetalPanel: đã dispose')
+    if (this.normalNode === null) this.normalNode = this._perturbNormal(this._ridgeHeight())
+    return this.normalNode as NodeMaterial['normalNode']
+  }
+
+  /** Roughness node — đỉnh gân bóng hơn, rãnh nhám hơn + grain (kim loại). */
+  getRoughnessNode(): TSLNode {
+    if (!this.material) throw new Error('MetalPanel: đã dispose')
+    return this.roughnessNode ?? (this.roughnessNode = this._buildRoughnessNode())
+  }
+
   dispose(): void {
     if (this.isDisposed) return
     this.material?.dispose()
     this.material = null
+    this.normalNode = null
+    this.roughnessNode = null
     this.isDisposed = true
   }
 
   // ── TSL node graph ────────────────────────────────────────────────────────
+
+  // Ridge height blend triplanar: gân tôn (profile crown) — relief chính của tôn. Cho normal+roughness.
+  private _ridgeHeight(): TSLNode {
+    const { uScale, uRidgeH, uRidgeProfile } = this
+    const ridge = (pv: TSLNode): TSLNode => {
+      const ridgeLoc = pv.div(uRidgeH).fract()
+      const t = min(ridgeLoc.div(uRidgeProfile), float(1))
+      const crown = smoothstep(float(0), float(0.5), t)
+        .mul(smoothstep(float(1), float(0.5), t))
+        .mul(float(2))
+      const inCrown = smoothstep(float(0), float(0.05), uRidgeProfile.sub(ridgeLoc))
+      return crown.mul(inCrown)
+    }
+    const ridgeY = ridge(positionWorld.y.mul(uScale)) // wall: ridges repeat theo Y
+    const ridgeZ = ridge(positionWorld.z.mul(uScale)) // floor/roof: theo Z
+    const sharp = normalWorld.abs().pow(vec3(8.0))
+    const w = sharp.div(sharp.dot(vec3(1.0)).max(float(0.001)))
+    return ridgeY.mul(w.x).add(ridgeZ.mul(w.y)).add(ridgeY.mul(w.z)) as TSLNode
+  }
+
+  private _buildRoughnessNode(): TSLNode {
+    const grain = triNoise3D(positionWorld.mul(this.uScale).mul(float(6.0)), float(0), float(0))
+      .sub(float(0.5))
+      .mul(float(0.1))
+    return mix(float(0.55), float(0.32), this._ridgeHeight())
+      .add(grain)
+      .clamp(float(0.25), float(0.8)) as TSLNode
+  }
+
+  // Port three BumpMapNode.perturbNormalArb (không export): normal view-space từ screen-space dH.
+  private _perturbNormal(h: TSLNode): TSLNode {
+    const dHdxy = vec2(h.dFdx(), h.dFdy()).mul(this.uBumpScale)
+    const sigmaX = positionView.dFdx().normalize()
+    const sigmaY = positionView.dFdy().normalize()
+    const r1 = sigmaY.cross(normalView)
+    const r2 = normalView.cross(sigmaX)
+    const fDet = sigmaX.dot(r1).mul(faceDirection)
+    const vGrad = fDet.sign().mul(dHdxy.x.mul(r1).add(dHdxy.y.mul(r2)))
+    return fDet.abs().mul(normalView).sub(vGrad).normalize() as TSLNode
+  }
 
   private _buildColorNode(): TSLNode {
     const { uScale } = this
