@@ -16,8 +16,10 @@ import { NodeMaterial } from 'three/webgpu'
 import {
   faceDirection,
   float,
+  int,
   mix,
   min,
+  mx_fractal_noise_float,
   normalView,
   normalWorld,
   positionView,
@@ -58,6 +60,16 @@ export interface MetalPanelOptions {
   seamColor?: THREE.ColorRepresentation
   /** Bump intensity của gân tôn (dùng getNormalNode). Default: 0.5 */
   bumpScale?: number
+  /** Rỉ/bẩn loang — độ mạnh đổi tông mảng (nâu-cam) [0–1]. Default: 0.35 */
+  mottle?: number
+  /** Tần số rỉ loang (1/m). Nhỏ = mảng to. Default: 0.35 */
+  mottleScale?: number
+  /** Bóng đổ trong rãnh dưới gân — độ sâu [0–1]. Default: 0.25 */
+  grooveShadow?: number
+  /** Xước — độ đậm vệt xước dọc [0–1]. Default: 0.3 */
+  scratch?: number
+  /** Tần số xước (1/m). Cao = xước dày. Default: 4.0 */
+  scratchScale?: number
 }
 
 // ── MetalPanel ────────────────────────────────────────────────────────────────
@@ -78,6 +90,11 @@ export class MetalPanel {
   private readonly uDarkColor:      ReturnType<typeof uniform>
   private readonly uSeamColor:      ReturnType<typeof uniform>
   private readonly uBumpScale:      ReturnType<typeof uniform>
+  private readonly uMottle:         ReturnType<typeof uniform>
+  private readonly uMottleScale:    ReturnType<typeof uniform>
+  private readonly uGrooveShadow:   ReturnType<typeof uniform>
+  private readonly uScratch:        ReturnType<typeof uniform>
+  private readonly uScratchScale:   ReturnType<typeof uniform>
 
   constructor(opts: MetalPanelOptions = {}) {
     this.uScale          = uniform(opts.scale          ?? 1.0)
@@ -90,6 +107,11 @@ export class MetalPanel {
     this.uDarkColor      = uniform(new THREE.Color(opts.darkColor  ?? 0x616161))
     this.uSeamColor      = uniform(new THREE.Color(opts.seamColor  ?? 0x383838))
     this.uBumpScale      = uniform(opts.bumpScale ?? 0.5)
+    this.uMottle       = uniform(opts.mottle       ?? 0.35)
+    this.uMottleScale  = uniform(opts.mottleScale  ?? 0.35)
+    this.uGrooveShadow = uniform(opts.grooveShadow ?? 0.25)
+    this.uScratch      = uniform(opts.scratch      ?? 0.3)
+    this.uScratchScale = uniform(opts.scratchScale ?? 4.0)
 
     const mat = new NodeMaterial()
     mat.colorNode = this._buildColorNode()
@@ -213,7 +235,27 @@ export class MetalPanel {
     const wSum  = sharp.dot(vec3(1.0)).max(float(0.001))
     const w     = sharp.div(wSum)
 
-    return colZY.mul(w.x).add(colXZ.mul(w.y)).add(colXY.mul(w.z)) as TSLNode
+    const blended = colZY.mul(w.x).add(colXZ.mul(w.y)).add(colXY.mul(w.z))
+
+    // Rỉ/bẩn loang 2 lớp fbm: đổi tông nâu-cam (rỉ) ↔ kim loại sạch → mảng loang qua nhiều tấm.
+    const nBig = mx_fractal_noise_float(positionWorld.mul(this.uMottleScale), int(4), float(2.0), float(0.5))
+    const nSmall = mx_fractal_noise_float(
+      positionWorld.mul(this.uMottleScale.mul(float(3.7))), int(3), float(2.0), float(0.55))
+    const tm = nBig.add(nSmall.mul(float(0.5))).mul(float(0.5)).add(float(0.5)).clamp(float(0), float(1))
+    const dark = blended.mul(vec3(0.62, 0.5, 0.42)) // rỉ nâu-cam
+    const lite = blended.mul(vec3(1.05, 1.05, 1.07)) // kim loại sạch hơi lạnh
+    const rusted = mix(dark, lite, tm)
+    const weathered = mix(blended, rusted, this.uMottle.clamp(float(0), float(1)))
+
+    // Xước DỌC: level-set fbm dị hướng (ngang nhanh, dọc chậm → vệt chạy dọc); màu = scuff đậm hơn (×0.8).
+    const sp = positionWorld.mul(vec3(this.uScratchScale, this.uScratchScale.mul(float(0.25)), this.uScratchScale))
+    const sn = mx_fractal_noise_float(sp, int(3), float(2.2), float(0.5))
+    const sLine = float(1).sub(smoothstep(float(0), float(0.025), sn.abs()))
+    const sCluster = smoothstep(float(0.45), float(0.8),
+      mx_fractal_noise_float(positionWorld.mul(this.uScratchScale.mul(float(0.3))), int(2), float(2.0), float(0.5))
+        .mul(float(0.5)).add(float(0.5)))
+    const scratch = sLine.mul(sCluster).mul(this.uScratch.clamp(float(0), float(1)))
+    return mix(weathered, weathered.mul(float(0.8)), scratch) as TSLNode
   }
 
   /**
@@ -223,7 +265,7 @@ export class MetalPanel {
   private _metalFace(pu: TSLNode, pv: TSLNode): TSLNode {
     const {
       uRidgeH, uRidgesPerPanel, uSeamFrac, uRidgeProfile,
-      uVariation, uMetalColor, uDarkColor, uSeamColor,
+      uVariation, uMetalColor, uDarkColor, uSeamColor, uGrooveShadow,
     } = this
 
     // ── Ridges (repeat along pv) ─────────────────────────────────────────────
@@ -279,7 +321,12 @@ export class MetalPanel {
     // Add highlight + crease darkening
     const litCol = ridgeCol.add(vec3(highlight)).mul(float(0.7).add(crease.mul(float(0.3))))
 
-    // Seam override
-    return mix(litCol, uSeamColor, isSeam) as TSLNode
+    // Bóng đổ dưới gân: dải tối ngay sau đỉnh crown (ridgeLoc > ridgeProfile) → tan dần xuống đáy rãnh.
+    const underRidge = smoothstep(uRidgeProfile, uRidgeProfile.add(float(0.06)), ridgeLoc)
+      .mul(float(1).sub(smoothstep(uRidgeProfile.add(float(0.06)), float(1), ridgeLoc)))
+    const grooveAO = float(1).sub(underRidge.mul(uGrooveShadow))
+
+    // Seam override + bóng gân
+    return mix(litCol.mul(grooveAO), uSeamColor, isSeam) as TSLNode
   }
 }

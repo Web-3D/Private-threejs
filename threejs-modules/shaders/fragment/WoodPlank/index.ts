@@ -17,13 +17,16 @@ import { NodeMaterial } from 'three/webgpu'
 import {
   faceDirection,
   float,
+  int,
   min,
   mix,
+  mx_fractal_noise_float,
   normalView,
   normalWorld,
   positionView,
   positionWorld,
   smoothstep,
+  step,
   triNoise3D,
   uniform,
   vec2,
@@ -43,6 +46,8 @@ export interface WoodPlankOptions {
   scale?: number
   /** Plank height in metres (world space / scale). Default: 0.14 */
   plankH?: number
+  /** Plank length in scaled units (butt-joint spacing). Lớn = ván dài, ít mối nối dọc. Default: 4.0 */
+  plankLen?: number
   /** Seam gap as fraction of plankH. Default: 0.08 (8%) */
   seamFrac?: number
   /** Grain noise amplitude (0–1). Default: 0.22 */
@@ -51,10 +56,22 @@ export interface WoodPlankOptions {
   woodColor?: THREE.ColorRepresentation
   /** Dark vein / end-grain colour. Default: dark walnut */
   darkColor?: THREE.ColorRepresentation
-  /** Seam crack colour. Default: near-black */
-  seamColor?: THREE.ColorRepresentation
   /** Bump intensity của seam ván (dùng getNormalNode). Default: 0.5 */
   bumpScale?: number
+  /** Loang lổ (bạc màu/nắng mưa) — độ mạnh đổi tông mảng [0–1]. Default: 0.45 */
+  mottle?: number
+  /** Tần số loang lổ (1/m). Nhỏ = mảng to. Default: 0.4 */
+  mottleScale?: number
+  /** Độ sâu BÓNG khe ván (đậm ở đỉnh khe → mờ xuống) [0–1]. Cao = khe tối/sâu. Default: 0.85 */
+  grooveShadow?: number
+  /** Bề rộng bóng khe DỌC (butt-joint) [0–0.3]. Nhỏ = vệt mờ ngắn/sắc hơn. Default: 0.0125 */
+  jointW?: number
+  /** Nẻ thớ gỗ — độ sẫm đường nẻ [0–1]. Default: 0.4 */
+  crack?: number
+  /** Tần số nẻ (1/m). Default: 3.5 */
+  crackScale?: number
+  /** Bề rộng đường nẻ [0–0.1]. Default: 0.04 */
+  crackWidth?: number
 }
 
 // ── WoodPlank ─────────────────────────────────────────────────────────────────
@@ -67,22 +84,36 @@ export class WoodPlank {
 
   private readonly uScale:     ReturnType<typeof uniform>
   private readonly uPlankH:    ReturnType<typeof uniform>
+  private readonly uPlankLen:  ReturnType<typeof uniform>
   private readonly uSeamFrac:  ReturnType<typeof uniform>
   private readonly uGrainAmp:  ReturnType<typeof uniform>
   private readonly uWoodColor: ReturnType<typeof uniform>
   private readonly uDarkColor: ReturnType<typeof uniform>
-  private readonly uSeamColor: ReturnType<typeof uniform>
   private readonly uBumpScale: ReturnType<typeof uniform>
+  private readonly uMottle:     ReturnType<typeof uniform>
+  private readonly uMottleScale: ReturnType<typeof uniform>
+  private readonly uGrooveShadow: ReturnType<typeof uniform>
+  private readonly uJointW:     ReturnType<typeof uniform>
+  private readonly uCrack:      ReturnType<typeof uniform>
+  private readonly uCrackScale: ReturnType<typeof uniform>
+  private readonly uCrackWidth: ReturnType<typeof uniform>
 
   constructor(opts: WoodPlankOptions = {}) {
     this.uScale     = uniform(opts.scale    ?? 1.0)
     this.uPlankH    = uniform(opts.plankH   ?? 0.14)
+    this.uPlankLen  = uniform(opts.plankLen ?? 4.0)
     this.uSeamFrac  = uniform(opts.seamFrac ?? 0.08)
     this.uGrainAmp  = uniform(opts.grainAmp ?? 0.22)
     this.uWoodColor = uniform(new THREE.Color(opts.woodColor ?? 0xb88548))
     this.uDarkColor = uniform(new THREE.Color(opts.darkColor ?? 0x61361e))
-    this.uSeamColor = uniform(new THREE.Color(opts.seamColor ?? 0x2e1f13))
     this.uBumpScale = uniform(opts.bumpScale ?? 0.5)
+    this.uMottle      = uniform(opts.mottle      ?? 0.45)
+    this.uMottleScale = uniform(opts.mottleScale ?? 0.4)
+    this.uGrooveShadow = uniform(opts.grooveShadow ?? 0.85)
+    this.uJointW    = uniform(opts.jointW   ?? 0.0125)
+    this.uCrack       = uniform(opts.crack       ?? 0.4)
+    this.uCrackScale  = uniform(opts.crackScale  ?? 3.5)
+    this.uCrackWidth  = uniform(opts.crackWidth  ?? 0.04)
 
     const mat = new NodeMaterial()
     mat.colorNode = this._buildColorNode()
@@ -209,7 +240,28 @@ export class WoodPlank {
     const wSum   = sharp.dot(vec3(1.0)).max(float(0.001))
     const w      = sharp.div(wSum) // vec3(wx, wy, wz)
 
-    return colZY.mul(w.x).add(colXZ.mul(w.y)).add(colXY.mul(w.z)) as TSLNode
+    const blended = colZY.mul(w.x).add(colXZ.mul(w.y)).add(colXY.mul(w.z))
+
+    // Loang lổ (bạc màu nắng mưa) 2 lớp fbm: đổi tông nâu sâu ↔ sáng ấm → mảng loang qua nhiều ván.
+    const nBig = mx_fractal_noise_float(positionWorld.mul(this.uMottleScale), int(4), float(2.0), float(0.5))
+    const nSmall = mx_fractal_noise_float(
+      positionWorld.mul(this.uMottleScale.mul(float(3.7))), int(3), float(2.0), float(0.55))
+    const t = nBig.add(nSmall.mul(float(0.5))).mul(float(0.5)).add(float(0.5)).clamp(float(0), float(1))
+    const dark = blended.mul(vec3(0.72, 0.6, 0.46)) // nâu sâu
+    const lite = blended.mul(vec3(1.18, 1.1, 0.95)) // sáng ấm
+    const mottled = mix(dark, lite, t)
+    const weathered = mix(blended, mottled, this.uMottle.clamp(float(0), float(1)))
+
+    // Nẻ thớ gỗ: level-set fbm KÉO NGANG THEO THỚ (scale Y cao → đường nẻ chạy ngang);
+    // mask theo mặt ván (tắt ở khe); màu = gỗ đậm hơn (×0.45).
+    const cp = positionWorld.mul(vec3(this.uCrackScale, this.uCrackScale.mul(float(2.5)), this.uCrackScale))
+    const cn = mx_fractal_noise_float(cp, int(4), float(2.3), float(0.5))
+    const line = float(1).sub(smoothstep(float(0), this.uCrackWidth, cn.abs()))
+    const cluster = smoothstep(float(0.5), float(0.85),
+      mx_fractal_noise_float(positionWorld.mul(this.uCrackScale.mul(float(0.25))), int(2), float(2.0), float(0.5))
+        .mul(float(0.5)).add(float(0.5)))
+    const crack = line.mul(cluster).mul(this._plankMask()).mul(this.uCrack.clamp(float(0), float(1)))
+    return mix(weathered, weathered.mul(float(0.45)), crack) as TSLNode
   }
 
   /**
@@ -217,7 +269,7 @@ export class WoodPlank {
    * pu = horizontal axis, pv = height axis (plank rows run horizontally).
    */
   private _plankFace(pu: TSLNode, pv: TSLNode): TSLNode {
-    const { uPlankH, uSeamFrac, uGrainAmp, uWoodColor, uDarkColor, uSeamColor } = this
+    const { uPlankH, uPlankLen, uSeamFrac, uGrainAmp, uWoodColor, uDarkColor, uGrooveShadow, uJointW } = this
 
     // ── Row ──────────────────────────────────────────────────────────────────
     // totalH = plankH * (1 + seamFrac) — height of 1 plank + 1 seam
@@ -226,17 +278,16 @@ export class WoodPlank {
     const rowIdx  = rowF.floor()
     const rowLoc  = rowF.fract()   // 0..1 trong 1 row
 
-    // Seam occupies top portion of each row cycle. AA: mép mềm ~1px (fwidth của rowF liên tục)
-    // thay step cứng → hết răng cưa đường ngang ở xa/nghiêng.
+    // Khe nằm ở phần trên mỗi row cycle (rowLoc ∈ [seamThr, 1]).
     const seamThr = float(1).sub(uSeamFrac)
-    const seamAA  = rowF.fwidth().mul(float(0.75))
-    const isSeam  = smoothstep(seamThr.sub(seamAA), seamThr.add(seamAA), rowLoc)
 
-    // ── X stagger per row ─────────────────────────────────────────────────────
-    // Hash rowIdx → 1D value → use as X offset so boards don't line up
+    // ── X stagger per row + plank length ──────────────────────────────────────
+    // Hash rowIdx → X offset (so le mối nối); chia pu theo plankLen → ván DÀI, mối nối thưa
     const rowHash = triNoise3D(vec3(rowIdx.mul(float(7.31)), float(0), float(0)), float(0), float(0))
-    const xShift  = rowHash.mul(float(0.4))
-    const puS     = pu.add(xShift).fract()   // shifted, wrapped
+    const xShift  = rowHash.mul(float(0.5))
+    const cellF   = pu.div(uPlankLen).add(xShift)
+    const puS     = cellF.fract()   // 0..1 trong 1 ván dài uPlankLen
+    const cellU   = cellF.floor()   // chỉ số ván — để hash kiểu mối nối
 
     // ── Wood grain ────────────────────────────────────────────────────────────
     // Grain runs along horizontal axis (pu direction, simulating wood fibre)
@@ -252,18 +303,28 @@ export class WoodPlank {
     )
     const grain = g0.mul(float(0.65)).add(g1.mul(float(0.35)))
 
-    // ── End-grain darkening ───────────────────────────────────────────────────
-    // Tối dần ở 2 cạnh mỗi ván (puS ≈ 0 và ≈ 1)
-    const leftDark  = smoothstep(float(0.08), float(0), puS)
-    const rightDark = smoothstep(float(0.92), float(1), puS)
-    const edgeDark  = min(leftDark.add(rightDark).mul(float(0.55)), float(1))
+    // ── Khe dọc (butt-joint) — RANDOM 3 kiểu/mối qua hash(chỉ số ván, hàng) ──
+    // hash <0.4: bóng fade về TRÁI (sắc ở phải) | 0.4–0.6: chỉ ĐƯỜNG MẢNH | >0.6: fade về PHẢI (sắc ở trái).
+    const distR = float(1).sub(puS)   // 0 tại mối phải (puS=1)
+    const distL = puS                 // 0 tại mối trái (puS=0)
+    const hashJ = (j: TSLNode): TSLNode =>
+      triNoise3D(vec3(j.mul(float(13.1)), rowIdx.mul(float(5.7)), float(0)), float(0), float(0))
+    const rR = hashJ(cellU.add(float(1)))   // mối bên phải ô
+    const rL = hashJ(cellU)                 // mối bên trái ô
+    const lineW = uJointW.mul(float(0.25))  // đường mảnh — luôn có ở cả 2 mối
+    const lineR = float(1).sub(smoothstep(float(0), lineW, distR))
+    const lineL = float(1).sub(smoothstep(float(0), lineW, distL))
+    // fade rộng có điều kiện: mối phải cast TRÁI nếu rR<0.4; mối trái cast PHẢI nếu rL>0.6
+    const fadeR = float(1).sub(smoothstep(float(0), uJointW, distR)).mul(float(1).sub(step(float(0.4), rR)))
+    const fadeL = float(1).sub(smoothstep(float(0), uJointW, distL)).mul(step(float(0.6), rL))
+    const jointShade = lineR.max(lineL).max(fadeR).max(fadeL)
 
     // ── Per-row hue shift ──────────────────────────────────────────────────────
     // Small ±0.06 so neighbouring planks look slightly different
     const rowHue = rowHash.sub(float(0.5)).mul(float(0.06))
 
     // ── Assemble wood colour ──────────────────────────────────────────────────
-    const grainFactor = grain.mul(uGrainAmp).add(edgeDark)
+    const grainFactor = grain.mul(uGrainAmp)
     const woodMixed   = mix(uWoodColor, uDarkColor, grainFactor)
 
     // Hue shift: warm → red channel up, blue down
@@ -274,7 +335,10 @@ export class WoodPlank {
     )
     const woodWithHue = woodMixed.add(hueShift)
 
-    // Seam override
-    return mix(woodWithHue, uSeamColor, isSeam) as TSLNode
+    // Khe ván = BÓNG gỗ tối (KHÔNG tô đen phẳng). NGANG: đậm dưới ván trên (rowLoc→1, mép trên SẮC do
+    // fract reset) → mờ xuống. DỌC (jointShade): đậm mép phải → mờ trái. Lấy bóng SÂU NHẤT (max).
+    const seamShade = smoothstep(seamThr, float(1), rowLoc)
+    const shade     = seamShade.max(jointShade)
+    return woodWithHue.mul(float(1).sub(shade.mul(uGrooveShadow))) as TSLNode
   }
 }

@@ -17,8 +17,10 @@ import { NodeMaterial } from 'three/webgpu'
 import {
   faceDirection,
   float,
+  int,
   min,
   mix,
+  mx_fractal_noise_float,
   normalView,
   normalWorld,
   positionView,
@@ -55,6 +57,18 @@ export interface ConcretePanelOptions {
   seamColor?: THREE.ColorRepresentation
   /** Bump intensity của seam (dùng getNormalNode). Default: 0.4 */
   bumpScale?: number
+  /** Loang lổ (ố ẩm/bẩn) — độ mạnh đổi tông mảng [0–1]. Default: 0.5 */
+  mottle?: number
+  /** Tần số loang lổ (1/m). Nhỏ = mảng to. Default: 0.3 */
+  mottleScale?: number
+  /** Bóng đổ trong mạch dưới panel — độ sâu [0–1]. Default: 0.3 */
+  grooveShadow?: number
+  /** Nứt bê tông — độ sẫm đường nứt [0–1]. Default: 0.5 */
+  crack?: number
+  /** Tần số nứt (1/m). Nhỏ = nứt dài/thưa. Default: 2.2 */
+  crackScale?: number
+  /** Bề rộng đường nứt [0–0.1]. Default: 0.045 */
+  crackWidth?: number
 }
 
 // ── ConcretePanel class ───────────────────────────────────────────────────────
@@ -74,6 +88,12 @@ export class ConcretePanel {
   private readonly uBaseColor: ReturnType<typeof uniform>
   private readonly uSeamColor: ReturnType<typeof uniform>
   private readonly uBumpScale: ReturnType<typeof uniform>
+  private readonly uMottle: ReturnType<typeof uniform>
+  private readonly uMottleScale: ReturnType<typeof uniform>
+  private readonly uGrooveShadow: ReturnType<typeof uniform>
+  private readonly uCrack: ReturnType<typeof uniform>
+  private readonly uCrackScale: ReturnType<typeof uniform>
+  private readonly uCrackWidth: ReturnType<typeof uniform>
 
   constructor(opts: ConcretePanelOptions = {}) {
     this.uPanelW    = uniform(opts.panelW         ?? 1.20)
@@ -85,6 +105,12 @@ export class ConcretePanel {
     this.uBaseColor = uniform(new THREE.Color(opts.baseColor ?? 0xacaba4))
     this.uSeamColor = uniform(new THREE.Color(opts.seamColor ?? 0x706f6a))
     this.uBumpScale = uniform(opts.bumpScale ?? 0.4)
+    this.uMottle      = uniform(opts.mottle      ?? 0.5)
+    this.uMottleScale = uniform(opts.mottleScale ?? 0.3)
+    this.uGrooveShadow = uniform(opts.grooveShadow ?? 0.3)
+    this.uCrack       = uniform(opts.crack       ?? 0.5)
+    this.uCrackScale  = uniform(opts.crackScale  ?? 2.2)
+    this.uCrackWidth  = uniform(opts.crackWidth  ?? 0.045)
 
     const mat = new NodeMaterial()
     mat.colorNode = this._buildColorNode()
@@ -212,7 +238,7 @@ export class ConcretePanel {
   private _buildColorNode(): TSLNode {
     const {
       uPanelW, uPanelH, uSeamW, uFbmAmp,
-      uRoughness, uBlend, uBaseColor, uSeamColor,
+      uRoughness, uBlend, uBaseColor, uSeamColor, uGrooveShadow,
     } = this
 
     // Concrete panel face for one axis-aligned projection
@@ -261,7 +287,12 @@ export class ConcretePanel {
 
       // AO sâu hơn ở seam (contact occlusion) → tạo độ sâu rõ
       const ao = isPanel.mul(float(0.28)).add(float(0.72))
-      return blended.mul(ao)
+      // Bóng đổ dưới panel: ĐẬM ngay mép dưới (localV≈band) → MỜ xuống tâm mạch (localV→0). Light từ trên.
+      const band = uSeamW.div(uPanelH).max(float(0.015))
+      const grooveBelow = smoothstep(float(0), band, localV)
+        .mul(float(1).sub(smoothstep(band, band.mul(float(2.2)), localV)))
+      const grooveAO = float(1).sub(grooveBelow.mul(uGrooveShadow))
+      return blended.mul(ao).mul(grooveAO)
     }
 
     // Three axis-aligned projections
@@ -275,6 +306,26 @@ export class ConcretePanel {
     const wSum   = sharp.dot(vec3(1.0)).max(float(0.001))
     const w      = sharp.div(wSum)
 
-    return colZY.mul(w.x).add(colXZ.mul(w.y)).add(colXY.mul(w.z))
+    const blended = colZY.mul(w.x).add(colXZ.mul(w.y)).add(colXY.mul(w.z))
+
+    // Loang lổ (ố ẩm/bẩn) 2 lớp fbm: đổi tông xám tối ↔ sáng → mảng loang qua nhiều panel.
+    const nBig = mx_fractal_noise_float(positionWorld.mul(this.uMottleScale), int(4), float(2.0), float(0.5))
+    const nSmall = mx_fractal_noise_float(
+      positionWorld.mul(this.uMottleScale.mul(float(3.7))), int(3), float(2.0), float(0.55))
+    const t = nBig.add(nSmall.mul(float(0.5))).mul(float(0.5)).add(float(0.5)).clamp(float(0), float(1))
+    const dark = blended.mul(vec3(0.7, 0.7, 0.72)) // ố ẩm — xám hơi lạnh, tối
+    const lite = blended.mul(vec3(1.07, 1.07, 1.06))
+    const mottled = mix(dark, lite, t)
+    const weathered = mix(blended, mottled, this.uMottle.clamp(float(0), float(1)))
+
+    // Nứt bê tông: level-set |fbm|→0 — CHẠY DÀI LIỀN MẠCH (không mask theo panel, bê tông liền khối).
+    // Màu nứt = tông bê tông nhưng ĐẬM HƠN (×0.5), không phải đen.
+    const cn = mx_fractal_noise_float(positionWorld.mul(this.uCrackScale), int(4), float(2.3), float(0.5))
+    const line = float(1).sub(smoothstep(float(0), this.uCrackWidth, cn.abs()))
+    const cluster = smoothstep(float(0.45), float(0.82),
+      mx_fractal_noise_float(positionWorld.mul(this.uCrackScale.mul(float(0.2))), int(2), float(2.0), float(0.5))
+        .mul(float(0.5)).add(float(0.5)))
+    const crack = line.mul(cluster).mul(this.uCrack.clamp(float(0), float(1)))
+    return mix(weathered, weathered.mul(float(0.5)), crack) as TSLNode
   }
 }

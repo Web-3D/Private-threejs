@@ -16,8 +16,10 @@ import { NodeMaterial } from 'three/webgpu'
 import {
   faceDirection,
   float,
+  int,
   min,
   mix,
+  mx_fractal_noise_float,
   normalView,
   normalWorld,
   positionView,
@@ -55,6 +57,16 @@ export interface BrickWallOptions {
   mortarColor?: THREE.ColorRepresentation
   /** Bump intensity của mạch vữa (dùng getNormalNode). Default: 0.5 */
   bumpScale?: number
+  /** Micro-relief biên độ trên mặt gạch (detail normal). Default: 0.18 */
+  microBump?: number
+  /** Tần số micro-relief (1/m). Cao = lốm đốm mịn hơn (nhưng dễ lấp lánh ở xa). Default: 18 */
+  microScale?: number
+  /** Loang lổ (weathering) — độ mạnh đổi tông màu mảng [0–1]. Default: 0.55 */
+  mottle?: number
+  /** Tần số loang lổ (1/m). Nhỏ = mảng to. Default: 0.3 */
+  mottleScale?: number
+  /** Bóng đổ trong rãnh dưới gạch — độ sâu [0–1]. Default: 0.32 */
+  grooveShadow?: number
 }
 
 // ── BrickWall class ───────────────────────────────────────────────────────────
@@ -74,6 +86,11 @@ export class BrickWall {
   private readonly uBrickColor: ReturnType<typeof uniform>
   private readonly uMortarColor: ReturnType<typeof uniform>
   private readonly uBumpScale: ReturnType<typeof uniform>
+  private readonly uMicroBump: ReturnType<typeof uniform>
+  private readonly uMicroScale: ReturnType<typeof uniform>
+  private readonly uMottle: ReturnType<typeof uniform>
+  private readonly uMottleScale: ReturnType<typeof uniform>
+  private readonly uGrooveShadow: ReturnType<typeof uniform>
 
   constructor(opts: BrickWallOptions = {}) {
     this.uBrickW    = uniform(opts.brickW         ?? 0.40)
@@ -85,6 +102,11 @@ export class BrickWall {
     this.uBrickColor  = uniform(new THREE.Color(opts.brickColor  ?? 0xb86042))
     this.uMortarColor = uniform(new THREE.Color(opts.mortarColor ?? 0xc7c4be))
     this.uBumpScale   = uniform(opts.bumpScale ?? 0.5)
+    this.uMicroBump   = uniform(opts.microBump  ?? 0.18)
+    this.uMicroScale  = uniform(opts.microScale ?? 18)
+    this.uMottle      = uniform(opts.mottle      ?? 0.55)
+    this.uMottleScale = uniform(opts.mottleScale ?? 0.3)
+    this.uGrooveShadow = uniform(opts.grooveShadow ?? 0.32)
 
     const mat = new NodeMaterial()
     mat.colorNode = this._buildColorNode()
@@ -203,9 +225,18 @@ export class BrickWall {
     return hZY.mul(w.x).add(hXZ.mul(w.y)).add(hXY.mul(w.z)) as TSLNode
   }
 
-  // Bump từ mask (mạch vữa lõm) qua screen-space derivative.
+  // Bump: mạch vữa lõm (mask) + micro-relief fbm cao tần TRÊN MẶT gạch (detail normal) →
+  // mặt gạch lồi lõm li ti, bắt sáng không đều như normal map thật (hết "phẳng/nhựa").
+  // LOD chống lấp lánh: footprint thế giới/pixel = fwidth(posWorld); khi ~ chu kỳ noise → alias.
+  // Fade micro về 0 ở xa (thay mipmap mà fbm procedural không có) → hết shimmer.
   private _buildNormalNode(): TSLNode {
-    return this._perturbNormal(this._brickMask())
+    const fw = positionWorld.fwidth()
+    const cyclesPerPx = fw.x.max(fw.y).max(fw.z).mul(this.uMicroScale)
+    const lod = float(1).sub(smoothstep(float(0.3), float(0.8), cyclesPerPx))
+    const micro = mx_fractal_noise_float(
+      positionWorld.mul(this.uMicroScale), int(3), float(2.0), float(0.5),
+    ).mul(this.uMicroBump).mul(lod)
+    return this._perturbNormal(this._brickMask().add(micro))
   }
 
   // Roughness biến thiên: vữa matte (0.97) → gạch (0.82) + grain → phá vẻ "nhựa" đồng đều.
@@ -237,7 +268,7 @@ export class BrickWall {
   private _buildColorNode(): TSLNode {
     const {
       uBrickW, uBrickH, uMortar, uVariation,
-      uRoughness, uBlend, uBrickColor, uMortarColor,
+      uRoughness, uBlend, uBrickColor, uMortarColor, uGrooveShadow,
     } = this
 
     // Brick pattern for one axis-aligned projection
@@ -290,7 +321,13 @@ export class BrickWall {
 
       // AO sâu hơn ở rãnh (contact occlusion): mặt gạch sáng (1.0) → đáy rãnh tối (0.62)
       const ao     = isBrick.mul(float(0.38)).add(float(0.62))
-      const blended = mix(mortarFinal, brickFinal, isBrick).mul(ao)
+      // Bóng đổ trong rãnh DƯỚI gạch: ĐẬM NHẤT ngay mép dưới viên (localV≈mFracV — chỗ đỏ-nâu vừa hết),
+      // MỜ DẦN xuống tâm rãnh trắng (localV→0), cắt khi lên thân gạch. Light từ trên → viên che rãnh dưới.
+      const mFracV  = uMortar.div(bhM)
+      const grooveBelow = smoothstep(float(0), mFracV, localV)
+        .mul(float(1).sub(smoothstep(mFracV, mFracV.mul(float(2.2)), localV)))
+      const grooveAO = float(1).sub(grooveBelow.mul(uGrooveShadow))
+      const blended = mix(mortarFinal, brickFinal, isBrick).mul(ao).mul(grooveAO)
       return blended
     }
 
@@ -306,7 +343,23 @@ export class BrickWall {
     const wSum    = sharp.dot(vec3(1.0)).max(float(0.001))
     const w       = sharp.div(wSum) // vec3: (wx, wy, wz)
 
-    // Final: weighted sum of three face colors
-    return colZY.mul(w.x).add(colXZ.mul(w.y)).add(colXY.mul(w.z))
+    const blended = colZY.mul(w.x).add(colXZ.mul(w.y)).add(colXY.mul(w.z))
+
+    // Loang lổ (weathering) 2 lớp fbm: mảng lớn (uMottleScale) + cụm gạch (×3.7) chồng nhau.
+    // → t ∈ [0,1] điều khiển ĐỔI TÔNG MÀU (xỉn-tối ↔ sáng-ấm), không chỉ sáng/tối → loang rõ kể cả trên nền tối.
+    const nBig = mx_fractal_noise_float(positionWorld.mul(this.uMottleScale), int(4), float(2.0), float(0.5))
+    const nSmall = mx_fractal_noise_float(
+      positionWorld.mul(this.uMottleScale.mul(float(3.7))), int(3), float(2.0), float(0.55))
+    const t = nBig.add(nSmall.mul(float(0.5))).mul(float(0.5)).add(float(0.5)).clamp(float(0), float(1))
+
+    const dark = blended.mul(vec3(0.55, 0.48, 0.46)) // mảng xỉn — đỏ ngả nâu tối
+    const lite = blended.mul(vec3(1.18, 1.1, 0.98)) // mảng sáng — ấm ngả vàng (sun-bleached)
+    const mottled = mix(dark, lite, t)
+    const weathered = mix(blended, mottled, this.uMottle.clamp(float(0), float(1)))
+
+    // Đốm màu mid-freq (~5/m) trong viên → phá vẻ "đều" của mặt gạch. Là ALBEDO nên ít lấp lánh
+    // hơn normal nhiều (specular aliasing mới gây shimmer) → an toàn không cần LOD.
+    const speck = mx_fractal_noise_float(positionWorld.mul(float(5.0)), int(3), float(2.0), float(0.5))
+    return weathered.mul(float(1).add(speck.mul(float(0.14)))) as TSLNode
   }
 }
