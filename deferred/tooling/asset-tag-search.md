@@ -36,7 +36,7 @@ node search-assets.js --tag splat --category environments
 node search-assets.js --shader vietnamese-street
 ```
 
-Output: bảng markdown để Claude/Gemini paste vào context.
+Output: bảng markdown để Claude paste vào context.
 
 ### 3. CLAUDE.md Living Index — thêm section tags
 

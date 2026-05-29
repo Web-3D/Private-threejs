@@ -42,4 +42,4 @@ Claude query → MCP server → SQLite-vec search → trả về chunks liên qu
 ## Cũng xem thêm
 
 - `Martian-Engineering/agent-memory` — contradiction detection giữa các memory entry
-- `zilliztech/memsearch` — multi-agent memory sync (khi cần sync giữa Claude + Gemini)
+- `zilliztech/memsearch` — multi-agent memory sync (khi cần sync nhiều session/agent)

@@ -67,15 +67,15 @@ Template Vite + TypeScript + Three.js 0.174. Mọi dự án mới clone từ đ�
 └── templates/  ← BaseWorld, BaseShader, BaseComponent
 ```
 
-**Import module:** Gemini copy từ `threejs-modules/` → `src/imported/[name]/`
-→ Claude Code adapt theo `module-handoff` skill.
+**Import module:** Claude copy từ `threejs-modules/` → `src/imported/[name]/`
+→ adapt theo `module-handoff` skill (tìm → copy → adapt → lock).
 
 ### 3. Công cụ engine — Hỗ trợ kỹ thuật
 
 | Tool | Chạy khi nào | Tác dụng |
 |---|---|---|
 | `validate.js` | Sau khi build/sửa module | Kiểm tra structure, meta.json, exports |
-| `check-imports.js` | Sau khi Gemini copy module | Phát hiện import từ raw/ hoặc optimized/ |
+| `check-imports.js` | Sau khi copy module | Phát hiện import từ raw/ hoặc optimized/ |
 | `update-index.js` | Tự động (SessionStart hook) | Sync Living Index trong CLAUDE.md |
 | `scan-versions.js` | Sau mỗi `npm install three@x` | Detect module chưa verify với Three.js mới |
 | `find-unused.js` | Định kỳ / khi nghi orphan | Stale imports + unregistered modules + orphan files |
@@ -110,8 +110,7 @@ cat CLAUDE.md   # → Living Index → Modules
 node validate.js threejs-modules/[category]/[ModuleName]
 
 # 5. Tích hợp vào project
-# Gemini: module-find → handoff-to-claude
-# Claude: module-handoff skill
+# Claude: module-handoff skill (tìm → copy → adapt → lock)
 ```
 
 ---

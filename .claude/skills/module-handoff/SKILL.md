@@ -10,10 +10,17 @@ Skill này YÊU CẦU apply cùng lúc:
 
 ---
 
+## Bối cảnh
+
+Từ **2026-05-29** Gemini rời dự án — Claude đảm nhận **cả việc tìm/copy module (vai Librarian cũ) lẫn tích hợp (vai Adapter)**. Không còn handoff trung gian qua `SUMMARY.md`. `.module-lock.json` vẫn giữ để track version — đủ cho private library 1 người.
+
+---
+
 ## Implementation checklist
 
-- [ ] Đọc `src/imported/[ModuleName]/SUMMARY.md` **trước** khi viết bất kỳ dòng code nào
-- [ ] Tạo/sửa file tích hợp trong `src/world/` hoặc `src/shaders/` — không trong `src/imported/`
+- [ ] Đọc `threejs-modules/[category]/[Name]/README.md` + `meta.json` (status `unit-pass`, xem dependencies) **trước** khi copy
+- [ ] Copy vào `src/imported/[ModuleName]/` — giữ nguyên, không sửa file gốc (để diff sau)
+- [ ] Tạo/sửa file tích hợp trong `src/world/` hoặc `src/shaders/` — KHÔNG trong `src/imported/`
 - [ ] Apply `dispose-pattern` cho file tích hợp — module gốc thường thiếu pattern này
 - [ ] Update `.module-lock.json` — `commit-sha`, `status: "adapted"`, `integrated-into`
 - [ ] Xóa `src/imported/[name]/` hoặc thêm vào `.gitignore` nếu module cần giữ để diff
@@ -21,32 +28,23 @@ Skill này YÊU CẦU apply cùng lúc:
 
 ---
 
-## Phân công vai trò
+## Workflow (4 bước)
 
-Workflow này có 2 AI với vai trò khác nhau — skill này chỉ bao gồm **vai trò Claude Code**:
-
-| AI              | Vai trò   | Công việc                                                                       |
-| --------------- | --------- | ------------------------------------------------------------------------------- |
-| **Gemini**      | Librarian | Tìm module trong `threejs-modules`, copy vào `src/imported/`, viết `SUMMARY.md` |
-| **Claude Code** | Adapter   | Đọc `SUMMARY.md`, tích hợp vào scene chính, update lock file                    |
-
----
-
-## Workflow Claude Code (4 bước)
-
-**Bước 1 — Đọc SUMMARY.md trước, không làm gì khác**
+**Bước 1 — Tìm + copy module từ library**
 
 ```
-src/imported/[ModuleName]/SUMMARY.md
+threejs-modules/[category]/[ModuleName]/   → đọc README.md + meta.json
+            ↓ copy nguyên trạng
+00-Threejs/src/imported/[ModuleName]/
 ```
 
-SUMMARY.md chứa: props, dependencies, phần nào cần adapt, phần nào giữ nguyên.
+Ghi lại `commit-sha` của repo `threejs-modules` lúc copy — để biết đang dùng version nào. Không sửa gì trong bản copy.
 
 **Bước 2 — Tích hợp vào scene chính**
 
 - Target thường là `src/world/` hoặc `src/shaders/`
 - Áp dụng đầy đủ `dispose-pattern` cho file tích hợp
-- Không copy-paste thô — adapt theo context của scene hiện tại
+- Không copy-paste thô — adapt theo context của scene (uniform names, camera setup, world scale thường khác giữa library và project)
 
 **Bước 3 — KHÔNG sửa file trong `src/imported/[ModuleName]/`**
 
@@ -83,7 +81,7 @@ File gốc phải giữ nguyên để có thể diff với version mới từ li
 
 | Step                       | Cost       | Ghi chú                                     |
 | -------------------------- | ---------- | ------------------------------------------- |
-| Đọc SUMMARY.md             | < 1 phút   | Gemini viết đủ ngắn — đọc hết trước khi làm |
+| Tìm + đọc README/meta.json | < 2 phút   | Đọc hết dependencies trước khi copy         |
 | Viết file tích hợp         | 10–30 phút | Tùy độ phức tạp module                      |
 | `node check-imports.js`    | < 3s       | Verify import paths                         |
 | Update `.module-lock.json` | < 1 phút   | 4 fields — không bỏ qua                     |
@@ -105,17 +103,15 @@ File gốc phải giữ nguyên để có thể diff với version mới từ li
 ## Lỗi thường gặp
 
 - ❌ **Sửa file trong `src/imported/[name]/`** → phá khả năng diff khi update module từ library sau này
-- ❌ **Chạy `git pull` từ threejs-modules** → đó là việc của Gemini, không phải Claude Code
 - ❌ **Quên update `.module-lock.json`** → mất track version, không biết đang dùng commit nào
 - ❌ **Bỏ qua `dispose-pattern` trong file tích hợp** → module gốc thường không có — phải tự thêm khi adapt
 - ❌ **Copy-paste thô mà không adapt** → uniform names, camera setup, world scale thường khác giữa library và project
-- ❌ **Không đọc SUMMARY.md trước** → adapt sai context, mất thời gian fix sau
+- ❌ **Không đọc README/meta.json trước khi copy** → adapt sai context, bỏ sót dependencies, mất thời gian fix sau
 
 ---
 
 ## Checklist verify sau khi adapt
 
-- [ ] Đã đọc `SUMMARY.md` trước khi viết bất kỳ dòng code nào
 - [ ] File tích hợp (`src/world/X.ts` hoặc `src/shaders/X/`) có đầy đủ dispose pattern
 - [ ] `.module-lock.json` đã update — `commit-sha`, `status: "adapted"`, `integrated-into`
 - [ ] `src/imported/[name]/` đã xóa hoặc thêm vào `.gitignore`

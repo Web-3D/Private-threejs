@@ -63,11 +63,11 @@ Effects/VFX → `threejs-modules/effects/` (GPUParticleSystem, SparkSystem ✅ P
 ```
 node validate.js ../assets/[category]/[name]       # sau khi thêm/sửa asset (từ thư mục THREEJS/)
 node validate.js threejs-modules/[category]/[Name] # sau khi thêm/sửa module
-node check-imports.js                               # sau khi Gemini copy module vào 00-Threejs/src/
+node check-imports.js                               # sau khi copy module vào 00-Threejs/src/imported/
 ```
 
 Hook tự chạy validate.js sau mỗi lần Claude Code write/edit file trong `../assets/` hoặc `threejs-modules/`.  
-Khi user chỉnh tay hoặc Gemini copy file → **phải chạy thủ công**.
+Khi user chỉnh tay → **phải chạy thủ công**.
 
 **Caching:** validate.js bỏ qua nếu file không đổi (lưu hash tại `.validate-cache.json` — gitignored).  
 **Registry:** sau mỗi asset PASS, `../assets/REGISTRY.json` tự update — không sửa tay file này.
@@ -106,19 +106,23 @@ Câu đầu tiên khi mở THREEJS session:
 | Quyết định / context session trước?         | `../SYNC.md`                                   |
 | Tại sao chọn pattern/stack này?             | `decisions/` — ADR index                       |
 | Tính năng đã nghiên cứu nhưng hoãn?         | `deferred/README.md`                           |
-| Workflow Gemini copy module → tích hợp?     | `../.claude/skills/module-handoff/SKILL.md` |
+| Workflow import + tích hợp module?          | `../.claude/skills/module-handoff/SKILL.md` |
 | Kế hoạch asset, budget tier, shaderProfile? | `../assets/ROADMAP.md`                         |
 
 ---
 
-## Workflow 2 AI
+## Workflow import module (Claude solo)
 
-| AI              | Vai trò                                                                    |
-| --------------- | -------------------------------------------------------------------------- |
-| **Gemini**      | Librarian — tìm/copy module từ `threejs-modules`, viết `SUMMARY.md`        |
-| **Claude Code** | Adapter — đọc `SUMMARY.md`, tích hợp vào scene, update `.module-lock.json` |
+> Gemini rời 2026-05-29 — Claude đảm nhận cả Librarian lẫn Adapter. Không còn handoff qua `SUMMARY.md`. Chi tiết: skill `module-handoff`.
 
-Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff.
+| Bước | Việc |
+| ---- | ---- |
+| 1. Tìm  | Tìm module trong `threejs-modules/[category]/[Name]` (đọc README + meta.json) |
+| 2. Copy | Copy vào `00-Threejs/src/imported/[Name]/` — giữ nguyên, không sửa để còn diff |
+| 3. Adapt | Tích hợp vào scene chính (import path, props, dispose-pattern) |
+| 4. Lock | Update `.module-lock.json`: `commit-sha`, `status: "adapted"`, `integrated-into` |
+
+Không sửa file trong `src/imported/[name]/` — giữ nguyên để diff. `.module-lock.json` vẫn track version dù chỉ 1 AI.
 
 ---
 

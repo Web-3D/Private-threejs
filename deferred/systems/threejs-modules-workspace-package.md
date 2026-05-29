@@ -4,7 +4,7 @@
 
 ## Vấn đề hiện tại
 
-`threejs-modules/` không có `package.json` → không phải npm package thật. Khi Gemini copy module sang `00-Threejs/src/imported/`, import path phải fix tay. Ổn với < 15 modules, rườm rà hơn khi scale lên.
+`threejs-modules/` không có `package.json` → không phải npm package thật. Khi copy module sang `00-Threejs/src/imported/`, import path phải fix tay. Ổn với < 15 modules, rườm rà hơn khi scale lên.
 
 ## Giải pháp đề xuất
 
