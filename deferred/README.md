@@ -25,6 +25,7 @@ deferred/
 |---|---|---|
 | [building-iq-techniques.md](geometry/building-iq-techniques.md) | IQ math tricks cho building: palette, periodic windows, fBm height | Building system cần visual phong phú hơn |
 | [building-sdf-phases.md](geometry/building-sdf-phases.md) | SDF ray march per component → bake pipeline | Bắt đầu Phase 1 SDF (column/beam) — xem `01-Doraemon/deferred/geometry/` |
+| [archplan-coord-true-slice.md](geometry/archplan-coord-true-slice.md) | Coordinate scanner cắt geometry/segment thật thay bbox → tọa độ tường đúng từng tầng | Cần đọc tọa độ tường trong / footprint per-floor, hoặc làm build editor |
 
 ---
 
