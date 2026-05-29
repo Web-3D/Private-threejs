@@ -21,7 +21,6 @@ import {
   normalWorld,
   positionWorld,
   smoothstep,
-  step,
   triNoise3D,
   uniform,
   vec3,
@@ -165,8 +164,11 @@ export class WoodPlank {
     const rowIdx  = rowF.floor()
     const rowLoc  = rowF.fract()   // 0..1 trong 1 row
 
-    // Seam occupies top portion of each row cycle
-    const isSeam  = step(float(1).sub(uSeamFrac), rowLoc)
+    // Seam occupies top portion of each row cycle. AA: mép mềm ~1px (fwidth của rowF liên tục)
+    // thay step cứng → hết răng cưa đường ngang ở xa/nghiêng.
+    const seamThr = float(1).sub(uSeamFrac)
+    const seamAA  = rowF.fwidth().mul(float(0.75))
+    const isSeam  = smoothstep(seamThr.sub(seamAA), seamThr.add(seamAA), rowLoc)
 
     // ── X stagger per row ─────────────────────────────────────────────────────
     // Hash rowIdx → 1D value → use as X offset so boards don't line up

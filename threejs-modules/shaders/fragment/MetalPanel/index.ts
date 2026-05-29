@@ -20,7 +20,6 @@ import {
   normalWorld,
   positionWorld,
   smoothstep,
-  step,
   triNoise3D,
   uniform,
   vec3,
@@ -191,7 +190,10 @@ export class MetalPanel {
     const panelF   = pu.div(panelW)
     const panelIdx = panelF.floor()
     const panelLoc = panelF.fract()
-    const isSeam   = step(float(1).sub(uSeamFrac.mul(float(0.1))), panelLoc)
+    // AA: mép seam dọc mềm ~1px (fwidth của panelF liên tục) thay step cứng → hết răng cưa.
+    const seamThr  = float(1).sub(uSeamFrac.mul(float(0.1)))
+    const seamAA   = panelF.fwidth().mul(float(0.75))
+    const isSeam   = smoothstep(seamThr.sub(seamAA), seamThr.add(seamAA), panelLoc)
 
     // ── Per-panel galvanized variation ────────────────────────────────────────
     // Hash (panelIdx, ridgeIdx) → slight brightness ±variation

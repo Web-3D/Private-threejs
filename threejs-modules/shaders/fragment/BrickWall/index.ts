@@ -14,15 +14,19 @@
 import * as THREE from 'three'
 import { NodeMaterial } from 'three/webgpu'
 import {
+  faceDirection,
   float,
   min,
   mix,
+  normalView,
   normalWorld,
+  positionView,
   positionWorld,
   smoothstep,
   step,
   triNoise3D,
   uniform,
+  vec2,
   vec3,
 } from 'three/tsl'
 import type { ShaderNodeObject } from 'three/tsl'
@@ -49,12 +53,16 @@ export interface BrickWallOptions {
   brickColor?: THREE.ColorRepresentation
   /** Mortar color. Default: 0xc7c4be (light grey cement) */
   mortarColor?: THREE.ColorRepresentation
+  /** Bump intensity của mạch vữa (dùng getNormalNode). Default: 0.5 */
+  bumpScale?: number
 }
 
 // ── BrickWall class ───────────────────────────────────────────────────────────
 
 export class BrickWall {
   private material: NodeMaterial | null = null
+  private normalNode: TSLNode | null = null // lazy cache cho getNormalNode()
+  private roughnessNode: TSLNode | null = null // lazy cache cho getRoughnessNode()
   private isDisposed = false
 
   private readonly uBrickW: ReturnType<typeof uniform>
@@ -65,6 +73,7 @@ export class BrickWall {
   private readonly uBlend: ReturnType<typeof uniform>
   private readonly uBrickColor: ReturnType<typeof uniform>
   private readonly uMortarColor: ReturnType<typeof uniform>
+  private readonly uBumpScale: ReturnType<typeof uniform>
 
   constructor(opts: BrickWallOptions = {}) {
     this.uBrickW    = uniform(opts.brickW         ?? 0.40)
@@ -75,6 +84,7 @@ export class BrickWall {
     this.uBlend     = uniform(opts.blendSharpness ?? 8.0)
     this.uBrickColor  = uniform(new THREE.Color(opts.brickColor  ?? 0xb86042))
     this.uMortarColor = uniform(new THREE.Color(opts.mortarColor ?? 0xc7c4be))
+    this.uBumpScale   = uniform(opts.bumpScale ?? 0.5)
 
     const mat = new NodeMaterial()
     mat.colorNode = this._buildColorNode()
@@ -136,14 +146,89 @@ export class BrickWall {
     return this.material
   }
 
+  /**
+   * Normal node (Mikkelsen screen-space bump) — mạch vữa lõm bắt sáng thật.
+   * Gán: `meshStandardNodeMat.normalNode = brick.getNormalNode()`. Lazy + cache.
+   */
+  getNormalNode(): NodeMaterial['normalNode'] {
+    if (!this.material) throw new Error('BrickWall: already disposed')
+    if (this.normalNode === null) this.normalNode = this._buildNormalNode()
+    return this.normalNode as NodeMaterial['normalNode']
+  }
+
+  /**
+   * Roughness node — mạch vữa rất nhám (matte), mặt gạch đỡ nhám + grain noise.
+   * Roughness biến thiên (thay vì phẳng) là đòn chính chống bề mặt "nhựa".
+   */
+  getRoughnessNode(): TSLNode {
+    if (!this.material) throw new Error('BrickWall: already disposed')
+    return this.roughnessNode ?? (this.roughnessNode = this._buildRoughnessNode())
+  }
+
+  /** Cường độ nổi của mạch vữa. Range [0, 2]. */
+  setBumpScale(v: number): void {
+    if (this.isDisposed) return
+    this.uBumpScale.value = Math.max(0, Math.min(2, v))
+  }
+
   dispose(): void {
     if (this.isDisposed) return
     this.material?.dispose()
     this.material = null
+    this.normalNode = null
+    this.roughnessNode = null
     this.isDisposed = true
   }
 
   // ── Private ────────────────────────────────────────────────────────────────
+
+  // Brick mask blend triplanar: mạch vữa (0, lõm/nhám) → mặt gạch (1). Dùng chung normal + roughness.
+  private _brickMask(): TSLNode {
+    const { uBrickW, uBrickH, uMortar, uBlend } = this
+    const bevel = (px: TSLNode, py: TSLNode): TSLNode => {
+      const su = px.div(uBrickW.add(uMortar))
+      const sv = py.div(uBrickH.add(uMortar))
+      const stagger = step(float(0.5), sv.floor().mul(float(0.5)).fract()).mul(float(0.5))
+      const localU = su.add(stagger).fract()
+      const localV = sv.fract()
+      const minDist = min(min(localU, localU.oneMinus()), min(localV, localV.oneMinus()))
+      const bevelW = uMortar.div(uBrickW.add(uMortar)).mul(float(3)) // rãnh vát ~3× mortar
+      return smoothstep(float(0), bevelW, minDist)
+    }
+    const hXY = bevel(positionWorld.x, positionWorld.y)
+    const hZY = bevel(positionWorld.z, positionWorld.y)
+    const hXZ = bevel(positionWorld.x, positionWorld.z)
+    const sharp = normalWorld.abs().pow(vec3(uBlend))
+    const w = sharp.div(sharp.dot(vec3(1.0)).max(float(0.001)))
+    return hZY.mul(w.x).add(hXZ.mul(w.y)).add(hXY.mul(w.z)) as TSLNode
+  }
+
+  // Bump từ mask (mạch vữa lõm) qua screen-space derivative.
+  private _buildNormalNode(): TSLNode {
+    return this._perturbNormal(this._brickMask())
+  }
+
+  // Roughness biến thiên: vữa matte (0.97) → gạch (0.82) + grain → phá vẻ "nhựa" đồng đều.
+  private _buildRoughnessNode(): TSLNode {
+    const mask = this._brickMask()
+    const grain = triNoise3D(positionWorld.mul(float(14.0)), float(0), float(0))
+      .sub(float(0.5))
+      .mul(float(0.14))
+    return mix(float(0.97), float(0.82), mask).add(grain).clamp(float(0.45), float(1.0)) as TSLNode
+  }
+
+  // Port của three BumpMapNode.perturbNormalArb (không export): suy normal view-space từ
+  // đạo hàm màn hình của height h. Projection-agnostic → hợp triplanar, không cần tangent.
+  private _perturbNormal(h: TSLNode): TSLNode {
+    const dHdxy = vec2(h.dFdx(), h.dFdy()).mul(this.uBumpScale)
+    const sigmaX = positionView.dFdx().normalize()
+    const sigmaY = positionView.dFdy().normalize()
+    const r1 = sigmaY.cross(normalView)
+    const r2 = normalView.cross(sigmaX)
+    const fDet = sigmaX.dot(r1).mul(faceDirection)
+    const vGrad = fDet.sign().mul(dHdxy.x.mul(r1).add(dHdxy.y.mul(r2)))
+    return fDet.abs().mul(normalView).sub(vGrad).normalize() as TSLNode
+  }
 
   /**
    * Build TSL color node:
@@ -179,9 +264,12 @@ export class BrickWall {
       const dV = min(localV, localV.oneMinus())
       const minDist = min(dU, dV)
 
-      // Mortar occupies mFrac fraction of cell; smoothstep → crisp AA'd edge
+      // Mortar occupies mFrac fraction of cell; smoothstep → crisp AA'd edge.
+      // AA: mép rộng tối thiểu ~1px màn hình (fwidth) → hết răng cưa khi ở xa/nghiêng;
+      // gần thì mFrac*2.5 giữ nét. minDist liên tục qua seam nên fwidth an toàn (không spike).
       const mFrac   = uMortar.div(bwM)
-      const isBrick = smoothstep(float(0), mFrac.mul(float(2.5)), minDist)
+      const aaW     = mFrac.mul(float(2.5)).max(minDist.fwidth().mul(float(1.5)))
+      const isBrick = smoothstep(float(0), aaW, minDist)
 
       // Per-brick lightness variation: noise keyed by cell grid integer coords
       const cellHash = triNoise3D(

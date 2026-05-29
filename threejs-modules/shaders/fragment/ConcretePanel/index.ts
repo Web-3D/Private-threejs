@@ -166,8 +166,9 @@ export class ConcretePanel {
 
       // Seam fraction relative to panel width
       const sFrac   = uSeamW.div(uPanelW)
-      // 0 = seam groove, 1 = panel face
-      const isPanel = smoothstep(float(0), sFrac.mul(float(2.5)), minDist)
+      // 0 = seam groove, 1 = panel face. AA: mép tối thiểu ~1px (fwidth) → hết răng cưa ở xa.
+      const aaW     = sFrac.mul(float(2.5)).max(minDist.fwidth().mul(float(1.5)))
+      const isPanel = smoothstep(float(0), aaW, minDist)
 
       // ── fbm surface variation — 3 octaves ─────────────────────────────────
       // Low-frequency pour/aggregate colour shift within each panel
