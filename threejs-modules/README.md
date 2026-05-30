@@ -102,6 +102,9 @@
 | `PostProcessing` | WebGPU bloom pipeline — pass → bloom → tone mapping output  | post-processing, bloom, webgpu, effects    | medium     |
 | `OutlineShader`  | Per-object outline via BackSide scaled mesh — no post-processing | outline, highlight, select, backside    | low        |
 | `InstancedBrickWall` | Tường gạch geometry THẬT — nền vữa + InstancedMesh vạn viên running-bond, khe = vữa lõm | brick, wall, instanced, running-bond, architecture | medium |
+| `SubdivideDisplaceWall` | Tường gạch bằng subdivide plane + vertex displace (mặt liền, bậc mềm) — so sánh với InstancedBrickWall | brick, wall, displacement, subdivide, heightmap, lod | medium |
+| `WoodSidingWall` | Tường ván gỗ ngang (clapboard) instanced — ~13 tấm nghiêng chồng mép, 2 mặt/tấm (4 tris), cực rẻ (~64 tris) | wood, siding, clapboard, plank, instanced | low |
+| `WoodSidingStrip` | Tường ván gỗ ngang dạng 1 KHỐI liền (răng cưa slant+step) — plain mesh MERGE được xuyên nhà (1 draw call/trăm nhà) | wood, siding, clapboard, strip, mergeable | low |
 
 ---
 

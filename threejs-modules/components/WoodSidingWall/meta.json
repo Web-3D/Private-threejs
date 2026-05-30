@@ -1,0 +1,25 @@
+{
+  "name": "WoodSidingWall",
+  "category": "components",
+  "version": "1.0.0",
+  "description": "Tường ván gỗ ngang (clapboard) geometry thật — InstancedMesh ~13 tấm ván nghiêng chồng mép, mỗi tấm 2 mặt = 4 tris (bỏ mặt sau + trên + 2 đầu). Cực rẻ → dùng đại trà được.",
+  "tags": ["wood", "siding", "clapboard", "plank", "instanced", "architecture", "lap-siding"],
+  "complexity": "low",
+  "performance-cost": "low",
+  "performance": "1 draw call. Triangle = N tấm × 4 (2 mặt: front+bottom) + nền 12 ≈ 64/tường → rẻ gấp ~200× brick instanced. Rebuild chỉ tính ma trận. Đủ nhẹ để xài đại trà nhiều nhà (khác brick-3d chỉ điểm nhấn).",
+  "three-version": ">=0.174",
+  "status": "experimental",
+  "dependencies": ["three"],
+  "props": [
+    { "name": "width",         "type": "number", "default": "—",      "description": "Bề rộng tường (m, bắt buộc)" },
+    { "name": "height",        "type": "number", "default": "—",      "description": "Chiều cao tường (m, bắt buộc)" },
+    { "name": "depth",         "type": "number", "default": "0.1",    "description": "Bề dày nền sau (m)" },
+    { "name": "plankExposed",  "type": "number", "default": "0.235",  "description": "Chiều cao LỘ mỗi tấm — reveal (m); ván rộng bản (1×8 ~0.178)" },
+    { "name": "plankOverlap",  "type": "number", "default": "0.035",  "description": "Mép tấm chồng lên tấm dưới — lap (m)" },
+    { "name": "plankProtrude", "type": "number", "default": "0.018",  "description": "Bề dày mép dưới (butt) nhô (m)" },
+    { "name": "tiltDeg",       "type": "number", "default": "6",      "description": "Nghiêng tấm ra ngoài — dáng clapboard (độ)" },
+    { "name": "woodColor",     "type": "THREE.ColorRepresentation", "default": "0x9c6b3f", "description": "Màu gỗ" },
+    { "name": "colorVariation","type": "number", "default": "0.14",   "description": "Jitter sáng/tối từng tấm [0-1]" }
+  ],
+  "usage": "const w = new WoodSidingWall({ width: 8, height: 3 }); scene.add(w.getGroup())"
+}
