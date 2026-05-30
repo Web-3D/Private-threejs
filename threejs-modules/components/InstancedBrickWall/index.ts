@@ -154,8 +154,10 @@ export class InstancedBrickWall {
       .map((o) => ({
         xa: Math.max(x0, x0 + o.x),
         xb: Math.min(x1, x0 + o.x + o.w),
-        y0: Math.max(0, o.y),
+        y0: Math.max(0, o.y), // mép RENDER (clamp vào tường)
         y1: Math.min(h, o.y + o.h),
+        ey0: o.y, // mép ELLIP THẬT (chưa clamp) → cung tròn bị tường clip thành bán nguyệt khi kéo
+        ey1: o.y + o.h, // qua mép trên/dưới (khớp _inOpening vốn đã cull gạch theo ellipse thật)
         round: o.round ?? false,
       }))
       .filter((o) => o.xb - o.xa > 1e-4 && o.y1 - o.y0 > 1e-4)
@@ -173,8 +175,8 @@ export class InstancedBrickWall {
       if (yy < o.y0 - 1e-9 || yy > o.y1 + 1e-9) return null
       if (!o.round) return [o.xa, o.xb]
       const cx = (o.xa + o.xb) / 2
-      const cy = (o.y0 + o.y1) / 2
-      const kk = 1 - ((yy - cy) / ((o.y1 - o.y0) / 2)) ** 2
+      const cy = (o.ey0 + o.ey1) / 2 // ellipse THẬT → mép clamp cho chord phẳng (bán nguyệt), ko co lại
+      const kk = 1 - ((yy - cy) / ((o.ey1 - o.ey0) / 2)) ** 2
       const hw = ((o.xb - o.xa) / 2) * Math.sqrt(Math.max(0, kk))
       return [cx - hw, cx + hw]
     }

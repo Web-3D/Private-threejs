@@ -52,8 +52,10 @@ Xem `meta.json`. Bắt buộc: `width`, `height` (m). Còn lại có default.
 - **Nền vữa**: KHOÉT lỗ thật (custom geo front/back clip) + **reveal tunnel 4 mặt** (vách 2 bên +
   bệ + đầu) → nhìn xuyên được, không còn nền đặc che. Reveal dùng chính vật liệu vữa.
 - Giữa mép lỗ (rect) và mép gạch (lùi do overlap-cull) là viền vữa nền — như reveal vữa quanh ô.
-- **`round: true`** → lỗ **ELLIP** (fit bbox w×h): nền cắt theo chord ellip (lấy mẫu Y ~30mm) + reveal
+- **`round: true`** → lỗ **ELLIP** (fit bbox w×h): nền cắt theo chord ellip (lấy mẫu Y ~25mm) + reveal
   cong phát theo band; gạch cull theo ellip-nở-nửa-viên (Minkowski) → gạch lấp đầy 4 góc bbox quanh tròn.
+  Ellipse tính theo `y`/`h` **THẬT** (chưa clamp) cho cả nền lẫn cull gạch → kéo `y` âm / `y+h` vượt
+  tường thì ellip bị **clip thành cửa bán nguyệt / cung** thay vì co lại vừa khít bbox.
 
 ```typescript
 const wall = new InstancedBrickWall({

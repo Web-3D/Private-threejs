@@ -31,6 +31,12 @@ tường trong World scene vẫn MeshToon phẳng, KHÁC editor.
 - **Feasibility:** thấp-trung bình — logic y hệt ArchPlanLab. Cân nhắc tách `wall-materials.ts`
   dùng chung để khỏi lặp (đủ 2 nơi dùng → vẫn dưới ngưỡng abstraction 3, cân nhắc khi làm).
 
+## 2b. Ban công (balcony) render trong World — **thấp**
+ArchPlanLab đã có `structure.balcony` (state + GUI tab + geometry `makePositionedBalcony` + highlight),
+nhưng `instanceToJSON`/`structureToJSON` (AP4 export) CHƯA xuất balcony → `BuildingFromPlan` không
+dựng ban công trong World. Save/Load editor vẫn round-trip (serializeDesign = full state). Khi làm ý 2:
+thêm balcony vào structureToJSON + dựng trong BuildingFromPlan (gọi lại `makePositionedBalcony`).
+
 ## 3. Full per-material params (advanced) — **thấp, GUI bloat**
 Hiện chỉ expose colorIndex + Pattern scale. Mỗi shader còn nhiều param (brick: mortar/variation;
 concrete: seamW/fbm; metal: ridgesPerPanel/ridgeH; wood: grainAmp/seamFrac + darkColor).

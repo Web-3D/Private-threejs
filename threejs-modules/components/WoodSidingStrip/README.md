@@ -39,7 +39,10 @@ THẬT** — không tô baked (vertex color chỉ jitter màu/tấm).
   phẳng); **head/sill** ngang bám `frontZ(mép)`. Bịt kín hốc rỗng. Toạ độ MÉT: `x` từ mép trái, `y` từ
   chân tường (cửa `y=0`, cửa sổ `y=` chiều cao bệ).
 - **`round: true`** → lỗ **ELLIP** (fit bbox w×h): `solidSpans` cắt theo chord ellip, lấy mẫu Y mịn
-  (~30mm) cho mượt; reveal cong tự bám chu vi (jamb band); bỏ head/sill (tròn không có cạnh ngang).
+  (~25mm) cho mượt; reveal cong tự bám chu vi (jamb band); bỏ head/sill (tròn không có cạnh ngang).
+  Ellipse tính theo `y`/`h` **THẬT** (chưa clamp), chỉ RENDER trong tường → kéo `y` âm (xuống dưới
+  sàn) hoặc `y+h` vượt đỉnh thì tường **clip** ellip thành **cửa bán nguyệt / cung** (chord phẳng ở
+  mép, không co ellip lại vừa khít). Mép clip nằm đúng mặt ±Y nên cap đã bịt, không hở.
 
 ## Usage
 
