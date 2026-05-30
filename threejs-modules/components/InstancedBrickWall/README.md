@@ -45,10 +45,25 @@ Viên lộ 215×65mm, sâu nhô 12mm, mạch 10mm → bước ngang 225, hàng c
 
 Xem `meta.json`. Bắt buộc: `width`, `height` (m). Còn lại có default.
 
+## Cửa/cửa sổ (`openings`)
+
+`openings: { x, y, w, h }[]` (MÉT — x từ mép trái, y từ chân tường) → **đục xuyên 2 lớp**:
+- **Gạch**: cull viên CHẠM lỗ (AABB overlap) → không viên nào dư ra trong lỗ.
+- **Nền vữa**: KHOÉT lỗ thật (custom geo front/back clip) + **reveal tunnel 4 mặt** (vách 2 bên +
+  bệ + đầu) → nhìn xuyên được, không còn nền đặc che. Reveal dùng chính vật liệu vữa.
+- Giữa mép lỗ (rect) và mép gạch (lùi do overlap-cull) là viền vữa nền — như reveal vữa quanh ô.
+- **`round: true`** → lỗ **ELLIP** (fit bbox w×h): nền cắt theo chord ellip (lấy mẫu Y ~30mm) + reveal
+  cong phát theo band; gạch cull theo ellip-nở-nửa-viên (Minkowski) → gạch lấp đầy 4 góc bbox quanh tròn.
+
+```typescript
+const wall = new InstancedBrickWall({
+  width: 8, height: 3,
+  openings: [{ x: 1, y: 0, w: 1, h: 2.1 }], // cửa chạm sàn
+})
+```
+
 ## Giới hạn (experimental)
 
-- `openings` chỉ **cull** viên gạch trong vùng lỗ — **chưa khoét nền** (nền vữa vẫn kín). Cửa/sổ
-  thật cần cắt nền (sau).
 - Mép tường: viên có tâm ngoài tường bị bỏ → có thể chừa mép vữa nhỏ (chưa clip viên mép).
 
 ## Dispose

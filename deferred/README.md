@@ -47,6 +47,7 @@ deferred/
 | [lab-base-template.md](systems/lab-base-template.md) | LabBase abstract class — extract từ BuildingLab | Khi có ≥3 Lab (TerrainLab, VegetationLab...) |
 | [archplan-build-editor.md](systems/archplan-build-editor.md) | Grid snap · room auto-fill · wall auto-join (kiểu The Sims/SketchUp) | Đẩy ArchPlanLab thành build editor tương tác |
 | [threejs-modules-workspace-package.md](systems/threejs-modules-workspace-package.md) | Nâng cấp threejs-modules thành pnpm workspace package | ~15+ modules hoặc có project thứ 2 dùng chung |
+| [neighborhood-block-assembly-lod.md](systems/neighborhood-block-assembly-lod.md) | Quy hoạch khu phố N nhà: bake (Triangle+Shimmer) + instance/merge + LOD (Draw call) | Dựng khu phố thật trong World sau khi chốt vài kiểu nhà |
 
 ---
 

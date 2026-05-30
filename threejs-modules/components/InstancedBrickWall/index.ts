@@ -1,7 +1,7 @@
 /**
  * VỊ TRÍ   — threejs-modules/components/InstancedBrickWall/index.ts
- * VAI TRÒ  — Tường gạch GEOMETRY THẬT: nền vữa (box) + InstancedMesh hàng vạn viên gạch nhô,
- *             xếp running-bond chừa khe = mạch vữa lõm. Bake ra không phẳng (khác brick shader).
+ * VAI TRÒ  — Tường gạch GEOMETRY THẬT: nền vữa (box, hoặc custom KHOÉT lỗ cửa/sổ + reveal) +
+ *             InstancedMesh hàng vạn viên gạch nhô running-bond chừa khe = mạch vữa lõm (bake không phẳng).
  * LIÊN HỆ  — Dùng trong 01-Doraemon ArchPlanLab (material 'brick-3d'); thay/bổ sung BrickWall shader.
  *
  * Vì sao InstancedMesh (không phải box rời merge / Points sprite):
@@ -24,12 +24,13 @@ export interface BrickOpening {
   y: number // m — mép dưới lỗ (từ chân tường)
   w: number // m
   h: number // m
+  round?: boolean // true = lỗ ELLIP (fit bbox w×h) thay vì chữ nhật. Default false
 }
 
 export interface InstancedBrickWallOptions {
   width: number // m — bề rộng tường (trục X)
   height: number // m — chiều cao tường (trục Y)
-  depth?: number // m — bề dày nền vữa (trục Z). Default 0.1
+  depth?: number // m — bề dày nền vữa (trục Z). Default 0.1. Nền + reveal lỗ dùng MeshStandardNodeMaterial vữa.
   brickL?: number // m — chiều dài mặt lộ viên. Default 0.215 (UK)
   brickH?: number // m — chiều cao mặt lộ viên. Default 0.065 (UK)
   brickProtrude?: number // m — độ nhô viên khỏi nền vữa = độ sâu rãnh. Default 0.012
@@ -38,17 +39,18 @@ export interface InstancedBrickWallOptions {
   brickColor?: THREE.ColorRepresentation // Default 0xb86042 (terra cotta)
   mortarColor?: THREE.ColorRepresentation // Default 0xc7c4be (xám vữa)
   colorVariation?: number // 0–1 — jitter sáng/tối từng viên (instanceColor). Default 0.12
-  openings?: BrickOpening[] // lỗ cửa/sổ — cull viên gạch nằm trong (prototype: chưa khoét nền)
+  openings?: BrickOpening[] // lỗ cửa/sổ — cull gạch CHẠM lỗ (không dư ra) + KHOÉT XUYÊN nền vữa + reveal 4 mặt
 }
 
 export class InstancedBrickWall {
   private group: THREE.Group | null = null
-  private backingGeo: THREE.BoxGeometry | null = null
+  private backingGeo: THREE.BufferGeometry | null = null // Box (không lỗ) hoặc custom có lỗ + reveal
   private backingMat: MeshStandardNodeMaterial | null = null
   private brickGeo: THREE.BoxGeometry | null = null
   private brickMat: THREE.MeshStandardMaterial | null = null
   private instanced: THREE.InstancedMesh | null = null
   private brickCount = 0
+  private backingTris = 12 // 6 mặt box; custom có lỗ thì nhiều hơn (set trong _buildBacking)
   private isDisposed = false
 
   constructor(opts: InstancedBrickWallOptions) {
@@ -60,9 +62,10 @@ export class InstancedBrickWall {
     const variation = opts.colorVariation ?? 0.12
 
     const group = new THREE.Group()
-    this._buildBacking(group, opts.width, opts.height, depth, opts.mortarColor ?? 0xc7c4be)
+    const openings = opts.openings ?? []
+    this._buildBacking(group, opts.width, opts.height, depth, opts.mortarColor ?? 0xc7c4be, openings)
 
-    const centers = this._layoutBricks(opts.width, opts.height, brickL, brickH, joint, opts.openings ?? [])
+    const centers = this._layoutBricks(opts.width, opts.height, brickL, brickH, joint, openings)
     this.brickCount = centers.length
     this._buildBricks(group, centers, {
       brickL,
@@ -87,9 +90,9 @@ export class InstancedBrickWall {
     return this.brickCount
   }
 
-  /** Tổng triangle (gạch ×10 — đã bỏ mặt sau — + nền 12) — đọc để đo budget / quyết LOD. */
+  /** Tổng triangle (gạch ×10 — đã bỏ mặt sau — + nền/reveal) — đọc để đo budget / quyết LOD. */
   getTriangleCount(): number {
-    return this.brickCount * 10 + 12
+    return this.brickCount * 10 + this.backingTris
   }
 
   dispose(): void {
@@ -111,21 +114,147 @@ export class InstancedBrickWall {
 
   // ── Private ────────────────────────────────────────────────────────────────
 
-  // Nền vữa: box W×H×depth, tâm (0, H/2, 0). Mặt ngoài +Z; gạch nhô từ đó.
+  // Nền vữa: box W×H×depth (mặt ngoài +Z; gạch nhô từ đó). Có lỗ cửa/sổ → custom geo KHOÉT XUYÊN
+  // + vách reveal 4 mặt (đục thật, không còn nền đặc che). Box tâm (0,H/2,0); custom dựng y∈[0,h].
   private _buildBacking(
     group: THREE.Group,
     w: number,
     h: number,
     depth: number,
-    mortarColor: THREE.ColorRepresentation
+    mortarColor: THREE.ColorRepresentation,
+    openings: BrickOpening[]
   ): void {
-    this.backingGeo = new THREE.BoxGeometry(w, h, depth)
+    const hasHoles = openings.length > 0
+    this.backingGeo = hasHoles
+      ? this._buildBackingGeo(w, h, depth, openings)
+      : new THREE.BoxGeometry(w, h, depth)
+    this.backingTris = this.backingGeo.index ? this.backingGeo.index.count / 3 : 12
     this.backingMat = this._mortarMaterial(mortarColor)
     const mesh = new THREE.Mesh(this.backingGeo, this.backingMat)
-    mesh.position.set(0, h / 2, 0)
+    mesh.position.set(0, hasHoles ? 0 : h / 2, 0) // custom geo đã ở y∈[0,h]; box centered → nâng h/2
     mesh.castShadow = true
     mesh.receiveShadow = true
     group.add(mesh)
+  }
+
+  // Nền vữa KHOÉT lỗ: front (+Z) + back (−Z) clip theo lỗ (band ngang, chừa khoảng X đặc) + 4 mặt
+  // ngoài (cạnh tường) + reveal tunnel 4 mặt/lỗ (front→back, normal hướng vào lỗ). Dùng vật liệu vữa
+  // (world-space) → không cần vertex color/uv, chỉ position + computeVertexNormals.
+  private _buildBackingGeo(
+    w: number,
+    h: number,
+    depth: number,
+    openings: BrickOpening[]
+  ): THREE.BufferGeometry {
+    const x0 = -w / 2
+    const x1 = w / 2
+    const zf = depth / 2
+    const zb = -depth / 2
+    const ops = openings
+      .map((o) => ({
+        xa: Math.max(x0, x0 + o.x),
+        xb: Math.min(x1, x0 + o.x + o.w),
+        y0: Math.max(0, o.y),
+        y1: Math.min(h, o.y + o.h),
+        round: o.round ?? false,
+      }))
+      .filter((o) => o.xb - o.xa > 1e-4 && o.y1 - o.y0 > 1e-4)
+    type Op = (typeof ops)[number]
+    const pos: number[] = []
+    const idx: number[] = []
+    let v = 0
+    const quad = (c: number[][]): void => {
+      for (const p of c) pos.push(p[0], p[1], p[2])
+      idx.push(v, v + 1, v + 2, v, v + 2, v + 3)
+      v += 4
+    }
+    // Chord lỗ tại yy (round THU VỀ điểm cx ở 2 cực, không null trong [y0,y1]).
+    const holeChord = (o: Op, yy: number): [number, number] | null => {
+      if (yy < o.y0 - 1e-9 || yy > o.y1 + 1e-9) return null
+      if (!o.round) return [o.xa, o.xb]
+      const cx = (o.xa + o.xb) / 2
+      const cy = (o.y0 + o.y1) / 2
+      const kk = 1 - ((yy - cy) / ((o.y1 - o.y0) / 2)) ** 2
+      const hw = ((o.xb - o.xa) / 2) * Math.sqrt(Math.max(0, kk))
+      return [cx - hw, cx + hw]
+    }
+    // Hình thang đặc của band [ya,yb]: trừ trapezoid lỗ — mép NGHIÊNG theo chord top/bottom → MƯỢT +
+    // KÍN (không bậc/riser). jL/jR = cạnh trái/phải là mép lỗ (cần reveal). Giả định lỗ không chồng x.
+    type Trap = { lB: number; lT: number; rB: number; rT: number; jL: boolean; jR: boolean }
+    const solidTraps = (ya: number, yb: number): Trap[] => {
+      const ht: { lB: number; lT: number; rB: number; rT: number; c: number }[] = []
+      for (const o of ops) {
+        const b = holeChord(o, ya)
+        const t = holeChord(o, yb)
+        if (!b && !t) continue
+        ht.push({
+          lB: b ? b[0] : t![0],
+          lT: t ? t[0] : b![0],
+          rB: b ? b[1] : t![1],
+          rT: t ? t[1] : b![1],
+          c: ((b ? b[0] : t![0]) + (b ? b[1] : t![1])) / 2,
+        })
+      }
+      ht.sort((a, b) => a.c - b.c)
+      const out: Trap[] = []
+      let cB = x0
+      let cT = x0
+      for (const hl of ht) {
+        if (hl.lB > cB + 1e-6 || hl.lT > cT + 1e-6) {
+          out.push({ lB: cB, lT: cT, rB: hl.lB, rT: hl.lT, jL: cB > x0 + 1e-6 || cT > x0 + 1e-6, jR: true })
+        }
+        cB = Math.max(cB, hl.rB)
+        cT = Math.max(cT, hl.rT)
+      }
+      out.push({ lB: cB, lT: cT, rB: x1, rT: x1, jL: cB > x0 + 1e-6 || cT > x0 + 1e-6, jR: false })
+      return out.filter((t) => t.rB - t.lB > 1e-6 || t.rT - t.lT > 1e-6)
+    }
+    // REVEAL angled (front zf → back zb) tại mép lỗ nghiêng (xB,ya)→(xT,yb). plus = normal +X.
+    const revealQuad = (xB: number, xT: number, ya: number, yb: number, plus: boolean): void => {
+      const fa = [xB, ya, zf]
+      const fb = [xT, yb, zf]
+      const ba = [xB, ya, zb]
+      const bb = [xT, yb, zb]
+      if (plus) quad([ba, bb, fb, fa])
+      else quad([fa, fb, bb, ba])
+    }
+    // FRONT (+Z) + BACK (−Z) + reveal trái/phải: chia Y (round mịn ~25mm) → mỗi band dựng hình thang đặc.
+    const yCuts = [0, h]
+    for (const o of ops) {
+      yCuts.push(o.y0, o.y1)
+      if (o.round) {
+        const ns = Math.max(2, Math.ceil((o.y1 - o.y0) / 0.025))
+        for (let s = 1; s < ns; s++) yCuts.push(o.y0 + ((o.y1 - o.y0) * s) / ns)
+      }
+    }
+    const ys = [...new Set(yCuts)].filter((y) => y >= -1e-9 && y <= h + 1e-9).sort((a, b) => a - b)
+    for (let k = 0; k < ys.length - 1; k++) {
+      const ya = ys[k]
+      const yb = ys[k + 1]
+      if (yb - ya < 1e-6) continue
+      for (const tr of solidTraps(ya, yb)) {
+        quad([[tr.lB, ya, zf], [tr.rB, ya, zf], [tr.rT, yb, zf], [tr.lT, yb, zf]]) // front +Z
+        quad([[tr.rB, ya, zb], [tr.lB, ya, zb], [tr.lT, yb, zb], [tr.rT, yb, zb]]) // back −Z
+        if (tr.jL) revealQuad(tr.lB, tr.lT, ya, yb, false) // cạnh trái = mép phải lỗ → −X
+        if (tr.jR) revealQuad(tr.rB, tr.rT, ya, yb, true) // cạnh phải = mép trái lỗ → +X
+      }
+    }
+    // 4 mặt ngoài (cạnh tường, không bị lỗ cắt vì lỗ nằm trong)
+    quad([[x0, 0, zb], [x0, 0, zf], [x0, h, zf], [x0, h, zb]]) // trái −X
+    quad([[x1, 0, zf], [x1, 0, zb], [x1, h, zb], [x1, h, zf]]) // phải +X
+    quad([[x0, h, zf], [x1, h, zf], [x1, h, zb], [x0, h, zb]]) // đỉnh +Y
+    quad([[x0, 0, zb], [x1, 0, zb], [x1, 0, zf], [x0, 0, zf]]) // đáy −Y
+    // REVEAL bệ + đầu (head/sill) cho lỗ CHỮ NHẬT — trái/phải ĐÃ do band phát. Lỗ tròn: band lo hết.
+    for (const o of ops) {
+      if (o.round) continue
+      quad([[o.xa, o.y0, zb], [o.xa, o.y0, zf], [o.xb, o.y0, zf], [o.xb, o.y0, zb]]) // bệ +Y
+      quad([[o.xb, o.y1, zb], [o.xb, o.y1, zf], [o.xa, o.y1, zf], [o.xa, o.y1, zb]]) // đầu −Y
+    }
+    const geo = new THREE.BufferGeometry()
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3))
+    geo.setIndex(idx)
+    geo.computeVertexNormals()
+    return geo
   }
 
   // Vữa procedural: loang màu (mottle) + grain roughness world-space → hết phẳng đều trong rãnh.
@@ -177,7 +306,14 @@ export class InstancedBrickWall {
     for (const o of openings) {
       const ox = o.x + o.w / 2
       const oy = o.y + o.h / 2
-      if (Math.abs(cx - ox) < (bl + o.w) / 2 && Math.abs(cy - oy) < (bh + o.h) / 2) return true
+      if (o.round) {
+        // ellip nở thêm nửa viên (Minkowski xấp xỉ) → cull viên CHẠM ellip, chừa viên ở góc bbox.
+        const ex = o.w / 2 + bl / 2
+        const ey = o.h / 2 + bh / 2
+        if (((cx - ox) / ex) ** 2 + ((cy - oy) / ey) ** 2 <= 1) return true
+      } else if (Math.abs(cx - ox) < (bl + o.w) / 2 && Math.abs(cy - oy) < (bh + o.h) / 2) {
+        return true
+      }
     }
     return false
   }

@@ -2,11 +2,11 @@
   "name": "WoodSidingStrip",
   "category": "components",
   "version": "1.0.0",
-  "description": "Tường ván gỗ ngang dạng 1 KHỐI liền — 1 BufferGeometry răng cưa (slant front + step butt vuông góc nối tiếp) + plane lưng. Plain mesh → MERGE được xuyên nhà (1 draw call cho cả trăm nhà).",
-  "tags": ["wood", "siding", "clapboard", "strip", "mergeable", "architecture", "low-poly"],
+  "description": "Tường ván gỗ ngang dạng 1 KHỐI liền — 1 BufferGeometry răng cưa (slant front + step butt nối tiếp) + plane lưng + 2 mặt bên (kín 5 mặt). Khoét lỗ cửa/sổ (clip dải + jamb reveal). Plain mesh → MERGE được xuyên nhà (1 draw call cho cả trăm nhà).",
+  "tags": ["wood", "siding", "clapboard", "strip", "mergeable", "architecture", "low-poly", "openings"],
   "complexity": "low",
   "performance-cost": "low",
-  "performance": "~10 tấm (reveal 0.32) × 4 tris + plane lưng 2 ≈ 42 tris/tường. Plain mesh (KHÁC InstancedMesh) → mergeGeometries xuyên tường/nhà → 1 draw call cho cả trăm nhà gỗ (đòn scale). butt 45mm + step nghiêng tilt (mượt, không singularity) cho Lambert + shadow map.",
+  "performance": "Mép SẮC (bỏ bo bezier): ~10 tấm × (2 dải slant + 1 step ≈ 6 tris) + plane lưng + 2 mặt bên + trên/dưới ≈ 150 tris/tường; mỗi lỗ cửa/sổ jamb bám profile + head/sill. Plain mesh (KHÁC InstancedMesh) → mergeGeometries xuyên nhà → 1 draw call cho cả trăm nhà gỗ. butt + step nghiêng tilt (mượt, không singularity) cho Lambert + shadow map.",
   "three-version": ">=0.174",
   "status": "experimental",
   "dependencies": ["three"],
@@ -19,7 +19,8 @@
     { "name": "stepTiltDeg",   "type": "number", "default": "-35",   "description": "Nghiêng mép butt ±85° (0=phẳng, +dốc lên, −hắt xuống); cạnh quay → mượt, không singularity" },
     { "name": "woodColor",     "type": "THREE.ColorRepresentation", "default": "0x9c6b3f", "description": "Màu gỗ mặt ngoài" },
     { "name": "backColor",     "type": "THREE.ColorRepresentation", "default": "0x5c4026", "description": "Màu plane lưng (trong nhà)" },
-    { "name": "colorVariation","type": "number", "default": "0.14",  "description": "Jitter sáng/tối từng tấm [0-1]" }
+    { "name": "colorVariation","type": "number", "default": "0.14",  "description": "Jitter sáng/tối từng tấm [0-1]" },
+    { "name": "openings",      "type": "WoodStripOpening[]", "default": "[]", "description": "Lỗ cửa/sổ {x,y,w,h} MÉT (x từ mép trái, y từ chân; cửa y=0). Clip dải gỗ + jamb reveal" }
   ],
-  "usage": "const w = new WoodSidingStrip({ width: 8, height: 3 }); scene.add(w.getMesh())"
+  "usage": "const w = new WoodSidingStrip({ width: 8, height: 3, openings: [{ x: 1, y: 0, w: 1, h: 2.1 }] }); scene.add(w.getMesh())"
 }

@@ -31,12 +31,29 @@ Khác `WoodSidingWall` (InstancedMesh từng tấm).
 `tan` cũ lộn ở 90°) → mặt step tự tối (Lambert) + **shadow map bắt được** bóng. **Bóng từ ÁNH SÁNG
 THẬT** — không tô baked (vertex color chỉ jitter màu/tấm).
 
+## Tường kín 5 mặt + cửa/sổ
+
+- **5 mặt kín**: front răng cưa + plane lưng + **2 mặt bên ±X** (cap silhouette front→lưng, ~3 điểm/tấm).
+- **Cửa/cửa sổ** (`openings`): `band()` chia dải gỗ tại mép lỗ → chỉ vẽ khoảng X đặc. Jamb reveal:
+  **trái/phải XIÊN theo mặt cắt răng cưa** (band phát z front thật từng dải → đúng góc slant, không gờ
+  phẳng); **head/sill** ngang bám `frontZ(mép)`. Bịt kín hốc rỗng. Toạ độ MÉT: `x` từ mép trái, `y` từ
+  chân tường (cửa `y=0`, cửa sổ `y=` chiều cao bệ).
+- **`round: true`** → lỗ **ELLIP** (fit bbox w×h): `solidSpans` cắt theo chord ellip, lấy mẫu Y mịn
+  (~30mm) cho mượt; reveal cong tự bám chu vi (jamb band); bỏ head/sill (tròn không có cạnh ngang).
+
 ## Usage
 
 ```typescript
 import { WoodSidingStrip } from 'threejs-modules/components/WoodSidingStrip'
 
-const wall = new WoodSidingStrip({ width: 8, height: 3 }) // ~78 tris, 1 mesh
+const wall = new WoodSidingStrip({
+  width: 8,
+  height: 3,
+  openings: [
+    { x: 1.0, y: 0, w: 1.0, h: 2.1 }, // cửa ra vào (chạm sàn)
+    { x: 4.0, y: 0.9, w: 1.2, h: 1.2 }, // cửa sổ (bệ 0.9m)
+  ],
+})
 scene.add(wall.getMesh())
 
 // Cross-house: gom geo nhiều tường → mergeGeometries → 1 mesh → 1 draw call
@@ -44,7 +61,7 @@ scene.add(wall.getMesh())
 
 ## Props
 
-Xem `meta.json`. Bắt buộc: `width`, `height`.
+Xem `meta.json` + interface `WoodSidingStripOptions`. Bắt buộc: `width`, `height`. `openings?` = `WoodStripOpening[]`.
 
 ## Dispose
 
