@@ -1,0 +1,23 @@
+{
+  "name": "AsphaltGround",
+  "category": "shaders/ground",
+  "version": "1.0.0",
+  "description": "Procedural asphalt/tar road ground (đường nhựa hắc ín) — world-space XZ, no UV. Dark tar base + worn tire patches + grey aggregate + pepper grain + screen-space normal with LOD.",
+  "tags": ["asphalt", "tar", "road", "ground", "environment", "procedural", "world-space", "no-uv", "dark"],
+  "complexity": "medium",
+  "performance-cost": "medium",
+  "performance": "1 fbm + 3 triNoise3D per fragment. Ground 1 mesh, receiveShadow. LOD-fade pepper chống lấp lánh ở xa.",
+  "three-version": ">=0.174",
+  "status": "stable",
+  "dependencies": ["three"],
+  "props": [
+    { "name": "scale",      "type": "number",                    "default": "1.0",     "description": "World-space scale (lớn = hạt nhỏ hơn)" },
+    { "name": "baseColor",  "type": "THREE.ColorRepresentation", "default": "0x121214", "description": "Màu tar nền (đen hắc ín)" },
+    { "name": "aggColor",   "type": "THREE.ColorRepresentation", "default": "0x4e4e53", "description": "Màu cốt liệu đá rải" },
+    { "name": "aggScale",   "type": "number",                    "default": "34",      "description": "Tần số cốt liệu (1/m)" },
+    { "name": "aggDensity", "type": "number",                    "default": "0.55",    "description": "Mật độ đá lộ [0-1]" },
+    { "name": "wear",       "type": "number",                    "default": "0.3",     "description": "Biên độ mảng mòn vệt bánh xe [0-1]" },
+    { "name": "bumpScale",  "type": "number",                    "default": "0.95",    "description": "Cường độ normal (hạt cốt liệu)" }
+  ],
+  "usage": "const a = new AsphaltGround({ scale: 1 }); mesh.material = a.getMaterial()"
+}
