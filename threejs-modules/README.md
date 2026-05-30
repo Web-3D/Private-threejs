@@ -101,6 +101,7 @@
 | `LODBillboard`   | Swap 3D mesh → billboard sprite khi xa — tiết kiệm draw call | lod, billboard, sprite, crowd, performance | medium     |
 | `PostProcessing` | WebGPU bloom pipeline — pass → bloom → tone mapping output  | post-processing, bloom, webgpu, effects    | medium     |
 | `OutlineShader`  | Per-object outline via BackSide scaled mesh — no post-processing | outline, highlight, select, backside    | low        |
+| `InstancedBrickWall` | Tường gạch geometry THẬT — nền vữa + InstancedMesh vạn viên running-bond, khe = vữa lõm | brick, wall, instanced, running-bond, architecture | medium |
 
 ---
 

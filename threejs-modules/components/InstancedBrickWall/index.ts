@@ -1,0 +1,260 @@
+/**
+ * VỊ TRÍ   — threejs-modules/components/InstancedBrickWall/index.ts
+ * VAI TRÒ  — Tường gạch GEOMETRY THẬT: nền vữa (box) + InstancedMesh hàng vạn viên gạch nhô,
+ *             xếp running-bond chừa khe = mạch vữa lõm. Bake ra không phẳng (khác brick shader).
+ * LIÊN HỆ  — Dùng trong 01-Doraemon ArchPlanLab (material 'brick-3d'); thay/bổ sung BrickWall shader.
+ *
+ * Vì sao InstancedMesh (không phải box rời merge / Points sprite):
+ *   - 1 draw call cho cả vạn viên; RAM nhẹ (1 geo + ma trận); rebuild nhanh (chỉ tính ma trận).
+ *   - Points = sprite phẳng, không khối/bóng thật → KHÔNG dùng. InstancedMesh = box thật.
+ *   - Cái giá còn lại: triangle = N×12. 1 nhà OK; nhiều nhà cần LOD (gọi getTriangleCount để đo).
+ *
+ * Số đo chuẩn (mặc định = Metric UK/EU BS EN): viên lộ 215×65mm, sâu nhô 12mm, mạch 10mm
+ *   → bước ngang 225, hàng cao 75, lệch running-bond 112.5mm.
+ *
+ * DISPOSE: backing geo+mat, brick geo+mat, InstancedMesh — gọi dispose() khi gỡ tường.
+ */
+
+import * as THREE from 'three'
+import { float, int, mix, mx_fractal_noise_float, positionWorld, vec3 } from 'three/tsl'
+import { MeshStandardNodeMaterial } from 'three/webgpu'
+
+export interface BrickOpening {
+  x: number // m — mép trái lỗ (từ đầu trái tường)
+  y: number // m — mép dưới lỗ (từ chân tường)
+  w: number // m
+  h: number // m
+}
+
+export interface InstancedBrickWallOptions {
+  width: number // m — bề rộng tường (trục X)
+  height: number // m — chiều cao tường (trục Y)
+  depth?: number // m — bề dày nền vữa (trục Z). Default 0.1
+  brickL?: number // m — chiều dài mặt lộ viên. Default 0.215 (UK)
+  brickH?: number // m — chiều cao mặt lộ viên. Default 0.065 (UK)
+  brickProtrude?: number // m — độ nhô viên khỏi nền vữa = độ sâu rãnh. Default 0.012
+  edgeBevel?: number // m — vê cạnh mặt trước (taper đỉnh +Z vào trong) làm mềm cạnh sắc. Default 0.004. 0 = sắc
+  joint?: number // m — bề rộng mạch vữa. Default 0.01
+  brickColor?: THREE.ColorRepresentation // Default 0xb86042 (terra cotta)
+  mortarColor?: THREE.ColorRepresentation // Default 0xc7c4be (xám vữa)
+  colorVariation?: number // 0–1 — jitter sáng/tối từng viên (instanceColor). Default 0.12
+  openings?: BrickOpening[] // lỗ cửa/sổ — cull viên gạch nằm trong (prototype: chưa khoét nền)
+}
+
+export class InstancedBrickWall {
+  private group: THREE.Group | null = null
+  private backingGeo: THREE.BoxGeometry | null = null
+  private backingMat: MeshStandardNodeMaterial | null = null
+  private brickGeo: THREE.BoxGeometry | null = null
+  private brickMat: THREE.MeshStandardMaterial | null = null
+  private instanced: THREE.InstancedMesh | null = null
+  private brickCount = 0
+  private isDisposed = false
+
+  constructor(opts: InstancedBrickWallOptions) {
+    const depth = opts.depth ?? 0.1
+    const brickL = opts.brickL ?? 0.215
+    const brickH = opts.brickH ?? 0.065
+    const protrude = opts.brickProtrude ?? 0.012
+    const joint = opts.joint ?? 0.01
+    const variation = opts.colorVariation ?? 0.12
+
+    const group = new THREE.Group()
+    this._buildBacking(group, opts.width, opts.height, depth, opts.mortarColor ?? 0xc7c4be)
+
+    const centers = this._layoutBricks(opts.width, opts.height, brickL, brickH, joint, opts.openings ?? [])
+    this.brickCount = centers.length
+    this._buildBricks(group, centers, {
+      brickL,
+      brickH,
+      protrude,
+      frontZ: depth / 2,
+      bevel: opts.edgeBevel ?? 0.004,
+      color: new THREE.Color(opts.brickColor ?? 0xb86042),
+      variation,
+    })
+    this.group = group
+  }
+
+  /** Group chứa nền + InstancedMesh gạch. Thêm vào scene; tự đặt transform bên ngoài. */
+  getGroup(): THREE.Group {
+    if (!this.group) throw new Error('InstancedBrickWall: đã dispose')
+    return this.group
+  }
+
+  /** Số viên gạch thực tế (sau cull lỗ). */
+  getBrickCount(): number {
+    return this.brickCount
+  }
+
+  /** Tổng triangle (gạch ×10 — đã bỏ mặt sau — + nền 12) — đọc để đo budget / quyết LOD. */
+  getTriangleCount(): number {
+    return this.brickCount * 10 + 12
+  }
+
+  dispose(): void {
+    if (this.isDisposed) return
+    this.group?.parent?.remove(this.group)
+    this.backingGeo?.dispose()
+    this.backingMat?.dispose()
+    this.brickGeo?.dispose()
+    this.brickMat?.dispose()
+    this.instanced?.dispose()
+    this.group = null
+    this.backingGeo = null
+    this.backingMat = null
+    this.brickGeo = null
+    this.brickMat = null
+    this.instanced = null
+    this.isDisposed = true
+  }
+
+  // ── Private ────────────────────────────────────────────────────────────────
+
+  // Nền vữa: box W×H×depth, tâm (0, H/2, 0). Mặt ngoài +Z; gạch nhô từ đó.
+  private _buildBacking(
+    group: THREE.Group,
+    w: number,
+    h: number,
+    depth: number,
+    mortarColor: THREE.ColorRepresentation
+  ): void {
+    this.backingGeo = new THREE.BoxGeometry(w, h, depth)
+    this.backingMat = this._mortarMaterial(mortarColor)
+    const mesh = new THREE.Mesh(this.backingGeo, this.backingMat)
+    mesh.position.set(0, h / 2, 0)
+    mesh.castShadow = true
+    mesh.receiveShadow = true
+    group.add(mesh)
+  }
+
+  // Vữa procedural: loang màu (mottle) + grain roughness world-space → hết phẳng đều trong rãnh.
+  private _mortarMaterial(mortarColor: THREE.ColorRepresentation): MeshStandardNodeMaterial {
+    const base = new THREE.Color(mortarColor)
+    const mat = new MeshStandardNodeMaterial()
+    const t = mx_fractal_noise_float(positionWorld.mul(float(11)), int(3), float(2), float(0.5))
+      .mul(float(0.5))
+      .add(float(0.5))
+    const dark = vec3(base.r * 0.8, base.g * 0.8, base.b * 0.84) // mảng ẩm xám
+    const lite = vec3(base.r * 1.1, base.g * 1.09, base.b * 1.06) // mảng khô sáng
+    mat.colorNode = mix(dark, lite, t)
+    const grain = mx_fractal_noise_float(positionWorld.mul(float(42)), int(2), float(2), float(0.5))
+    mat.roughnessNode = float(0.95).add(grain.mul(float(0.12))).clamp(float(0.8), float(1))
+    return mat
+  }
+
+  // Tính tâm từng viên (local, gốc tâm tường): running-bond, cull viên tâm ngoài tường + trong lỗ.
+  private _layoutBricks(
+    w: number,
+    h: number,
+    brickL: number,
+    brickH: number,
+    joint: number,
+    openings: BrickOpening[]
+  ): { x: number; y: number }[] {
+    const px = brickL + joint // bước ngang
+    const py = brickH + joint // bước đứng (1 hàng)
+    const out: { x: number; y: number }[] = []
+    let row = 0
+    for (let cy = joint + brickH / 2; cy + brickH / 2 <= h + 1e-4; cy += py, row++) {
+      const off = row % 2 === 1 ? px / 2 : 0
+      for (let cx = brickL / 2 + joint - off; cx - brickL / 2 < w; cx += px) {
+        if (cx < 0 || cx > w) continue // tâm ngoài tường → bỏ (chừa mép vữa)
+        if (this._inOpening(cx, cy, brickL, brickH, openings)) continue
+        out.push({ x: cx - w / 2, y: cy }) // đổi sang gốc tâm tường
+      }
+    }
+    return out
+  }
+
+  private _inOpening(
+    cx: number,
+    cy: number,
+    bl: number,
+    bh: number,
+    openings: BrickOpening[]
+  ): boolean {
+    for (const o of openings) {
+      const ox = o.x + o.w / 2
+      const oy = o.y + o.h / 2
+      if (Math.abs(cx - ox) < (bl + o.w) / 2 && Math.abs(cy - oy) < (bh + o.h) / 2) return true
+    }
+    return false
+  }
+
+  // InstancedMesh: 1 box gạch, đặt tâm theo centers, nhô +Z; jitter màu từng viên (instanceColor).
+  private _buildBricks(
+    group: THREE.Group,
+    centers: { x: number; y: number }[],
+    p: {
+      brickL: number
+      brickH: number
+      protrude: number
+      frontZ: number
+      bevel: number
+      color: THREE.Color
+      variation: number
+    }
+  ): void {
+    if (centers.length === 0) return
+    this.brickGeo = new THREE.BoxGeometry(p.brickL, p.brickH, p.protrude)
+    if (p.bevel > 0) this._bevelFront(this.brickGeo, p.bevel, p.brickL, p.brickH)
+    this._removeBackFace(this.brickGeo, p.protrude) // mặt sau giáp nền: -2 tris + hết z-fight
+    this.brickMat = new THREE.MeshStandardMaterial({ roughness: 0.88 })
+    const inst = new THREE.InstancedMesh(this.brickGeo, this.brickMat, centers.length)
+    inst.castShadow = true
+    inst.receiveShadow = true
+    const m = new THREE.Matrix4()
+    const c = new THREE.Color()
+    const zc = p.frontZ + p.protrude / 2
+    centers.forEach((ct, i) => {
+      m.makeTranslation(ct.x, ct.y, zc)
+      inst.setMatrixAt(i, m)
+      const j = 1 + (this._hash(ct.x, ct.y) - 0.5) * 2 * p.variation
+      inst.setColorAt(i, c.copy(p.color).multiplyScalar(j))
+    })
+    inst.instanceMatrix.needsUpdate = true
+    if (inst.instanceColor) inst.instanceColor.needsUpdate = true
+    this.instanced = inst
+    group.add(inst)
+  }
+
+  // Vê cạnh trước (0 tris thêm): dời mọi đỉnh mặt +Z vào trong theo x/y → mặt trước nhỏ lại, 4 mặt
+  // bên hơi nghiêng → cạnh trước hết sắc 90°, bắt sáng dịu. computeVertexNormals để mặt bên ăn sáng đúng.
+  private _bevelFront(geo: THREE.BoxGeometry, bevel: number, brickL: number, brickH: number): void {
+    const b = Math.min(bevel, brickL * 0.4, brickH * 0.4)
+    const pos = geo.attributes.position
+    for (let i = 0; i < pos.count; i++) {
+      if (pos.getZ(i) <= 0) continue // chỉ đỉnh mặt trước (+Z)
+      const x = pos.getX(i)
+      const y = pos.getY(i)
+      pos.setX(i, x - Math.sign(x) * b)
+      pos.setY(i, y - Math.sign(y) * b)
+    }
+    pos.needsUpdate = true
+    geo.computeVertexNormals()
+  }
+
+  // Bỏ mặt sau (-Z) giáp nền vữa — luôn khuất → -2 tris/viên + hết z-fight (đồng phẳng với nền).
+  private _removeBackFace(geo: THREE.BoxGeometry, protrude: number): void {
+    const pos = geo.attributes.position
+    const idx = geo.index
+    if (!idx) return
+    const backZ = -protrude / 2 + 1e-6
+    const keep: number[] = []
+    for (let t = 0; t < idx.count; t += 3) {
+      const a = idx.getX(t)
+      const b = idx.getX(t + 1)
+      const c = idx.getX(t + 2)
+      if (pos.getZ(a) < backZ && pos.getZ(b) < backZ && pos.getZ(c) < backZ) continue // mặt sau
+      keep.push(a, b, c)
+    }
+    geo.setIndex(keep)
+  }
+
+  // Hash [0,1) ổn định theo vị trí viên → jitter màu lặp lại được (không nhấp nháy giữa build).
+  private _hash(x: number, y: number): number {
+    const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453
+    return s - Math.floor(s)
+  }
+}

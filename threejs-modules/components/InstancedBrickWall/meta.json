@@ -1,0 +1,28 @@
+{
+  "name": "InstancedBrickWall",
+  "category": "components",
+  "version": "1.0.0",
+  "description": "Tường gạch geometry THẬT — nền vữa + InstancedMesh hàng vạn viên gạch nhô xếp running-bond, khe = mạch vữa lõm. Bake ra không phẳng, 1 draw call.",
+  "tags": ["brick", "wall", "instanced", "instancedmesh", "geometry", "running-bond", "architecture", "no-uv"],
+  "complexity": "medium",
+  "performance-cost": "medium",
+  "performance": "1 draw call (InstancedMesh) cho cả vạn viên. Triangle = N×10 (đã bỏ mặt sau giáp nền) — đọc getTriangleCount() để đo; nhiều nhà cần LOD (gần=instanced, xa=shader phẳng). Rebuild nhanh (chỉ tính ma trận, không merge geometry).",
+  "three-version": ">=0.174",
+  "status": "experimental",
+  "dependencies": ["three"],
+  "props": [
+    { "name": "width",         "type": "number", "default": "—",     "description": "Bề rộng tường (m, bắt buộc)" },
+    { "name": "height",        "type": "number", "default": "—",     "description": "Chiều cao tường (m, bắt buộc)" },
+    { "name": "depth",         "type": "number", "default": "0.1",   "description": "Bề dày nền vữa (m)" },
+    { "name": "brickL",        "type": "number", "default": "0.215", "description": "Dài mặt lộ viên (m) — UK BS EN" },
+    { "name": "brickH",        "type": "number", "default": "0.065", "description": "Cao mặt lộ viên (m)" },
+    { "name": "brickProtrude", "type": "number", "default": "0.012", "description": "Độ nhô viên khỏi vữa = độ sâu rãnh (m)" },
+    { "name": "edgeBevel",     "type": "number", "default": "0.004", "description": "Vê cạnh mặt trước (m, 0 tris thêm) — mềm cạnh sắc. 0 = sắc" },
+    { "name": "joint",         "type": "number", "default": "0.01",  "description": "Bề rộng mạch vữa (m)" },
+    { "name": "brickColor",    "type": "THREE.ColorRepresentation", "default": "0xb86042", "description": "Màu gạch" },
+    { "name": "mortarColor",   "type": "THREE.ColorRepresentation", "default": "0xc7c4be", "description": "Màu nền vữa" },
+    { "name": "colorVariation","type": "number", "default": "0.12",  "description": "Jitter sáng/tối từng viên [0-1]" },
+    { "name": "openings",      "type": "BrickOpening[]", "default": "[]", "description": "Lỗ cửa/sổ — cull viên gạch trong vùng (chưa khoét nền)" }
+  ],
+  "usage": "const w = new InstancedBrickWall({ width: 8, height: 3 }); scene.add(w.getGroup())"
+}
