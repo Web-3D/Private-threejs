@@ -202,12 +202,12 @@ export class WoodSidingStrip {
       for (const o of ops) {
         const b = holeChord(o, ya)
         const t = holeChord(o, yb)
-        if (!b && !t) continue
-        const lB = b ? b[0] : t![0]
-        const lT = t ? t[0] : b![0]
-        const rB = b ? b[1] : t![1]
-        const rT = t ? t[1] : b![1]
-        ht.push({ lB, lT, rB, rT, c: (lB + rB) / 2 })
+        // CẢ HAI mép phải có chord. band() luôn cắt tại y0/y1 → sub-band hoặc NẰM TRỌN trong
+        // [y0,y1] (cả 2 non-null) hoặc NGOÀI (≥1 null). Chỉ 1 null = sub-band CHẠM mép từ ngoài
+        // (vd dải dưới bệ cửa sổ: đỉnh=y0). Nếu khoét sẽ thủng CẢ mảng tường dưới lỗ (bug "mất
+        // phần dưới nhìn từ trong" — mặt lưng là 1 dải liền nên thủng từ chân tường tới bệ).
+        if (!b || !t) continue
+        ht.push({ lB: b[0], lT: t[0], rB: b[1], rT: t[1], c: (b[0] + b[1]) / 2 })
       }
       ht.sort((a, b) => a.c - b.c)
       const out: Trap[] = []
