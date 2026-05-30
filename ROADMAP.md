@@ -150,6 +150,9 @@ Mục tiêu: NPC tìm đường trong city — NavMesh bake + pathfinding.
 
 ## Changelog
 
+| 2026-05-30 | Category `ui/` mới (widget DOM thuần) — `Tabs` folder-style: tablist + ARIA + roving tabindex + keyboard, theme CSS vars; tách từ ArchPlanLab. validate.js whitelist thêm `ui` |
+| 2026-05-30 | Fix `WoodSidingStrip` + `InstancedBrickWall` solidTraps boundary `!b\|\|!t` (cùng bug copy-paste, propagate 7b171a6) — hết răng cưa mép lỗ cửa/sổ. Chi tiết: 01-Doraemon `known-issues/KI-001` |
+| 2026-05-30 | `components/` — wall geometry THẬT: `InstancedBrickWall` (gạch InstancedMesh + khoét lỗ), `WoodSidingWall` (clapboard), `WoodSidingStrip` (ribbon 1 khối mergeable + openings), `AsphaltGround` |
 | 2026-05-23 | Phase G hoàn thành — AudioSystem (spatial PositionalAudio, load/cache/play, tích hợp CollisionEventBus.onImpact) |
 | 2026-05-19 | Phase F mở rộng — CollisionEventBus (event bus collision → handler, force threshold, ImpactEvent dispatch cho VAT/Particle/Audio) |
 | 2026-05-18 | Phase F hoàn thành — PhysicsWorld (Rapier WASM wrap), RigidBody (dynamic/fixed/kinematic + cuboid/ball/capsule), CharacterController (collision-resolved movement + jump + gravity) |
