@@ -91,6 +91,7 @@ Câu đầu tiên khi mở THREEJS session:
 | `../SYNC.md`              | Log quyết định + trạng thái workspace — **đọc đầu session**, ghi sau thay đổi lớn          |
 | `c:\Editions\studio-3D\STATUS.md` | Command center — active project, phase, blockers cross-repo          |
 | `deferred/`               | Tính năng đã nghiên cứu nhưng hoãn — mỗi file 1 tính năng, đọc trước khi đề xuất implement |
+| `known-issues/`           | Catalog lỗi thường gặp + cách sửa (`KI-NNN`) — **đọc khi gặp triệu chứng lạ / trước khi sửa geometry-state-shader**, tránh tái phạm |
 | `../assets/REGISTRY.json` | Index tổng hợp tất cả assets đã validate — auto-generated, không sửa tay                   |
 
 ---
@@ -104,7 +105,8 @@ Câu đầu tiên khi mở THREEJS session:
 | Module nào đã build xong?                   | Living Index → Modules                     |
 | Asset nào production-ready?                 | Living Index → Assets                      |
 | Quyết định / context session trước?         | `../SYNC.md`                                   |
-| Tại sao chọn pattern/stack này?             | `decisions/` — ADR index                       |
+| Tại sao chọn pattern/stack này?             | `decisions/` — ADR index (thay đổi cấu trúc lớn) |
+| Lỗi này gặp rồi? Sửa sao? Sao đừng tái phạm? | `known-issues/README.md` — KI catalog (lỗi thường gặp) |
 | Tính năng đã nghiên cứu nhưng hoãn?         | `deferred/README.md`                           |
 | Workflow import + tích hợp module?          | `../.claude/skills/module-handoff/SKILL.md` |
 | Kế hoạch asset, budget tier, shaderProfile? | `../assets/ROADMAP.md`                         |

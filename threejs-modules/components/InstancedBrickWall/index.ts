@@ -188,14 +188,10 @@ export class InstancedBrickWall {
       for (const o of ops) {
         const b = holeChord(o, ya)
         const t = holeChord(o, yb)
-        if (!b && !t) continue
-        ht.push({
-          lB: b ? b[0] : t![0],
-          lT: t ? t[0] : b![0],
-          rB: b ? b[1] : t![1],
-          rT: t ? t[1] : b![1],
-          c: ((b ? b[0] : t![0]) + (b ? b[1] : t![1])) / 2,
-        })
+        // CẢ HAI mép phải có chord (band NẰM TRỌN trong [y0,y1]). Chỉ 1 null = band chạm mép lỗ TỪ
+        // NGOÀI → KHÔNG cắt. Xưa dùng `&&` + fallback → khoét lỗ thừa header/sill → răng cưa (KI-001).
+        if (!b || !t) continue
+        ht.push({ lB: b[0], lT: t[0], rB: b[1], rT: t[1], c: (b[0] + b[1]) / 2 })
       }
       ht.sort((a, b) => a.c - b.c)
       const out: Trap[] = []
