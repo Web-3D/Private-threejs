@@ -115,6 +115,16 @@
 
 ---
 
+## UI
+
+> Widget DOM thuần (KHÔNG Three.js) — companion UI cho 3D tool. Theme qua CSS custom props.
+
+| Tên    | Mô tả                                                                                                                  | Tags                                  | Complexity |
+| ------ | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | ---------- |
+| `Tabs` | Tabs folder-style thuần DOM — tablist ngang, ARIA + roving tabindex + keyboard (←/→/Home/End), theme CSS vars, nút add | ui, tabs, aria, keyboard, dom, widget | low        |
+
+---
+
 ## Thêm module mới
 
 Copy từ `_template/` trong category phù hợp.

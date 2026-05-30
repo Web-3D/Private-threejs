@@ -1,0 +1,23 @@
+{
+  "name": "Tabs",
+  "category": "ui",
+  "version": "1.0.0",
+  "description": "Tabs UI thuần DOM (folder-style): tablist ngang, ấn 1 tab mở tabpanel + đóng cái khác. ARIA đầy đủ (tablist/tab/tabpanel + aria-selected + aria-controls/labelledby) + roving tabindex + điều hướng phím (←/→/↑/↓/Home/End). Framework-agnostic (không Three.js/lil-gui), theme qua CSS custom props, hỗ trợ nút add cuối hàng. Tách từ ArchPlanLab.",
+  "tags": ["ui", "tabs", "tablist", "tabpanel", "aria", "accessibility", "keyboard", "dom", "widget", "framework-agnostic"],
+  "complexity": "low",
+  "performance-cost": "none",
+  "performance": "DOM thuần — không GPU/render. 1 keydown + n click listener (gỡ sạch qua AbortController khi dispose). Show/hide bằng style.display.",
+  "three-version": "n/a",
+  "status": "experimental",
+  "dependencies": [],
+  "props": [
+    { "name": "host",     "type": "HTMLElement",  "default": "—",    "description": "Container chứa sẵn các panel; tablist được chèn trước panel đầu" },
+    { "name": "items",    "type": "TabItem[]",    "default": "—",    "description": "{ label, panel, title? } — panel là element ĐÃ nằm trong host" },
+    { "name": "initial",  "type": "number",       "default": "0",    "description": "Tab mở ban đầu (clamp)" },
+    { "name": "addEl",    "type": "HTMLElement",  "default": "—",    "description": "Phần tử cuối tablist (nút +/open) — không phải tab, không vào arrow-nav" },
+    { "name": "classes",  "type": "Partial<TabsClasses>", "default": "tabs-*", "description": "Đổi tên class (bar/tab/panel/active) để tự theme" },
+    { "name": "injectCss","type": "boolean",      "default": "true", "description": "Bơm CSS mặc định 1 lần; false = caller tự lo CSS" },
+    { "name": "onChange", "type": "(i, {trusted}) => void", "default": "—", "description": "Gọi mỗi lần đổi tab; trusted=true khi user, false khi initial/code" }
+  ],
+  "usage": "const tabs = new Tabs(host, panels.map((panel, i) => ({ label: `Tab ${i+1}`, panel })), { onChange: (i) => {} })"
+}

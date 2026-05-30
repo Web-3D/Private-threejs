@@ -7,7 +7,8 @@
 
 ## Quy tắc khi thêm module mới
 
-1. Copy `_template/` từ category phù hợp (shaders/utils/components/hooks)
+1. Copy `_template/` từ category phù hợp (shaders/utils/components/hooks/effects/ui)
+   - `ui/` = widget DOM thuần (KHÔNG Three.js) — companion UI cho 3D tool (vd Tabs). dispose() gỡ listener, không cần GPU resource.
 2. Đổi tên folder: `PascalCase` cho shader/component, `camelCase` cho util/hook
 3. Điền đầy đủ `meta.json` — không để field trống
 4. Viết `README.md` có ví dụ usage thực tế
